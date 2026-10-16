@@ -380,3 +380,35 @@ msgstr "Sent"
 msgid "plugins.generic.reviewerCertificate.settings.saveFailed"
 msgstr "Certificate settings could not be saved. Check the fields and image (JPEG or PNG, up to 5 MB), then try again."
 
+msgid "plugins.generic.reviewerCertificate.settings.typography"
+msgstr "Typography Hierarchy"
+
+msgid "plugins.generic.reviewerCertificate.settings.typographyDescription"
+msgstr "Optional font sizes in points (6-72) for individual certificate elements. Leave at 0 to use the automatic size derived from the base font size. Name and journal settings apply to body lines that contain only {{$reviewerName}} or {{$journalName}}; long values are shrunk and wrapped to fit the page."
+
+msgid "plugins.generic.reviewerCertificate.settings.titleFontSize"
+msgstr "Title (pt)"
+
+msgid "plugins.generic.reviewerCertificate.settings.nameFontSize"
+msgstr "Reviewer name (pt)"
+
+msgid "plugins.generic.reviewerCertificate.settings.journalFontSize"
+msgstr "Journal name (pt)"
+
+msgid "plugins.generic.reviewerCertificate.settings.bodyFontSize"
+msgstr "Acknowledgement text (pt)"
+
+msgid "plugins.generic.reviewerCertificate.settings.footerFontSize"
+msgstr "Footer and code (pt)"
+
+msgid "plugins.generic.reviewerCertificate.settings.nameBold"
+msgstr "Show the reviewer name in bold"
+
+msgid "plugins.generic.reviewerCertificate.settings.journalBold"
+msgstr "Show the journal name in bold"
+
+msgid "plugins.generic.reviewerCertificate.settings.emphasisSpacing"
+msgstr "Spacing Around Name and Journal (mm)"
+
+msgid "plugins.generic.reviewerCertificate.settings.emphasisSpacingDescription"
+msgstr "Extra space in millimetres above and below the reviewer name and journal name lines."

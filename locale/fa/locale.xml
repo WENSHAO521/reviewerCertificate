@@ -192,4 +192,15 @@ Best regards,
 
 {{$journalName}}
 {{$journalUrl}}</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography">Typography Hierarchy</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typographyDescription">Optional font sizes in points (6-72) for individual certificate elements. Leave at 0 to use the automatic size derived from the base font size. Name and journal settings apply to body lines that contain only {{$reviewerName}} or {{$journalName}}; long values are shrunk and wrapped to fit the page.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.titleFontSize">Title (pt)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.nameFontSize">Reviewer name (pt)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.journalFontSize">Journal name (pt)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.bodyFontSize">Acknowledgement text (pt)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.footerFontSize">Footer and code (pt)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.nameBold">Show the reviewer name in bold</message>
+	<message key="plugins.generic.reviewerCertificate.settings.journalBold">Show the journal name in bold</message>
+	<message key="plugins.generic.reviewerCertificate.settings.emphasisSpacing">Spacing Around Name and Journal (mm)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.emphasisSpacingDescription">Extra space in millimetres above and below the reviewer name and journal name lines.</message>
 </locale>
