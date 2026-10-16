@@ -796,7 +796,15 @@ class CertificateHandler extends Handler {
             'includeQRCode',
             'minimumReviews',
             'pageOrientation',
-            'bodyTopOffset'
+            'bodyTopOffset',
+            'titleFontSize',
+            'nameFontSize',
+            'journalFontSize',
+            'bodyFontSize',
+            'footerFontSize',
+            'emphasisSpacing',
+            'nameBold',
+            'journalBold'
         );
 
         foreach ($settingNames as $name) {

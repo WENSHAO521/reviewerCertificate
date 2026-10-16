@@ -255,6 +255,29 @@ class CertificateSettingsFormTest extends TestCase
     }
 
     /**
+     * Typography overrides: 0 means automatic, otherwise clamped to 6-72 pt.
+     */
+    public function testTypographySettingsAreSavedAndClamped(): void
+    {
+        \PKP\form\Form::$mockUserVars['nameFontSize'] = '26';
+        \PKP\form\Form::$mockUserVars['journalFontSize'] = '500';
+        \PKP\form\Form::$mockUserVars['titleFontSize'] = '-3';
+        \PKP\form\Form::$mockUserVars['emphasisSpacing'] = '999';
+        \PKP\form\Form::$mockUserVars['nameBold'] = '1';
+
+        $form = $this->makeForm();
+        $form->readInputData();
+        $form->execute();
+
+        $this->assertSame(26, $this->plugin->settings['nameFontSize']);
+        $this->assertSame(72, $this->plugin->settings['journalFontSize']);
+        $this->assertSame(0, $this->plugin->settings['titleFontSize']);
+        $this->assertSame(50, $this->plugin->settings['emphasisSpacing']);
+        $this->assertTrue($this->plugin->settings['nameBold']);
+        $this->assertFalse($this->plugin->settings['journalBold']);
+    }
+
+    /**
      * Documents the OTHER half of Issue #74: OJS trims user vars on the way in, so
      * leading blank lines in the body template are gone before the PDF layer ever
      * sees them. That is why bodyTopOffset exists instead.

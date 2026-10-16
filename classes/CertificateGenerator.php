@@ -622,6 +622,17 @@ class CertificateGenerator {
         $footerSize = round($baseFontSize * 0.833);    // 0.833x base (default: 10)
         $codeSize = round($baseFontSize * 0.667);      // 0.667x base (default: 8)
 
+        // Optional per-element overrides (0 / unset = keep the proportional size above)
+        $titleOverride = $this->getSizeSetting('titleFontSize');
+        if ($titleOverride) {
+            $headerSize = $titleOverride;
+        }
+        $footerOverride = $this->getSizeSetting('footerFontSize');
+        if ($footerOverride) {
+            $footerSize = $footerOverride;
+            $codeSize = max(6, $footerOverride - 2);
+        }
+
         // Header text
 
         // Skip the header block entirely when the journal has cleared it, mirroring
@@ -651,8 +662,27 @@ class CertificateGenerator {
 
         // Body text
 
-        $pdf->SetFont($this->effectiveFont, '', $bodySize);
-        $pdf->MultiCell(0, 10, $bodyTemplate, 0, 'C', 0, 1);
+        $nameSize = $this->getSizeSetting('nameFontSize');
+        $journalSize = $this->getSizeSetting('journalFontSize');
+        $bodyOverride = $this->getSizeSetting('bodyFontSize');
+        $nameBold = (bool) $this->getTemplateSetting('nameBold', false);
+        $journalBold = (bool) $this->getTemplateSetting('journalBold', false);
+        $emphasisSpacing = max(0, min(50, (float) $this->getTemplateSetting('emphasisSpacing', 0)));
+
+        if ($nameSize || $journalSize || $bodyOverride || $nameBold || $journalBold || $emphasisSpacing > 0) {
+            if ($bodyOverride) {
+                $bodySize = $bodyOverride;
+            }
+            $this->renderStructuredBody($pdf, $variables, [
+                'body' => [$bodySize, ''],
+                'name' => [$nameSize ?: $bodySize, $nameBold ? 'B' : ''],
+                'journal' => [$journalSize ?: $bodySize, $journalBold ? 'B' : ''],
+            ], $emphasisSpacing);
+        } else {
+            // Legacy single-block layout, unchanged for journals that set nothing
+            $pdf->SetFont($this->effectiveFont, '', $bodySize);
+            $pdf->MultiCell(0, 10, $bodyTemplate, 0, 'C', 0, 1);
+        }
         $pdf->Ln(10);
 
         // Footer text
@@ -668,6 +698,68 @@ class CertificateGenerator {
             $code = $this->previewMode ? 'PREVIEW12345' : $this->certificate->getCertificateCode();
             $pdf->SetFont($this->effectiveFont, '', $codeSize);
             $pdf->Cell(0, 5, 'Certificate Code: ' . $code, 0, 1, 'C');
+        }
+    }
+
+    /**
+     * Read an optional font size override; 0 means "automatic".
+     * @param string $key
+     * @return int 0 or a size clamped to 6-72
+     */
+    private function getSizeSetting($key) {
+        $value = (int) $this->getTemplateSetting($key, 0);
+        return $value > 0 ? max(6, min(72, $value)) : 0;
+    }
+
+    /**
+     * Render the body line by line so a line consisting solely of the reviewer-name
+     * or journal-name variable can carry its own size and weight. Over-long
+     * lines are shrunk (down to 60% of the size, min 8pt) and then wrapped, so they
+     * stay on the page. Certificate code and QR rendering are not affected.
+     *
+     * @param $pdf TCPDF
+     * @param array $variables
+     * @param array $styles role => [size, style]
+     * @param float $spacing extra mm above and below emphasised lines
+     */
+    private function renderStructuredBody($pdf, $variables, $styles, $spacing) {
+        $rawTemplate = (string) $this->getTemplateSetting('bodyTemplate', $this->getDefaultBodyTemplate());
+        $margins = $pdf->getMargins();
+        $width = $pdf->getPageWidth() - $margins['left'] - $margins['right'];
+
+        foreach (preg_split('/\r\n|\r|\n/', $rawTemplate) as $rawLine) {
+            $trim = trim($rawLine);
+            $role = 'body';
+            if (in_array($trim, ['{{$reviewerName}}', '{$reviewerName}'], true)) {
+                $role = 'name';
+            } elseif (in_array($trim, ['{{$journalName}}', '{$journalName}'], true)) {
+                $role = 'journal';
+            }
+            list($size, $style) = $styles[$role];
+            $text = $this->replaceVariables($rawLine, $variables);
+
+            if ($role !== 'body' && $spacing > 0) {
+                $pdf->Ln($spacing);
+            }
+
+            $minSize = max(8, (int) floor($size * 0.6));
+            $pdf->SetFont($this->effectiveFont, $style, $size);
+            while ($role !== 'body' && $size > $minSize && $pdf->GetStringWidth($text) > $width) {
+                $size--;
+                $pdf->SetFont($this->effectiveFont, $style, $size);
+            }
+
+            // Cell height follows the font so larger text does not collide with the next line
+            $height = max(10, $size * 0.5);
+            if ($text === '') {
+                $pdf->Ln($height);
+            } else {
+                $pdf->MultiCell(0, $height, $text, 0, 'C', 0, 1);
+            }
+
+            if ($role !== 'body' && $spacing > 0) {
+                $pdf->Ln($spacing);
+            }
         }
     }
 

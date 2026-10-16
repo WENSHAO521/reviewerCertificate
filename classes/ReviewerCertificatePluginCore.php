@@ -218,6 +218,14 @@ class ReviewerCertificatePlugin extends GenericPlugin {
                     'includeQRCode' => $this->getSetting($context->getId(), 'includeQRCode') ?: false,
                     'pageOrientation' => $this->getSetting($context->getId(), 'pageOrientation') ?: 'P',
                     'bodyTopOffset' => $this->getSetting($context->getId(), 'bodyTopOffset') ?: 0,
+                    'titleFontSize' => $this->getSetting($context->getId(), 'titleFontSize') ?: 0,
+                    'nameFontSize' => $this->getSetting($context->getId(), 'nameFontSize') ?: 0,
+                    'journalFontSize' => $this->getSetting($context->getId(), 'journalFontSize') ?: 0,
+                    'bodyFontSize' => $this->getSetting($context->getId(), 'bodyFontSize') ?: 0,
+                    'footerFontSize' => $this->getSetting($context->getId(), 'footerFontSize') ?: 0,
+                    'emphasisSpacing' => $this->getSetting($context->getId(), 'emphasisSpacing') ?: 0,
+                    'nameBold' => $this->getSetting($context->getId(), 'nameBold') ?: false,
+                    'journalBold' => $this->getSetting($context->getId(), 'journalBold') ?: false,
                 );
 
                 $generator->setContext($context);

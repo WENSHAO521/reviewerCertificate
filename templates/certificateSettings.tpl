@@ -201,6 +201,41 @@
 			{fbvElement type="text" id="bodyTopOffset" value=$bodyTopOffset|default:0 size=$fbvStyles.size.SMALL}
 		{/fbvFormSection}
 
+		{* Typography hierarchy (0 = automatic) *}
+		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.typography" description="plugins.generic.reviewerCertificate.settings.typographyDescription"}
+			<div class="pkp_helpers_clear">
+				<div style="float:left; margin-right: 10px;">
+					<label for="titleFontSize">{translate key="plugins.generic.reviewerCertificate.settings.titleFontSize"}</label>
+					{fbvElement type="text" id="titleFontSize" value=$titleFontSize|default:0 size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; margin-right: 10px;">
+					<label for="nameFontSize">{translate key="plugins.generic.reviewerCertificate.settings.nameFontSize"}</label>
+					{fbvElement type="text" id="nameFontSize" value=$nameFontSize|default:0 size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; margin-right: 10px;">
+					<label for="journalFontSize">{translate key="plugins.generic.reviewerCertificate.settings.journalFontSize"}</label>
+					{fbvElement type="text" id="journalFontSize" value=$journalFontSize|default:0 size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; margin-right: 10px;">
+					<label for="bodyFontSize">{translate key="plugins.generic.reviewerCertificate.settings.bodyFontSize"}</label>
+					{fbvElement type="text" id="bodyFontSize" value=$bodyFontSize|default:0 size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left;">
+					<label for="footerFontSize">{translate key="plugins.generic.reviewerCertificate.settings.footerFontSize"}</label>
+					{fbvElement type="text" id="footerFontSize" value=$footerFontSize|default:0 size=$fbvStyles.size.SMALL inline=true}
+				</div>
+			</div>
+		{/fbvFormSection}
+
+		{fbvFormSection list=true}
+			{fbvElement type="checkbox" id="nameBold" value="1" checked=$nameBold label="plugins.generic.reviewerCertificate.settings.nameBold"}
+			{fbvElement type="checkbox" id="journalBold" value="1" checked=$journalBold label="plugins.generic.reviewerCertificate.settings.journalBold"}
+		{/fbvFormSection}
+
+		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.emphasisSpacing" description="plugins.generic.reviewerCertificate.settings.emphasisSpacingDescription"}
+			{fbvElement type="text" id="emphasisSpacing" value=$emphasisSpacing|default:0 size=$fbvStyles.size.SMALL}
+		{/fbvFormSection}
+
 		{* Page Orientation *}
 		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.pageOrientation" description="plugins.generic.reviewerCertificate.settings.pageOrientationDescription"}
 			{fbvElement type="select" id="pageOrientation" from=$orientationOptions selected=$pageOrientation translate=false defaultValue="P"}

@@ -72,6 +72,12 @@ class CertificateSettingsForm extends Form {
             $this->setData('minimumReviews', $this->plugin->getSetting($this->contextId, 'minimumReviews') ?? 1);
             $this->setData('bodyTopOffset', $this->plugin->getSetting($this->contextId, 'bodyTopOffset') ?? 0);
             $this->setData('includeQRCode', $this->plugin->getSetting($this->contextId, 'includeQRCode') ?? false);
+            foreach (['titleFontSize', 'nameFontSize', 'journalFontSize', 'bodyFontSize', 'footerFontSize', 'emphasisSpacing'] as $typographyField) {
+                $this->setData($typographyField, $this->plugin->getSetting($this->contextId, $typographyField) ?? 0);
+            }
+            foreach (['nameBold', 'journalBold'] as $typographyField) {
+                $this->setData($typographyField, $this->plugin->getSetting($this->contextId, $typographyField) ?? false);
+            }
             $this->setData('pageOrientation', $this->plugin->getSetting($this->contextId, 'pageOrientation') ?? 'P');
             $this->setData('backgroundImage', $this->plugin->getSetting($this->contextId, 'backgroundImage') ?? '');
             // Acknowledgement email templates — show localized defaults so
@@ -115,6 +121,14 @@ class CertificateSettingsForm extends Form {
             'minimumReviews',
             'bodyTopOffset',
             'includeQRCode',
+            'titleFontSize',
+            'nameFontSize',
+            'journalFontSize',
+            'bodyFontSize',
+            'footerFontSize',
+            'emphasisSpacing',
+            'nameBold',
+            'journalBold',
             'pageOrientation',
             'removeBackgroundImage',
             'ackEmailSubject',
@@ -140,7 +154,9 @@ class CertificateSettingsForm extends Form {
         $valid = parent::validate($callHooks);
         foreach (['headerText', 'bodyTemplate', 'footerText', 'fontFamily', 'fontSize',
             'minimumReviews', 'bodyTopOffset', 'textColorR', 'textColorG', 'textColorB',
-            'includeQRCode', 'pageOrientation', 'removeBackgroundImage', 'ackEmailSubject', 'ackEmailBody'] as $field) {
+            'includeQRCode', 'titleFontSize', 'nameFontSize', 'journalFontSize', 'bodyFontSize',
+            'footerFontSize', 'emphasisSpacing', 'nameBold', 'journalBold',
+            'pageOrientation', 'removeBackgroundImage', 'ackEmailSubject', 'ackEmailBody'] as $field) {
             $value = $this->getData($field);
             if ($value !== null && !is_scalar($value)) {
                 $this->addError($field, __('plugins.generic.reviewerCertificate.settings.invalidValue'));
@@ -371,7 +387,15 @@ class CertificateSettingsForm extends Form {
                     'textColorG' => [0, 255], 'textColorB' => [0, 255], 'minimumReviews' => [1, PHP_INT_MAX]] as $field => $range) {
                     $this->plugin->updateSetting($this->contextId, $field, max($range[0], min($range[1], (int) $this->getData($field))), 'int');
                 }
-                $this->plugin->updateSetting($this->contextId, 'includeQRCode', (bool) $this->getData('includeQRCode'), 'bool');
+                // Typography overrides: 0 keeps the automatic size
+                foreach (['titleFontSize', 'nameFontSize', 'journalFontSize', 'bodyFontSize', 'footerFontSize'] as $field) {
+                    $size = (int) $this->getData($field);
+                    $this->plugin->updateSetting($this->contextId, $field, $size > 0 ? max(6, min(72, $size)) : 0, 'int');
+                }
+                $this->plugin->updateSetting($this->contextId, 'emphasisSpacing', max(0, min(50, (int) $this->getData('emphasisSpacing'))), 'int');
+                foreach (['nameBold', 'journalBold', 'includeQRCode'] as $field) {
+                    $this->plugin->updateSetting($this->contextId, $field, (bool) $this->getData($field), 'bool');
+                }
                 parent::execute(...$functionArgs);
             });
             $committed = true;
