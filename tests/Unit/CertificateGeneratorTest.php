@@ -446,30 +446,18 @@ class CertificateGeneratorTest extends TestCase
      */
     public function testQRCodeDynamicPositioning(): void
     {
-        $qrSize = 30;
-        $margin = 10;
+        $size = \APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::QR_SIZE;
+        $margin = \APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::QR_MARGIN;
+        $label = \APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::QR_LABEL_HEIGHT;
 
-        // Portrait: 210x297mm
-        $portraitWidth = 210;
-        $portraitHeight = 297;
-        $qrXPortrait = $portraitWidth - $qrSize - $margin;
-        $qrYPortrait = $portraitHeight - $qrSize - $margin - 5;
-
-        $this->assertEquals(170, $qrXPortrait);
-        $this->assertEquals(252, $qrYPortrait);
-        $this->assertLessThan($portraitWidth, $qrXPortrait + $qrSize, 'QR code should fit within portrait page width');
-        $this->assertLessThan($portraitHeight, $qrYPortrait + $qrSize, 'QR code should fit within portrait page height');
-
-        // Landscape: 297x210mm
-        $landscapeWidth = 297;
-        $landscapeHeight = 210;
-        $qrXLandscape = $landscapeWidth - $qrSize - $margin;
-        $qrYLandscape = $landscapeHeight - $qrSize - $margin - 5;
-
-        $this->assertEquals(257, $qrXLandscape);
-        $this->assertEquals(165, $qrYLandscape);
-        $this->assertLessThan($landscapeWidth, $qrXLandscape + $qrSize, 'QR code should fit within landscape page width');
-        $this->assertLessThan($landscapeHeight, $qrYLandscape + $qrSize, 'QR code should fit within landscape page height');
+        $this->assertLessThanOrEqual(20, $size, 'QR code is the small version');
+        $this->assertGreaterThanOrEqual(12, $size, 'QR code stays large enough to scan');
+        foreach (array(array(210, 297), array(297, 210)) as list($width, $height)) {
+            $x = $width - $size - $margin;
+            $y = $height - $margin - $label - $size;
+            $this->assertLessThan($width, $x + $size, 'QR code should fit within the page width');
+            $this->assertLessThan($height, $y + $size + $label, 'QR code and its code line should fit within the page height');
+        }
     }
 
     /**
