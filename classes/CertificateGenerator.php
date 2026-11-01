@@ -701,6 +701,17 @@ class CertificateGenerator {
             ? 'dejavusans'
             : $configuredFont;
 
+        // DejaVu Sans has no Chinese, Japanese or Korean glyphs (they come out as
+        // boxes), so text in those scripts switches the certificate to one of
+        // TCPDF's Adobe CJK fonts. These are not embedded (the viewer supplies
+        // the glyphs), which keeps the PDF small.
+        if ($needsUnicodeFont) {
+            $cjkFont = self::selectCjkFont(array_merge(array_values($variables), [$headerText, $bodyTemplate, $footerText]));
+            if ($cjkFont !== null) {
+                $this->effectiveFont = $cjkFont;
+            }
+        }
+
         if ($this->getLayoutMode() === 'structured') {
             $this->addStructuredContent($pdf, $headerText, $footerText, $variables);
             return;
@@ -1417,6 +1428,65 @@ class CertificateGenerator {
      * @param string $text
      * @return bool
      */
+    /**
+     * Pick a CJK font for the given texts, or null when they hold no Chinese,
+     * Japanese or Korean characters. Hangul selects Korean and kana Japanese.
+     * Han-only text uses Traditional (MSung) or Simplified (STSong) Chinese,
+     * whichever character collection covers more of the characters; a tie
+     * goes to Traditional.
+     * @param $texts array
+     * @return string|null TCPDF font name
+     */
+    public static function selectCjkFont(array $texts) {
+        $text = implode("\n", array_map('strval', array_filter($texts, 'is_scalar')));
+        if (preg_match('/[\x{1100}-\x{11FF}\x{3130}-\x{318F}\x{AC00}-\x{D7AF}]/u', $text)) {
+            return 'hysmyeongjostdmedium';
+        }
+        if (preg_match('/[\x{3040}-\x{30FF}\x{31F0}-\x{31FF}]/u', $text)) {
+            return 'kozminproregular';
+        }
+        if (!preg_match_all('/[\x{3400}-\x{4DBF}\x{4E00}-\x{9FFF}\x{F900}-\x{FAFF}]/u', $text, $matches)) {
+            return null;
+        }
+        $chars = array_unique($matches[0]);
+        $traditional = self::countCidCoverage($chars, 'uni2cid_ac15.php');
+        $simplified = self::countCidCoverage($chars, 'uni2cid_ag15.php');
+        return $simplified > $traditional ? 'stsongstdlight' : 'msungstdlight';
+    }
+
+    /**
+     * How many of $chars a TCPDF unicode-to-CID table maps.
+     * @param $chars string[] Single UTF-8 characters
+     * @param $table string File in TCPDF's fonts directory
+     * @return int
+     */
+    private static function countCidCoverage(array $chars, $table) {
+        static $tables = array();
+        if (!isset($tables[$table])) {
+            $tables[$table] = array();
+            $fontsDir = defined('K_PATH_FONTS') ? K_PATH_FONTS : '';
+            if ($fontsDir && is_file($fontsDir . $table)) {
+                $cidinfo = array();
+                include($fontsDir . $table);
+                if (isset($cidinfo['uni2cid']) && is_array($cidinfo['uni2cid'])) {
+                    $tables[$table] = $cidinfo['uni2cid'];
+                }
+            }
+        }
+        $count = 0;
+        foreach ($chars as $char) {
+            // Every matched character is a three-byte UTF-8 sequence (BMP)
+            if (strlen($char) !== 3) {
+                continue;
+            }
+            $code = ((ord($char[0]) & 0x0F) << 12) | ((ord($char[1]) & 0x3F) << 6) | (ord($char[2]) & 0x3F);
+            if (isset($tables[$table][$code])) {
+                $count++;
+            }
+        }
+        return $count;
+    }
+
     private function containsNonLatin($text) {
         if (empty($text)) {
             return false;

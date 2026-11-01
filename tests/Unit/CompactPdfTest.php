@@ -101,4 +101,34 @@ class CompactPdfTest extends TestCase
         $this->assertStringStartsWith('%PDF-', $pdf);
         $this->assertLessThan(45 * 1024, strlen($pdf), 'DejaVu Sans subsets must only hold the used glyphs');
     }
+
+    public function testCjkScriptSelectsMatchingFont(): void
+    {
+        new \TCPDF(); // defines K_PATH_FONTS
+        $this->assertSame('msungstdlight', CertificateGenerator::selectCjkFont(['審稿證書', 'Dr. Jane Smith']));
+        $this->assertSame('stsongstdlight', CertificateGenerator::selectCjkFont(['审稿证书']));
+        $this->assertSame('kozminproregular', CertificateGenerator::selectCjkFont(['査読証明書', 'ありがとう']));
+        $this->assertSame('hysmyeongjostdmedium', CertificateGenerator::selectCjkFont(['심사 증명서']));
+        $this->assertNull(CertificateGenerator::selectCjkFont(['Сертифікат', 'Ελληνικά', 'Café']));
+    }
+
+    public function testChineseCertificateUsesCjkFontWithLatinWidths(): void
+    {
+        $generator = new CertificateGenerator();
+        $generator->setPreviewMode(true);
+        $generator->setContext($this->createMockContext(1, 'Test Journal', 'TJ'));
+        $generator->setTemplateSettings([
+            'fontFamily' => 'dejavusans',
+            'headerText' => '審稿證書',
+            'bodyTemplate' => '感謝 {{$reviewerName}} 為本刊審稿',
+            'footerText' => '',
+        ]);
+
+        $pdf = $generator->generatePDF();
+
+        $this->assertStringContainsString('/BaseFont /MSungStd-Light-Acro', $pdf);
+        // Latin glyphs need their real widths, or "Dr. Jane Smith" is spaced out
+        $this->assertMatchesRegularExpression('#/Subtype /CIDFontType0 /BaseFont /MSungStd-Light-Acro /CIDSystemInfo <<[^>]*>> /FontDescriptor \d+ 0 R /DW 1000\n/W \[ ?\d#', $pdf);
+        $this->assertLessThan(45 * 1024, strlen($pdf));
+    }
 }

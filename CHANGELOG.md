@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+- Chinese, Japanese and Korean text is shown instead of empty boxes. DejaVu Sans has no glyphs for these scripts, so a certificate containing them now switches to TCPDF's Adobe CJK fonts: MSung (Traditional Chinese) or STSong (Simplified Chinese), picked by which covers the text, Kozuka Mincho for Japanese and HYSMyeongJo for Korean. These fonts are not embedded (the PDF viewer supplies them), so such a certificate is only about 17 KB.
+
 ### Changed
 
 - Certificate PDFs are much smaller. A text-only certificate in DejaVu Sans drops from about 150 KB to about 30 KB: only the glyphs actually used are embedded (TCPDF used to embed ~240 per style). The text and layout are unchanged.

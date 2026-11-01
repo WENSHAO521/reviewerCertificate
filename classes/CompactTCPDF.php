@@ -46,8 +46,14 @@ class CompactTCPDF extends \TCPDF {
         $fontsBefore = $this->numfonts;
         $fontdata = parent::AddFont($family, $style, $fontfile, $subset);
         if ($this->numfonts > $fontsBefore && isset($fontdata['fontkey'])) {
-            // A newly registered font: drop TCPDF's 0-254 pre-seed
-            $this->setFontSubBuffer($fontdata['fontkey'], 'subsetchars', array());
+            // A newly registered embedded TrueType font: drop TCPDF's 0-254
+            // pre-seed. Other types keep it: for the non-embedded CJK fonts
+            // (cidfont0) TCPDF filters the /W widths with it by CID, not by
+            // code point, and an empty seed would drop the Latin widths.
+            $font = $this->getFontBuffer($fontdata['fontkey']);
+            if (isset($font['type']) && $font['type'] === 'TrueTypeUnicode') {
+                $this->setFontSubBuffer($fontdata['fontkey'], 'subsetchars', array());
+            }
         }
         return $fontdata;
     }
