@@ -18,12 +18,17 @@ try {
             $pdf->Ln();
         }
     }
+    foreach (['msungstdlight' => '審稿證書', 'stsongstdlight' => '审稿证书', 'kozminproregular' => '査読証明書', 'hysmyeongjostdmedium' => '심사 증명서'] as $font => $text) {
+        $pdf->SetFont($font, '', 12);
+        $pdf->Write(6, $text);
+        $pdf->Ln();
+    }
     $pdf->write2DBarcode('https://example.org/certificate/verify/TEST', 'QRCODE,L', 170, 240, 20, 20);
     $bytes = $pdf->Output('', 'S');
     if (substr($bytes, 0, 5) !== '%PDF-' || strlen($bytes) < 10000) {
         throw new RuntimeException('Packaged runtime did not produce a complete PDF');
     }
-    echo 'PASS: packaged PDF runtime, four fonts/styles, Unicode and QR (' . strlen($bytes) . " bytes)\n";
+    echo 'PASS: packaged PDF runtime, four fonts/styles, CJK, Unicode and QR (' . strlen($bytes) . " bytes)\n";
 } finally {
     $files = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($directory, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
     foreach ($files as $file) { $file->isDir() ? rmdir($file->getPathname()) : unlink($file->getPathname()); }

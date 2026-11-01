@@ -50,6 +50,7 @@ class CertificateGenerator {
         foreach ($tcpdfLocations as $tcpdfPath) {
             if (file_exists($tcpdfPath)) {
                 require_once($tcpdfPath);
+                require_once(dirname(__FILE__) . '/CompactTCPDF.php');
                 self::$tcpdfLoaded = true;
                 return;
             }
@@ -111,14 +112,17 @@ class CertificateGenerator {
         return self::getFilesDir() . '/journals/' . (int) $contextId . '/reviewerCertificate';
     }
 
-    /** Longest side an embedded background may have (~190 DPI on A4 landscape) */
-    const BG_MAX_SIDE_PX = 2200;
+    /** Longest side an embedded background may have (~150 DPI on A4) */
+    const BG_MAX_SIDE_PX = 1754;
 
     /** Source images above this size are re-encoded even when dimensions fit */
-    const BG_MAX_BYTES = 614400;
+    const BG_MAX_BYTES = 307200;
 
     /** JPEG quality for re-encoded backgrounds */
-    const BG_JPEG_QUALITY = 82;
+    const BG_JPEG_QUALITY = 80;
+
+    /** Print resolution for the logo, cover and seal at their placed size */
+    const OVERLAY_DPI = 300;
 
     /** QR code: side length, distance from the page edges, and the code line below it (mm) */
     const QR_SIZE = 12;
@@ -130,18 +134,21 @@ class CertificateGenerator {
      *
      * Full-resolution backgrounds produce multi-MB certificate PDFs that mail
      * relays reject (iitlt: SendPulse SMTP 552 "Message exceeds fixed maximum
-     * message size"). A certificate page needs at most ~200 DPI, so anything
-     * larger is capped at BG_MAX_SIDE_PX and re-encoded (JPEG, or PNG when the
-     * source has an alpha channel). The scaled copy is cached next to the
-     * original, keyed by the source's mtime+size; stale copies are pruned.
+     * message size"). A full-page background needs ~150 DPI, so anything
+     * larger is capped at BG_MAX_SIDE_PX (or $maxSidePx, used for the smaller
+     * logo/cover/seal overlays) and re-encoded (JPEG, or PNG when the source
+     * has an alpha channel). The scaled copy is cached next to the original,
+     * keyed by the source's mtime+size and the cap; stale copies are pruned.
      *
      * Fails open: whenever GD is unavailable or anything goes wrong, the
      * original path is returned unchanged.
      *
      * @param $path string Absolute path to the stored background image
+     * @param $maxSidePx int|null Longest side allowed (default BG_MAX_SIDE_PX)
      * @return string Path to embed (scaled copy, or the original)
      */
-    public static function downscaleBackgroundIfNeeded($path) {
+    public static function downscaleBackgroundIfNeeded($path, $maxSidePx = null) {
+        $maxSidePx = $maxSidePx ? max(64, (int) $maxSidePx) : self::BG_MAX_SIDE_PX;
         $realPath = realpath($path);
         if ($realPath === false || !is_file($realPath)) {
             return $path;
@@ -158,7 +165,7 @@ class CertificateGenerator {
         clearstatcache();
         $sourceBytes = (int) @filesize($realPath);
         $maxSide = max($width, $height);
-        if ($maxSide <= self::BG_MAX_SIDE_PX && $sourceBytes <= self::BG_MAX_BYTES) {
+        if ($maxSide <= $maxSidePx && $sourceBytes <= self::BG_MAX_BYTES) {
             return $path;
         }
 
@@ -179,7 +186,7 @@ class CertificateGenerator {
         $ext = $keepPng ? 'png' : 'jpg';
 
         $baseName = pathinfo($realPath, PATHINFO_FILENAME);
-        $cacheKey = substr(md5($realPath . '|' . @filemtime($realPath) . '|' . $sourceBytes), 0, 12);
+        $cacheKey = substr(md5($realPath . '|' . @filemtime($realPath) . '|' . $sourceBytes . '|' . $maxSidePx), 0, 12);
         $cachePath = dirname($realPath) . '/' . $baseName . '.rcscaled-' . $cacheKey . '.' . $ext;
         if (is_file($cachePath)) {
             return $cachePath;
@@ -205,7 +212,7 @@ class CertificateGenerator {
             return $path;
         }
 
-        $scale = min(1.0, self::BG_MAX_SIDE_PX / $maxSide);
+        $scale = min(1.0, $maxSidePx / $maxSide);
         $newWidth = max(1, (int) round($width * $scale));
         $newHeight = max(1, (int) round($height * $scale));
 
@@ -480,7 +487,7 @@ class CertificateGenerator {
         if (!in_array($orientation, array('P', 'L'))) {
             $orientation = 'P';
         }
-        $pdf = new \TCPDF($orientation, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf = new CompactTCPDF($orientation, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
         // Set document information
         $pdf->SetCreator('OJS Reviewer Certificate Plugin');
@@ -597,8 +604,11 @@ class CertificateGenerator {
             $x = max(0, min($pageWidth - $width, $x));
             $y = max(0, min($pageHeight - $height, $y));
 
+            // Scale to OVERLAY_DPI at the placed size: a 36 mm seal needs ~430 px,
+            // not the 2000+ px a phone photo or scan usually has
+            $maxSidePx = (int) ceil(max($width, $height) / 25.4 * self::OVERLAY_DPI);
             try {
-                $pdf->Image(self::downscaleBackgroundIfNeeded($realPath), $x, $y, $width, $height,
+                $pdf->Image(self::downscaleBackgroundIfNeeded($realPath, $maxSidePx), $x, $y, $width, $height,
                     '', '', '', false, 300, '', false, false, 0);
             } catch (\Throwable $e) {
                 error_log('ReviewerCertificate: Error adding ' . $name . ' image: ' . $e->getMessage());
@@ -690,6 +700,17 @@ class CertificateGenerator {
         $this->effectiveFont = ($needsUnicodeFont && !in_array($configuredFont, $unicodeFonts))
             ? 'dejavusans'
             : $configuredFont;
+
+        // DejaVu Sans has no Chinese, Japanese or Korean glyphs (they come out as
+        // boxes), so text in those scripts switches the certificate to one of
+        // TCPDF's Adobe CJK fonts. These are not embedded (the viewer supplies
+        // the glyphs), which keeps the PDF small.
+        if ($needsUnicodeFont) {
+            $cjkFont = self::selectCjkFont(array_merge(array_values($variables), [$headerText, $bodyTemplate, $footerText]));
+            if ($cjkFont !== null) {
+                $this->effectiveFont = $cjkFont;
+            }
+        }
 
         if ($this->getLayoutMode() === 'structured') {
             $this->addStructuredContent($pdf, $headerText, $footerText, $variables);
@@ -1407,6 +1428,65 @@ class CertificateGenerator {
      * @param string $text
      * @return bool
      */
+    /**
+     * Pick a CJK font for the given texts, or null when they hold no Chinese,
+     * Japanese or Korean characters. Hangul selects Korean and kana Japanese.
+     * Han-only text uses Traditional (MSung) or Simplified (STSong) Chinese,
+     * whichever character collection covers more of the characters; a tie
+     * goes to Traditional.
+     * @param $texts array
+     * @return string|null TCPDF font name
+     */
+    public static function selectCjkFont(array $texts) {
+        $text = implode("\n", array_map('strval', array_filter($texts, 'is_scalar')));
+        if (preg_match('/[\x{1100}-\x{11FF}\x{3130}-\x{318F}\x{AC00}-\x{D7AF}]/u', $text)) {
+            return 'hysmyeongjostdmedium';
+        }
+        if (preg_match('/[\x{3040}-\x{30FF}\x{31F0}-\x{31FF}]/u', $text)) {
+            return 'kozminproregular';
+        }
+        if (!preg_match_all('/[\x{3400}-\x{4DBF}\x{4E00}-\x{9FFF}\x{F900}-\x{FAFF}]/u', $text, $matches)) {
+            return null;
+        }
+        $chars = array_unique($matches[0]);
+        $traditional = self::countCidCoverage($chars, 'uni2cid_ac15.php');
+        $simplified = self::countCidCoverage($chars, 'uni2cid_ag15.php');
+        return $simplified > $traditional ? 'stsongstdlight' : 'msungstdlight';
+    }
+
+    /**
+     * How many of $chars a TCPDF unicode-to-CID table maps.
+     * @param $chars string[] Single UTF-8 characters
+     * @param $table string File in TCPDF's fonts directory
+     * @return int
+     */
+    private static function countCidCoverage(array $chars, $table) {
+        static $tables = array();
+        if (!isset($tables[$table])) {
+            $tables[$table] = array();
+            $fontsDir = defined('K_PATH_FONTS') ? K_PATH_FONTS : '';
+            if ($fontsDir && is_file($fontsDir . $table)) {
+                $cidinfo = array();
+                include($fontsDir . $table);
+                if (isset($cidinfo['uni2cid']) && is_array($cidinfo['uni2cid'])) {
+                    $tables[$table] = $cidinfo['uni2cid'];
+                }
+            }
+        }
+        $count = 0;
+        foreach ($chars as $char) {
+            // Every matched character is a three-byte UTF-8 sequence (BMP)
+            if (strlen($char) !== 3) {
+                continue;
+            }
+            $code = ((ord($char[0]) & 0x0F) << 12) | ((ord($char[1]) & 0x3F) << 6) | (ord($char[2]) & 0x3F);
+            if (isset($tables[$table][$code])) {
+                $count++;
+            }
+        }
+        return $count;
+    }
+
     private function containsNonLatin($text) {
         if (empty($text)) {
             return false;

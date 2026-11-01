@@ -1,10 +1,15 @@
 # Reviewer Certificate Plugin for OJS
 
-**Version 1.12.1** | [Changelog](CHANGELOG.md) | OJS 3.3 / 3.4 / 3.5
+**Version 1.13.0** | [Changelog](CHANGELOG.md) | OJS 3.3 / 3.4 / 3.5
 
 ## Overview
 
 The Reviewer Certificate Plugin enables reviewers to generate and download personalized PDF certificates of recognition after completing peer reviews. This plugin helps journals acknowledge and incentivize quality peer review work.
+
+**Changes in v1.13.0**:
+
+- Much smaller certificate PDFs: a text-only certificate drops from about 150 KB to about 30 KB, and uploaded images are scaled to print size.
+- Chinese, Japanese and Korean text now renders (it used to show as boxes), using non-embedded Adobe CJK fonts.
 
 **Changes in v1.12.1**:
 

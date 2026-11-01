@@ -6,7 +6,7 @@
  * embedded as-is by TCPDF, producing multi-MB certificate PDFs. SendPulse's
  * SMTP relay rejects the resulting email with 552 "Message exceeds fixed
  * maximum message size". Oversized backgrounds must be downscaled/re-encoded
- * before embedding (a certificate page needs ~200 DPI at most).
+ * before embedding (a certificate page needs ~150 DPI).
  *
  * Requires GD (as OJS itself does); skipped where the CLI lacks the
  * extension — run inside the ojs-test Docker containers for full coverage.
@@ -207,6 +207,24 @@ class BackgroundImageDownscaleTest extends TestCase
         $info = getimagesize($scaled);
         $this->assertLessThanOrEqual(2200, max($info[0], $info[1]));
         $this->assertSame(IMAGETYPE_PNG, $info[2]);
+    }
+
+    /**
+     * Logo/cover/seal overlays pass their own cap (300 DPI at the placed size):
+     * the scaled copy honours it, and a different cap gives a different copy.
+     */
+    public function testDownscaleHonoursExplicitCap(): void
+    {
+        $path = $this->createOversizedJpeg('seal.jpg', 1600, 1600);
+
+        $small = CertificateGenerator::downscaleBackgroundIfNeeded($path, 430);
+        $info = getimagesize($small);
+        $this->assertSame(430, max($info[0], $info[1]));
+
+        $larger = CertificateGenerator::downscaleBackgroundIfNeeded($path, 600);
+        $this->assertNotSame($small, $larger);
+        $info = getimagesize($larger);
+        $this->assertSame(600, max($info[0], $info[1]));
     }
 
     /**
