@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- The QR code is now a small 15 mm mark in the bottom-right corner, with the certificate code printed right under it. With the QR code on, the code is no longer repeated in the certificate body. Without the QR code nothing changes.
+- The QR code is now a small 12 mm mark in the bottom-right corner, with the certificate code printed right under it. With the QR code on, the code is no longer repeated in the certificate body. Without the QR code nothing changes.
 
 ### Fixed
 

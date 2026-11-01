@@ -121,7 +121,7 @@ class CertificateGenerator {
     const BG_JPEG_QUALITY = 82;
 
     /** QR code: side length, distance from the page edges, and the code line below it (mm) */
-    const QR_SIZE = 15;
+    const QR_SIZE = 12;
     const QR_MARGIN = 10;
     const QR_LABEL_HEIGHT = 4;
 
@@ -1211,12 +1211,12 @@ class CertificateGenerator {
         $qrX = $pageWidth - self::QR_SIZE - self::QR_MARGIN;
         $qrY = $pageHeight - self::QR_MARGIN - self::QR_LABEL_HEIGHT - self::QR_SIZE;
 
-        // Level M keeps the modules large enough to scan at this size. TCPDF
+        // Level L keeps the modules as large as possible at this small size. TCPDF
         // shrinks a barcode to fit inside the right page margin, so lift the
         // margin while drawing or the code comes out smaller than QR_SIZE.
         $margins = $pdf->getMargins();
         $pdf->SetRightMargin(0);
-        $pdf->write2DBarcode($verificationUrl, 'QRCODE,M', $qrX, $qrY, self::QR_SIZE, self::QR_SIZE, array(), 'N');
+        $pdf->write2DBarcode($verificationUrl, 'QRCODE,L', $qrX, $qrY, self::QR_SIZE, self::QR_SIZE, array(), 'N');
         $pdf->SetRightMargin($margins['right']);
 
         $labelWidth = 90;

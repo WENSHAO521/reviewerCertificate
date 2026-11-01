@@ -451,7 +451,7 @@ class CertificateGeneratorTest extends TestCase
         $label = \APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::QR_LABEL_HEIGHT;
 
         $this->assertLessThanOrEqual(20, $size, 'QR code is the small version');
-        $this->assertGreaterThanOrEqual(15, $size, 'QR code stays large enough to scan');
+        $this->assertGreaterThanOrEqual(12, $size, 'QR code stays large enough to scan');
         foreach (array(array(210, 297), array(297, 210)) as list($width, $height)) {
             $x = $width - $size - $margin;
             $y = $height - $margin - $label - $size;
