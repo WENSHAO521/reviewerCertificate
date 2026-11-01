@@ -102,7 +102,7 @@
 .rc-settings:not([data-layout="structured"]) .rc-only-structured { display: none !important; }
 
 /* Save bar */
-.rc-savebar { position: sticky; bottom: 0; z-index: 2; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 12px 16px; background: rgba(255, 255, 255, .96); border: 1px solid var(--rc-line); border-radius: var(--rc-radius); box-shadow: 0 -2px 8px rgba(16, 24, 40, .06); }
+.rc-savebar { margin-top: 20px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 12px 16px; background: #fff; border: 1px solid var(--rc-line); border-radius: var(--rc-radius); }
 .rc-savebar .formButtons { margin: 0 0 0 auto; padding: 0; border: 0; }
 .rc-savebar__hint { color: var(--rc-muted); font-size: .8rem; }
 
