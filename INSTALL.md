@@ -2,7 +2,7 @@
 
 ## Install or upgrade through OJS
 
-Back up the database and journal files first. Download the asset matching your OJS version from [GitHub Releases](https://github.com/ssemerikov/reviewerCertificate/releases):
+Back up the database and journal files first. Download the asset matching your OJS version from [GitHub Releases](https://github.com/WENSHAO521/reviewerCertificate/releases):
 
 - `reviewerCertificate-{VERSION}-3_3.tar.gz`: OJS 3.3, PHP 7.3 or newer.
 - `reviewerCertificate-{VERSION}-3_4.tar.gz`: OJS 3.4, PHP 8.0.2 or newer.
@@ -36,4 +36,4 @@ Keep source files readable by the web server and the configured OJS `files_dir` 
 
 For missing-table, migration, or invalid-JSON errors, inspect the OJS/PHP logs and confirm that the correct package was installed through OJS. The plugin uses OJS's configured database connection, including its port, socket, and TLS options. Legacy MySQL-only installation/uninstallation scripts are no longer provided; do not import old SQL as a migration workaround.
 
-Report the OJS/PHP/database versions and sanitized error details in [GitHub Issues](https://github.com/ssemerikov/reviewerCertificate/issues). Never include credentials or private review content.
+Report the OJS/PHP/database versions and sanitized error details in [GitHub Issues](https://github.com/WENSHAO521/reviewerCertificate/issues). Never include credentials or private review content.

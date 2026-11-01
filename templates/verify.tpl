@@ -2,6 +2,7 @@
  * plugins/generic/reviewerCertificate/templates/verify.tpl
  *
  * Copyright (c) 2024
+ * Modifications copyright (c) 2026 Panorama Scholarly Group Ltd. <contact@panorama-sg.com>
  * Distributed under the GNU GPL v3.
  *
  * Certificate verification page

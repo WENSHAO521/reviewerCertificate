@@ -5,6 +5,12 @@ All notable changes to the Reviewer Certificate Plugin will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Author and maintainer are now Panorama Scholarly Group Ltd. <contact@panorama-sg.com>. Serhiy O. Semerikov is credited as the original author in README.md, version.xml, composer.json and the source file headers; the original copyright notices are kept. Repository, release and issue links point to this fork.
+
 ## [1.13.0] - 2026-11-01
 
 ### Fixed
@@ -1009,7 +1015,8 @@ This release addresses multiple issues reported on PKP Community Forum:
 ---
 
 ## Links
-- **Repository**: https://github.com/ssemerikov/reviewerCertificate
-- **Issues**: https://github.com/ssemerikov/reviewerCertificate/issues
+- **Repository**: https://github.com/WENSHAO521/reviewerCertificate
+- **Issues**: https://github.com/WENSHAO521/reviewerCertificate/issues
+- **Original project**: https://github.com/ssemerikov/reviewerCertificate (Serhiy O. Semerikov)
 - **Documentation**: See README.md and INSTALL.md
 - **PKP Forum**: Search for "Reviewer Certificate Plugin"

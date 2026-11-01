@@ -1,13 +1,19 @@
 {
-    "name": "ssemerikov/reviewer-certificate-plugin",
+    "name": "wenshao521/reviewer-certificate-plugin",
     "description": "Reviewer Certificate Plugin for OJS - Generates personalized PDF certificates for peer reviewers",
     "type": "ojs-plugin",
     "license": "GPL-3.0",
     "authors": [
         {
+            "name": "Panorama Scholarly Group Ltd.",
+            "email": "contact@panorama-sg.com",
+            "role": "Maintainer"
+        },
+        {
             "name": "Serhiy O. Semerikov",
             "email": "semerikov@gmail.com",
-            "role": "Developer"
+            "homepage": "https://github.com/ssemerikov",
+            "role": "Original author"
         }
     ],
     "require": {

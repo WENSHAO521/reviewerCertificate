@@ -3,6 +3,7 @@
  * @file plugins/generic/reviewerCertificate/ReviewerCertificatePlugin.php
  *
  * Copyright (c) 2024
+ * Modifications copyright (c) 2026 Panorama Scholarly Group Ltd. <contact@panorama-sg.com>
  * Distributed under the GNU GPL v3.
  *
  * @class ReviewerCertificatePlugin

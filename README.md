@@ -39,9 +39,18 @@ See [integration testing](tests/environment/README.md) for reproducible checks a
 
 ## Author
 
+**Panorama Scholarly Group Ltd.**  
+Email: contact@panorama-sg.com
+
+### Original author
+
+This plugin is a fork of [ssemerikov/reviewerCertificate](https://github.com/ssemerikov/reviewerCertificate), created by:
+
 **Serhiy O. Semerikov**  
 Academy of Cognitive and Natural Sciences  
 Email: semerikov@gmail.com
+
+Releases up to 1.10.x are the original author's work. Later versions are modified by Panorama Scholarly Group Ltd.; see [CHANGELOG.md](CHANGELOG.md) for the changes.
 
 ## Development
 
@@ -97,7 +106,7 @@ The iterative development approach with Claude Code enabled rapid prototyping, t
 
 ### Quick Install via OJS Admin (Recommended)
 
-1. Download `reviewerCertificate-{VERSION}-3_X.tar.gz` from [Releases](https://github.com/ssemerikov/reviewerCertificate/releases)
+1. Download `reviewerCertificate-{VERSION}-3_X.tar.gz` from [Releases](https://github.com/WENSHAO521/reviewerCertificate/releases)
    - Use `-3_3.tar.gz` for OJS 3.3.x
    - Use `-3_4.tar.gz` for OJS 3.4.x
    - Use `-3_5.tar.gz` for OJS 3.5.x
@@ -118,7 +127,7 @@ The iterative development approach with Claude Code enabled rapid prototyping, t
 1. Clone or download the plugin:
    ```bash
    cd /path/to/ojs/plugins/generic/
-   git clone https://github.com/ssemerikov/reviewerCertificate.git
+   git clone https://github.com/WENSHAO521/reviewerCertificate.git
    ```
 
 2. Install dependencies:
@@ -416,7 +425,7 @@ The plugin creates these tables:
 For issues, questions, or feature requests:
 
 1. Check the [CHANGELOG.md](CHANGELOG.md) for recent fixes
-2. Search existing [Issues](https://github.com/ssemerikov/reviewerCertificate/issues)
+2. Search existing [Issues](https://github.com/WENSHAO521/reviewerCertificate/issues)
 3. Create a new issue with:
    - OJS version
    - PHP version
@@ -436,7 +445,10 @@ Contributions are welcome! Please:
 
 This plugin is licensed under the GNU General Public License v3.0.
 
-Copyright (c) 2025-2026 Serhiy O. Semerikov, Academy of Cognitive and Natural Sciences
+Copyright (c) 2025-2026 Serhiy O. Semerikov, Academy of Cognitive and Natural Sciences (original work)  
+Copyright (c) 2026 Panorama Scholarly Group Ltd. (modifications)
+
+This is a modified version of the original plugin, distributed under the same license.
 
 ## Acknowledgments
 
@@ -456,8 +468,8 @@ Thank you to everyone in the PKP Community Forum who provided feedback and helpe
 
 ## Credits
 
-**Author**: Serhiy O. Semerikov (Academy of Cognitive and Natural Sciences)  
-**Contact**: semerikov@gmail.com
+**Author**: Panorama Scholarly Group Ltd., contact@panorama-sg.com  
+**Original author**: Serhiy O. Semerikov (Academy of Cognitive and Natural Sciences), semerikov@gmail.com, [ssemerikov/reviewerCertificate](https://github.com/ssemerikov/reviewerCertificate)
 
 Developed for the Open Journal Systems community to support and recognize peer reviewers' contributions to scholarly publishing.
 

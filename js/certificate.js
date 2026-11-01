@@ -2,6 +2,7 @@
  * @file plugins/generic/reviewerCertificate/js/certificate.js
  *
  * Copyright (c) 2024
+ * Modifications copyright (c) 2026 Panorama Scholarly Group Ltd. <contact@panorama-sg.com>
  * Distributed under the GNU GPL v3.
  *
  * JavaScript for reviewer certificate functionality
