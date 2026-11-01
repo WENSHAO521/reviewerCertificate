@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Settings page redesigned as six numbered sections (layout and text, images, typography, page, eligibility, email) with a visual layout chooser, click-to-insert template variables, image cards, a typography table with colour pickers, and a sticky save/preview bar. Only the controls that apply to the chosen layout are shown.
-- In the structured layout the certificate title is written in the body template as a line starting with `#`; the separate Header Text field is folded into the body automatically. "Use recognition-style template" fills in the body and the matching typography in one click.
+- In the structured layout the certificate title is written in the body template as a line starting with `#`; the separate Header Text field is folded into the body automatically. The footer is written the same way, below a `---` line at the end of the body, and the separate Footer Text field is folded in too. "Use recognition-style template" fills in the body and the matching typography in one click.
 
 ## [1.11.0] - 2026-11-01
 

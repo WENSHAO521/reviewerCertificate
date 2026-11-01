@@ -137,6 +137,7 @@ $(function() {
 
 	var $body = $('#bodyTemplate');
 	var $header = $('#headerText');
+	var $footer = $('#footerText');
 	var imageInputs = '#backgroundImage, #logoImage, #coverImage, #sealImage';
 
 	// ---- Layout mode: show the controls that apply, and fold the header into the body
@@ -155,10 +156,19 @@ $(function() {
 		$body.val(text);
 		$header.val('');
 	}
+	function foldFooterIntoBody() {
+		var footer = $.trim($footer.val());
+		if (!footer) { return; }
+		var text = $body.val();
+		if (!/^[ \t]*-{3,}[ \t]*$/m.test(text)) {
+			$body.val(text.replace(/\s+$/, '') + '\n\n---\n' + footer);
+		}
+		$footer.val('');
+	}
 	function applyLayout() {
 		var mode = $form.find('input[name="layoutMode"]:checked').val() || 'classic';
 		$form.attr('data-layout', mode);
-		if (mode === 'structured') { foldHeaderIntoBody(); }
+		if (mode === 'structured') { foldHeaderIntoBody(); foldFooterIntoBody(); }
 	}
 	$form.on('change', 'input[name="layoutMode"]', applyLayout);
 	applyLayout();
@@ -185,9 +195,7 @@ $(function() {
 	$('#rcUseRecognition').on('click', function() {
 		$body.val($('#recognitionBodyTemplate').val());
 		$header.val('');
-		if (!$.trim($('#footerText').val())) {
-			$('#footerText').val('The Editors of {{$journalName}}');
-		}
+		$footer.val('');
 		$.each(recognitionPreset, function(name, value) {
 			var $field = $form.find('[name="' + name + '"]');
 			if ($field.is(':checkbox')) { $field.prop('checked', value); }
@@ -258,7 +266,10 @@ presented to
 
 {{$reviewerName}}
 
-in recognition of the review contributed to the journal{/literal}{/capture}
+in recognition of the review contributed to the journal
+
+---
+The Editors of {{$journalName}}{/literal}{/capture}
 
 <form class="pkp_form rc-settings" id="certificateSettingsForm" method="post" action="{url router=$smarty.const.ROUTE_COMPONENT op="manage" category="generic" plugin=$pluginName verb="settings" save=true}" enctype="multipart/form-data" data-layout="{$layoutMode|escape}">
 	{csrf}
@@ -319,7 +330,7 @@ in recognition of the review contributed to the journal{/literal}{/capture}
 					<button type="button" class="rc-link rc-only-structured" id="rcUseRecognition">{translate key="`$rcKey`useRecognitionTemplate"}</button>
 				</span>
 			</div>
-			<textarea class="rc-input rc-textarea" id="bodyTemplate" name="bodyTemplate" rows="10" spellcheck="false">{$bodyTemplate|escape}</textarea>
+			<textarea class="rc-input rc-textarea" id="bodyTemplate" name="bodyTemplate" rows="14" spellcheck="false">{$bodyTemplate|escape}</textarea>
 			<p class="rc-hint rc-only-structured">{translate key="`$rcKey`titleLineHint"}</p>
 			<div class="rc-chips" aria-label="{translate key="`$rcKey`availableVariables"}">
 				<span class="rc-chips__label">{translate key="`$rcKey`insertVariable"}</span>
@@ -331,7 +342,7 @@ in recognition of the review contributed to the journal{/literal}{/capture}
 			<textarea id="recognitionBodyTemplate" hidden>{$rcRecognitionBody|escape}</textarea>
 		</div>
 
-		<div class="rc-field">
+		<div class="rc-field rc-only-classic">
 			<label class="rc-label" for="footerText">{translate key="`$rcKey`footerText"}</label>
 			<textarea class="rc-input" id="footerText" name="footerText" rows="2">{$footerText|escape}</textarea>
 			<p class="rc-hint">{translate key="`$rcKey`footerTextDescription"}</p>

@@ -414,7 +414,7 @@ msgid "plugins.generic.reviewerCertificate.settings.layoutMode.structuredHint"
 msgstr "Title, reviewer name, journal and details each get their own style, like a printed award."
 
 msgid "plugins.generic.reviewerCertificate.settings.titleLineHint"
-msgstr "Start a line with # to make it the certificate title, e.g. \"# Certificate of Reviewing\". A line with only {{$reviewerName}} uses the name style, a line with only {{$journalName}} the journal style, and lines with a date the small detail style."
+msgstr "Start a line with # to make it the certificate title, e.g. \"# Certificate of Reviewing\". A line with only {{$reviewerName}} uses the name style, a line with only {{$journalName}} the journal style, and lines with a date the small detail style. Lines below a line of three dashes (---) form the footer."
 
 msgid "plugins.generic.reviewerCertificate.settings.insertVariable"
 msgstr "Insert:"

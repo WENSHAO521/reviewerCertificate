@@ -169,11 +169,12 @@ In the structured layout each line of the body template is styled by what it con
 | Journal name | A line containing only `{{$journalName}}` (optionally with `{{$journalAcronym}}`) | 17 pt |
 | Acknowledgement text | Every other line | 13 pt |
 | Review date, certificate code | Lines with a date variable or `{{$certificateCode}}`, and the certificate code line | 10 pt |
-| Footer | Footer text | 10 pt |
+| Footer | Lines below a `---` line | 10 pt |
 
 Each element also takes an optional colour (`#rrggbb`; empty uses the general text colour), and the reviewer name can be set to uppercase.
 
 - **Title**: start a line of the body template with `#` to make it the certificate title, e.g. `# Certificate of Reviewing`; it is drawn where it appears, for example below the journal name. In the structured layout the separate Header Text field is folded into the body this way automatically. (`{{$certificateTitle}}` on its own line still works and draws the header text.)
+- **Footer**: write the footer at the end of the body template, below a line of three dashes (`---`). Everything under that line is the footer. In the structured layout the separate Footer Text field is folded into the body this way automatically.
 - **Footer position**: *Below the content*, or pinned *Bottom left* / *Bottom centre* at a set distance from the bottom edge (e.g. inside a band in your background image). The flowing content is kept above it.
 - **Spacing**: blank lines in the template add **paragraph spacing**; **name spacing** adds room above and below the reviewer name; **side margin** narrows the text area so text stays clear of logos in the background (all in mm).
 - **Fitting**: titles, names and journal titles shrink (down to 60% of their size) to fit on one line, then wrap; if the content is still too tall, the whole layout scales down so the certificate stays on one page.
@@ -198,9 +199,12 @@ presented to
 {{$reviewerName}}
 
 in recognition of the review contributed to the journal
+
+---
+The Editors of {{$journalName}}
 ```
 
-with footer `The Editors of {{$journalName}}`, title 46 pt not bold in your brand colour, journal 20 pt, body 16 pt, name 24 pt bold uppercase, footer 13 pt bold *Bottom left* at 24 mm, paragraph spacing 9 mm, name spacing 2 mm, side margin 55 mm and body top spacing 22 mm.
+with title 46 pt not bold in your brand colour, journal 20 pt, body 16 pt, name 24 pt bold uppercase, footer 13 pt bold *Bottom left* at 24 mm, paragraph spacing 9 mm, name spacing 2 mm, side margin 55 mm and body top spacing 22 mm.
 
 #### Eligibility Criteria
 

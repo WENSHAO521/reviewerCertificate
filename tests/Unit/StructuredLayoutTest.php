@@ -424,4 +424,25 @@ class StructuredLayoutTest extends TestCase
         $this->assertStringContainsString(sprintf('%.6F %.6F %.6F rg', 27 / 255, 111 / 255, 138 / 255), $title[4], 'Drawn in the title style');
         $this->assertGreaterThan($this->cell($cells, 'Journal of Testing')[3], $title[3]);
     }
+
+    public function testFooterIsWrittenInTheBodyBelowADashLine(): void
+    {
+        $this->assertSame(array("Body", "Footer"), CertificateGenerator::splitBodyFooter("Body\n---\nFooter"));
+        $this->assertSame(array("Body", "Footer"), CertificateGenerator::splitBodyFooter("Body\r\n\r\n ----- \r\nFooter"));
+        $this->assertSame(array("No footer", null), CertificateGenerator::splitBodyFooter("No footer"));
+        $this->assertSame(array("a --- b", null), CertificateGenerator::splitBodyFooter("a --- b"));
+
+        list($pdf, $cells) = $this->render($this->generator($this->recognitionSettings(array(
+            'footerText' => 'Old footer that must not be drawn',
+            'bodyTemplate' => "{{\$journalName}}\n\n# Certificate of Reviewing\n\n{{\$reviewerName}}\n\n---\nThe Editors of {{\$journalName}}",
+        ))));
+        foreach ($cells as $cell) {
+            $this->assertStringNotContainsString('Old footer', $cell[0]);
+            $this->assertStringNotContainsString('---', $cell[0]);
+        }
+        $footer = $this->cell($cells, 'The Editors of Journal of Testing');
+        $this->assertSame('L', $footer[5], 'Uses the footer position');
+        $this->assertSame(13.0, (float) $footer[1], 'Uses the footer style');
+        $this->assertGreaterThan($pdf->getPageHeight() * 0.75, $footer[3]);
+    }
 }

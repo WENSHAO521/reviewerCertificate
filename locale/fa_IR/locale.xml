@@ -88,7 +88,7 @@
 	<message key="plugins.generic.reviewerCertificate.settings.section.layoutDescription">Choose how the certificate is laid out and write what it says.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.classicHint">One block of text, as in earlier versions. Existing certificates keep this look.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.structuredHint">Title, reviewer name, journal and details each get their own style, like a printed award.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.titleLineHint">Start a line with # to make it the certificate title, e.g. "# Certificate of Reviewing". A line with only {{$reviewerName}} uses the name style, a line with only {{$journalName}} the journal style, and lines with a date the small detail style.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.titleLineHint">Start a line with # to make it the certificate title, e.g. "# Certificate of Reviewing". A line with only {{$reviewerName}} uses the name style, a line with only {{$journalName}} the journal style, and lines with a date the small detail style. Lines below a line of three dashes (---) form the footer.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.insertVariable">Insert:</message>
 	<message key="plugins.generic.reviewerCertificate.settings.useRecognitionTemplate">Use recognition-style template</message>
 	<message key="plugins.generic.reviewerCertificate.settings.section.images">Background, logo, cover and seal</message>

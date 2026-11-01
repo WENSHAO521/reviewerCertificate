@@ -913,6 +913,19 @@ class CertificateGenerator {
      * @param array $variables
      * @return array of ['role' => string, 'text' => string, 'gapBefore' => bool]
      */
+    /**
+     * Split a structured body template at its first "---" line. Everything below
+     * that line is the footer.
+     * @return array [body template, footer template or null when there is no "---" line]
+     */
+    public static function splitBodyFooter($template) {
+        $parts = preg_split('/^[ \t]*-{3,}[ \t]*\r?$/m', (string) $template, 2);
+        if (count($parts) < 2) {
+            return array((string) $template, null);
+        }
+        return array(rtrim($parts[0]), trim($parts[1], "\r\n"));
+    }
+
     private function buildStructuredBlocks($template, $variables, $headerText = '') {
         $blocks = array();
         $pendingGap = false;
@@ -1101,11 +1114,15 @@ class CertificateGenerator {
      * so it stays on one page.
      */
     private function addStructuredContent($pdf, $headerText, $footerText, $variables) {
-        $blocks = $this->buildStructuredBlocks(
-            $this->getTemplateSetting('bodyTemplate', $this->getDefaultBodyTemplate()),
-            $variables,
-            $headerText
+        list($bodyTemplate, $bodyFooter) = self::splitBodyFooter(
+            $this->getTemplateSetting('bodyTemplate', $this->getDefaultBodyTemplate())
         );
+        if ($bodyFooter !== null) {
+            // The footer is written in the body below a "---" line; it replaces the
+            // separate footer setting (kept only for templates saved before 1.12).
+            $footerText = trim($this->replaceVariables($bodyFooter, $variables));
+        }
+        $blocks = $this->buildStructuredBlocks($bodyTemplate, $variables, $headerText);
         $code = null;
         if ($this->certificate || $this->previewMode) {
             $code = $this->previewMode ? 'PREVIEW12345' : $this->certificate->getCertificateCode();
