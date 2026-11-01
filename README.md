@@ -1,10 +1,17 @@
 # Reviewer Certificate Plugin for OJS
 
-**Version 1.10.0** | [Changelog](CHANGELOG.md) | OJS 3.3 / 3.4 / 3.5
+**Version 1.11.0** | [Changelog](CHANGELOG.md) | OJS 3.3 / 3.4 / 3.5
 
 ## Overview
 
 The Reviewer Certificate Plugin enables reviewers to generate and download personalized PDF certificates of recognition after completing peer reviews. This plugin helps journals acknowledge and incentivize quality peer review work.
+
+**Changes in v1.11.0**:
+
+- Optional structured certificate layout: separate size, weight and colour for the title, reviewer name, journal name, acknowledgement text, dates/code and footer, with automatic shrink-to-fit so certificates stay on one page.
+- Title placement inside the body (`{{$certificateTitle}}`), uppercase names, a footer pinned to the page bottom and a `{{$reviewMonthYear}}` variable.
+- Separate logo, journal cover and seal uploads drawn over the background, placed automatically or by position.
+- Classic layout, certificate codes and QR verification are unchanged.
 
 **Changes in v1.10.0**:
 
