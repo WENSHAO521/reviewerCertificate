@@ -49,7 +49,7 @@ msgid "plugins.generic.reviewerCertificate.settings.backgroundImage"
 msgstr "Achtergrondafbeelding"
 
 msgid "plugins.generic.reviewerCertificate.settings.backgroundImageDescription"
-msgstr "Upload een achtergrondafbeelding voor het certificaat (JPG of PNG, aanbevolen grootte: 2100x2970 pixels voor A4)"
+msgstr "Fills the whole page behind everything else, e.g. a border or a coloured band. 2970 × 2100 px for A4 landscape, 2100 × 2970 px for portrait."
 
 msgid "plugins.generic.reviewerCertificate.settings.currentImage"
 msgstr "Huidige achtergrondafbeelding"
@@ -124,7 +124,7 @@ msgid "plugins.generic.reviewerCertificate.settings.orientation.landscape"
 msgstr "Liggend (horizontaal)"
 
 msgid "plugins.generic.reviewerCertificate.settings.textColor"
-msgstr "Tekstkleur (RGB)"
+msgstr "Default text colour"
 
 msgid "plugins.generic.reviewerCertificate.settings.textColorDescription"
 msgstr "Specificeer de tekstkleur met RGB-waarden (0-255 voor elk component)"
@@ -306,19 +306,19 @@ msgid "plugins.generic.reviewerCertificate.settings.logoImage"
 msgstr "Logo"
 
 msgid "plugins.generic.reviewerCertificate.settings.logoImageDescription"
-msgstr "Optional PNG or JPEG (max 5 MB), drawn over the background. A PNG with a transparent background works best. Width in mm keeps the image's proportions. Leave X and Y at -1 for the automatic position (top left)."
+msgstr "Placed top left unless you set X and Y. A PNG with a transparent background works best."
 
 msgid "plugins.generic.reviewerCertificate.settings.coverImage"
 msgstr "Journal Cover"
 
 msgid "plugins.generic.reviewerCertificate.settings.coverImageDescription"
-msgstr "Optional PNG or JPEG (max 5 MB), drawn over the background. Width in mm keeps the image's proportions. Leave X and Y at -1 for the automatic position (top right)."
+msgstr "Placed top right unless you set X and Y. Swap it here when a new issue comes out."
 
 msgid "plugins.generic.reviewerCertificate.settings.sealImage"
 msgstr "Seal"
 
 msgid "plugins.generic.reviewerCertificate.settings.sealImageDescription"
-msgstr "Optional PNG or JPEG (max 5 MB), drawn over the background; use a PNG with a transparent background for a round seal. Width in mm keeps the image's proportions. Leave X and Y at -1 for the automatic position: bottom right, or just left of the QR code when the QR code is enabled."
+msgstr "Placed bottom right, or just left of the QR code when that is on. Use a transparent PNG for a round seal."
 
 msgid "plugins.generic.reviewerCertificate.settings.removeImage"
 msgstr "Remove this image"
@@ -357,31 +357,31 @@ msgid "plugins.generic.reviewerCertificate.settings.typography.title"
 msgstr "Certificate Title"
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.titleDescription"
-msgstr "Style of the header text. By default it is drawn at the top; put {{$certificateTitle}} on its own line in the body template to draw it there instead (for example below the journal name). Leave colour empty to use the general text colour. Suggested: 28–30 pt, bold."
+msgstr "The line starting with # (or the header text). Suggested 28–46 pt."
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.name"
 msgstr "Reviewer Name"
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.nameDescription"
-msgstr "Applies to body lines that contain only the reviewer name. Suggested: 24–26 pt, bold."
+msgstr "A line holding only {{$reviewerName}}. Suggested 24–26 pt, bold."
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.journal"
 msgstr "Journal Name"
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.journalDescription"
-msgstr "Applies to body lines that contain only the journal name. Suggested: 16–18 pt."
+msgstr "A line holding only {{$journalName}}. Suggested 16–20 pt."
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.body"
 msgstr "Acknowledgement Text"
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.bodyDescription"
-msgstr "Applies to all other body lines. Suggested: 12–14 pt."
+msgstr "All other lines. Suggested 12–16 pt."
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.detail"
 msgstr "Review Date and Certificate Code"
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.detailDescription"
-msgstr "Applies to body lines containing a date or the certificate code, and to the certificate code line. Suggested: 9–11 pt."
+msgstr "Lines with a date, and the certificate code. Suggested 8–11 pt."
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.size"
 msgstr "Size (pt)"
@@ -401,6 +401,69 @@ msgstr "Paragraph spacing"
 msgid "plugins.generic.reviewerCertificate.settings.typography.nameSpacing"
 msgstr "Name spacing"
 
+msgid "plugins.generic.reviewerCertificate.settings.section.layout"
+msgstr "Layout and text"
+
+msgid "plugins.generic.reviewerCertificate.settings.section.layoutDescription"
+msgstr "Choose how the certificate is laid out and write what it says."
+
+msgid "plugins.generic.reviewerCertificate.settings.layoutMode.classicHint"
+msgstr "One block of text, as in earlier versions. Existing certificates keep this look."
+
+msgid "plugins.generic.reviewerCertificate.settings.layoutMode.structuredHint"
+msgstr "Title, reviewer name, journal and details each get their own style, like a printed award."
+
+msgid "plugins.generic.reviewerCertificate.settings.titleLineHint"
+msgstr "Start a line with # to make it the certificate title, e.g. \"# Certificate of Reviewing\". A line with only {{$reviewerName}} uses the name style, a line with only {{$journalName}} the journal style, and lines with a date the small detail style."
+
+msgid "plugins.generic.reviewerCertificate.settings.insertVariable"
+msgstr "Insert:"
+
+msgid "plugins.generic.reviewerCertificate.settings.useRecognitionTemplate"
+msgstr "Use recognition-style template"
+
+msgid "plugins.generic.reviewerCertificate.settings.section.images"
+msgstr "Background, logo, cover and seal"
+
+msgid "plugins.generic.reviewerCertificate.settings.section.imagesDescription"
+msgstr "PNG or JPEG, up to 5 MB each. The background fills the page; the other images are placed on top. Leave X and Y empty for the automatic position."
+
+msgid "plugins.generic.reviewerCertificate.settings.image.none"
+msgstr "Not set"
+
+msgid "plugins.generic.reviewerCertificate.settings.image.xShort"
+msgstr "X (mm)"
+
+msgid "plugins.generic.reviewerCertificate.settings.image.yShort"
+msgstr "Y (mm)"
+
+msgid "plugins.generic.reviewerCertificate.settings.image.auto"
+msgstr "auto"
+
+msgid "plugins.generic.reviewerCertificate.settings.section.typographyDescription"
+msgstr "Size, colour and weight for each part of a structured certificate."
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.classicNotice"
+msgstr "These controls apply to the structured layout. Choose \"Structured\" in step 1 to use them."
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.element"
+msgstr "Element"
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.style"
+msgstr "Style"
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.defaultColor"
+msgstr "default"
+
+msgid "plugins.generic.reviewerCertificate.settings.section.page"
+msgstr "Page and colours"
+
+msgid "plugins.generic.reviewerCertificate.settings.section.pageDescription"
+msgstr "Paper orientation, font and the default text colour."
+
+msgid "plugins.generic.reviewerCertificate.settings.previewHint"
+msgstr "The preview uses the last saved settings, so save first."
+
 msgid "plugins.generic.reviewerCertificate.settings.typography.color"
 msgstr "Colour (#rrggbb)"
 
@@ -411,7 +474,7 @@ msgid "plugins.generic.reviewerCertificate.settings.typography.footer"
 msgstr "Footer"
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.footerDescription"
-msgstr "Style and position of the footer text. \"Bottom left\" or \"Bottom centre\" pins it at a fixed distance from the bottom edge of the page (for example inside a band in your background image); the rest of the content is kept above it."
+msgstr "The footer text; set its position below."
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.footerPosition"
 msgstr "Position"

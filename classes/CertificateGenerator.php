@@ -871,8 +871,9 @@ class CertificateGenerator {
 
     /**
      * Classify one raw (unsubstituted) body template line for the structured layout.
-     *   title   — the line is exactly {{$certificateTitle}}: the header text is drawn
-     *             here, in the title style, instead of at the top of the page
+     *   title   — the line starts with "# " (its text is the title), or is exactly
+     *             {{$certificateTitle}} (the header text); either way the title is
+     *             drawn here, in the title style, instead of at the top of the page
      *   name    — the line holds only reviewer-name placeholders
      *   journal — the line holds only journal-name placeholders
      *   detail  — the line mentions a date or the certificate code
@@ -889,7 +890,8 @@ class CertificateGenerator {
         $detailVars = $placeholder(array('reviewDate', 'dateIssued', 'currentDate', 'certificateCode'));
 
         $trimmed = trim($line);
-        if (preg_match('/^' . $placeholder(array('certificateTitle')) . '$/', $trimmed)) {
+        if (preg_match('/^' . $placeholder(array('certificateTitle')) . '$/', $trimmed)
+                || preg_match('/^#\s*\S/', $trimmed)) {
             return 'title';
         }
         if (preg_match('/' . $nameVars . '/', $trimmed) && trim(preg_replace('/' . $nameVars . '/', '', $trimmed), " \t,.") === '') {
@@ -921,7 +923,14 @@ class CertificateGenerator {
                 continue;
             }
             $role = self::classifyBodyLine($line);
-            $text = $role === 'title' ? trim((string) $headerText) : trim($this->replaceVariables($line, $variables));
+            if ($role === 'title' && strpos(ltrim($line), '#') === 0) {
+                // "# Certificate of Reviewing": the title is written in the body itself
+                $text = trim($this->replaceVariables(ltrim(ltrim($line), '#'), $variables));
+            } elseif ($role === 'title') {
+                $text = trim((string) $headerText);
+            } else {
+                $text = trim($this->replaceVariables($line, $variables));
+            }
             if ($text === '') {
                 // A placeholder that resolved to nothing must not leave a styled gap
                 continue;

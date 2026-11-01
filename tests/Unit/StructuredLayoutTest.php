@@ -405,4 +405,23 @@ class StructuredLayoutTest extends TestCase
         list(, $images) = $this->overlays(array('logoImage' => '/etc/passwd', 'coverImage' => '', 'sealImage' => ''));
         $this->assertSame(array(), $images);
     }
+
+    public function testHashLineIsTheTitleAndReplacesTheHeader(): void
+    {
+        $this->assertSame('title', CertificateGenerator::classifyBodyLine('# Certificate of Reviewing'));
+        $this->assertSame('title', CertificateGenerator::classifyBodyLine('  #Certificate'));
+        $this->assertSame('body', CertificateGenerator::classifyBodyLine('Issue #5 of the year'));
+
+        list(, $cells) = $this->render($this->generator($this->recognitionSettings(array(
+            'headerText' => 'Old header that must not be drawn',
+            'bodyTemplate' => "{{\$journalName}}\n\n# Certificate of Reviewing for {{\$journalAcronym}}\n\n{{\$reviewerName}}",
+        ))));
+        foreach ($cells as $cell) {
+            $this->assertStringNotContainsString('Old header', $cell[0]);
+            $this->assertStringNotContainsString('#', $cell[0]);
+        }
+        $title = $this->cell($cells, 'Certificate of Reviewing for');
+        $this->assertStringContainsString(sprintf('%.6F %.6F %.6F rg', 27 / 255, 111 / 255, 138 / 255), $title[4], 'Drawn in the title style');
+        $this->assertGreaterThan($this->cell($cells, 'Journal of Testing')[3], $title[3]);
+    }
 }
