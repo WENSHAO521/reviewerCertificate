@@ -89,6 +89,10 @@ for OJS_VERSION in 3.3 3.4 3.5; do
     FONT_NAME="${FONT##*/}"
     if [[ "$FONT_NAME" =~ ^(helvetica|times|courier|dejavusans|symbol|zapfdingbats)(b|i|bi)?\.(php|z|ctg\.z)$ ]]; then
       cp "$FONT" "$TCPDF_DEST/fonts/"
+    elif [[ "$FONT_NAME" =~ ^(msungstdlight|stsongstdlight|kozminproregular|hysmyeongjostdmedium|uni2cid_ac15|uni2cid_ag15)\.php$ ]]; then
+      # Non-embedded Adobe CJK fonts (metrics only) and the tables
+      # CertificateGenerator::selectCjkFont() uses to pick one
+      cp "$FONT" "$TCPDF_DEST/fonts/"
     elif [[ -d "$FONT" && "$FONT_NAME" == dejavu-fonts-ttf-* ]]; then
       mkdir -p "$TCPDF_DEST/fonts/$FONT_NAME"
       cp "$FONT/LICENSE" "$FONT/README" "$TCPDF_DEST/fonts/$FONT_NAME/"
