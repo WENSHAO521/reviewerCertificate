@@ -50,6 +50,7 @@ class CertificateGenerator {
         foreach ($tcpdfLocations as $tcpdfPath) {
             if (file_exists($tcpdfPath)) {
                 require_once($tcpdfPath);
+                require_once(dirname(__FILE__) . '/CompactTCPDF.php');
                 self::$tcpdfLoaded = true;
                 return;
             }
@@ -111,14 +112,17 @@ class CertificateGenerator {
         return self::getFilesDir() . '/journals/' . (int) $contextId . '/reviewerCertificate';
     }
 
-    /** Longest side an embedded background may have (~190 DPI on A4 landscape) */
-    const BG_MAX_SIDE_PX = 2200;
+    /** Longest side an embedded background may have (~150 DPI on A4) */
+    const BG_MAX_SIDE_PX = 1754;
 
     /** Source images above this size are re-encoded even when dimensions fit */
-    const BG_MAX_BYTES = 614400;
+    const BG_MAX_BYTES = 307200;
 
     /** JPEG quality for re-encoded backgrounds */
-    const BG_JPEG_QUALITY = 82;
+    const BG_JPEG_QUALITY = 80;
+
+    /** Print resolution for the logo, cover and seal at their placed size */
+    const OVERLAY_DPI = 300;
 
     /** QR code: side length, distance from the page edges, and the code line below it (mm) */
     const QR_SIZE = 12;
@@ -130,18 +134,21 @@ class CertificateGenerator {
      *
      * Full-resolution backgrounds produce multi-MB certificate PDFs that mail
      * relays reject (iitlt: SendPulse SMTP 552 "Message exceeds fixed maximum
-     * message size"). A certificate page needs at most ~200 DPI, so anything
-     * larger is capped at BG_MAX_SIDE_PX and re-encoded (JPEG, or PNG when the
-     * source has an alpha channel). The scaled copy is cached next to the
-     * original, keyed by the source's mtime+size; stale copies are pruned.
+     * message size"). A full-page background needs ~150 DPI, so anything
+     * larger is capped at BG_MAX_SIDE_PX (or $maxSidePx, used for the smaller
+     * logo/cover/seal overlays) and re-encoded (JPEG, or PNG when the source
+     * has an alpha channel). The scaled copy is cached next to the original,
+     * keyed by the source's mtime+size and the cap; stale copies are pruned.
      *
      * Fails open: whenever GD is unavailable or anything goes wrong, the
      * original path is returned unchanged.
      *
      * @param $path string Absolute path to the stored background image
+     * @param $maxSidePx int|null Longest side allowed (default BG_MAX_SIDE_PX)
      * @return string Path to embed (scaled copy, or the original)
      */
-    public static function downscaleBackgroundIfNeeded($path) {
+    public static function downscaleBackgroundIfNeeded($path, $maxSidePx = null) {
+        $maxSidePx = $maxSidePx ? max(64, (int) $maxSidePx) : self::BG_MAX_SIDE_PX;
         $realPath = realpath($path);
         if ($realPath === false || !is_file($realPath)) {
             return $path;
@@ -158,7 +165,7 @@ class CertificateGenerator {
         clearstatcache();
         $sourceBytes = (int) @filesize($realPath);
         $maxSide = max($width, $height);
-        if ($maxSide <= self::BG_MAX_SIDE_PX && $sourceBytes <= self::BG_MAX_BYTES) {
+        if ($maxSide <= $maxSidePx && $sourceBytes <= self::BG_MAX_BYTES) {
             return $path;
         }
 
@@ -179,7 +186,7 @@ class CertificateGenerator {
         $ext = $keepPng ? 'png' : 'jpg';
 
         $baseName = pathinfo($realPath, PATHINFO_FILENAME);
-        $cacheKey = substr(md5($realPath . '|' . @filemtime($realPath) . '|' . $sourceBytes), 0, 12);
+        $cacheKey = substr(md5($realPath . '|' . @filemtime($realPath) . '|' . $sourceBytes . '|' . $maxSidePx), 0, 12);
         $cachePath = dirname($realPath) . '/' . $baseName . '.rcscaled-' . $cacheKey . '.' . $ext;
         if (is_file($cachePath)) {
             return $cachePath;
@@ -205,7 +212,7 @@ class CertificateGenerator {
             return $path;
         }
 
-        $scale = min(1.0, self::BG_MAX_SIDE_PX / $maxSide);
+        $scale = min(1.0, $maxSidePx / $maxSide);
         $newWidth = max(1, (int) round($width * $scale));
         $newHeight = max(1, (int) round($height * $scale));
 
@@ -480,7 +487,7 @@ class CertificateGenerator {
         if (!in_array($orientation, array('P', 'L'))) {
             $orientation = 'P';
         }
-        $pdf = new \TCPDF($orientation, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+        $pdf = new CompactTCPDF($orientation, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
 
         // Set document information
         $pdf->SetCreator('OJS Reviewer Certificate Plugin');
@@ -597,8 +604,11 @@ class CertificateGenerator {
             $x = max(0, min($pageWidth - $width, $x));
             $y = max(0, min($pageHeight - $height, $y));
 
+            // Scale to OVERLAY_DPI at the placed size: a 36 mm seal needs ~430 px,
+            // not the 2000+ px a phone photo or scan usually has
+            $maxSidePx = (int) ceil(max($width, $height) / 25.4 * self::OVERLAY_DPI);
             try {
-                $pdf->Image(self::downscaleBackgroundIfNeeded($realPath), $x, $y, $width, $height,
+                $pdf->Image(self::downscaleBackgroundIfNeeded($realPath, $maxSidePx), $x, $y, $width, $height,
                     '', '', '', false, 300, '', false, false, 0);
             } catch (\Throwable $e) {
                 error_log('ReviewerCertificate: Error adding ' . $name . ' image: ' . $e->getMessage());

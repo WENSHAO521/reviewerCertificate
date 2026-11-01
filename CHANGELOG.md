@@ -5,6 +5,13 @@ All notable changes to the Reviewer Certificate Plugin will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- Certificate PDFs are much smaller. A text-only certificate in DejaVu Sans drops from about 150 KB to about 30 KB: only the glyphs actually used are embedded (TCPDF used to embed ~240 per style). The text and layout are unchanged.
+- Uploaded images are scaled to what the printed page needs before embedding: the background to ~150 DPI on A4 (was ~190 DPI), and the logo, cover and seal to 300 DPI at their placed size instead of the 2200 px background cap. A certificate with a large photo background, cover, logo and seal fell from about 2.7 MB to about 750 KB in testing.
+
 ## [1.12.1] - 2026-11-01
 
 ### Changed
