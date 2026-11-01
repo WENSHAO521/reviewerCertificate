@@ -696,6 +696,68 @@ class CertificateGenerator {
             'detailFontSize' => array(10, 6, 72),
             'paragraphSpacing' => array(4, 0, 50),
             'nameSpacing' => array(4, 0, 50),
+            'nameUppercase' => array(0, 0, 1),
+            'footerFontSize' => array(10, 6, 72),
+            'footerBold' => array(0, 0, 1),
+            'footerBottomSpacing' => array(20, 5, 150),
+            'sideMargin' => array(15, 10, 120),
+        );
+    }
+
+    /**
+     * String settings of the structured layout and their defaults. Colours are
+     * #rrggbb (empty = the general text colour); footerPosition is one of
+     * flow, bottomLeft, bottomCenter.
+     * @return array name => default
+     */
+    public static function getStructuredStringSettingDefaults() {
+        return array(
+            'titleColor' => '',
+            'nameColor' => '',
+            'journalColor' => '',
+            'bodyColor' => '',
+            'detailColor' => '',
+            'footerColor' => '',
+            'footerPosition' => 'flow',
+        );
+    }
+
+    /**
+     * Normalise a structured-layout string setting; invalid input yields the default.
+     * @param string $key
+     * @param mixed $value
+     * @return string
+     */
+    public static function sanitizeStructuredStringSetting($key, $value) {
+        $defaults = self::getStructuredStringSettingDefaults();
+        if (!array_key_exists($key, $defaults) || !is_scalar($value)) {
+            return $defaults[$key] ?? '';
+        }
+        $value = trim((string) $value);
+        if ($key === 'footerPosition') {
+            return in_array($value, array('flow', 'bottomLeft', 'bottomCenter'), true) ? $value : 'flow';
+        }
+        if (preg_match('/^#?([0-9a-fA-F]{6})$/', $value, $m)) {
+            return '#' . strtolower($m[1]);
+        }
+        return '';
+    }
+
+    /**
+     * Text colour for a structured-layout role as [r, g, b]; falls back to the
+     * general text colour.
+     * @param string $role
+     * @return array
+     */
+    private function getRoleColor($role) {
+        $hex = self::sanitizeStructuredStringSetting($role . 'Color', $this->getTemplateSetting($role . 'Color', ''));
+        if ($hex !== '') {
+            return array(hexdec(substr($hex, 1, 2)), hexdec(substr($hex, 3, 2)), hexdec(substr($hex, 5, 2)));
+        }
+        return array(
+            max(0, min(255, (int) $this->getTemplateSetting('textColorR', 0))),
+            max(0, min(255, (int) $this->getTemplateSetting('textColorG', 0))),
+            max(0, min(255, (int) $this->getTemplateSetting('textColorB', 0))),
         );
     }
 
@@ -727,6 +789,8 @@ class CertificateGenerator {
 
     /**
      * Classify one raw (unsubstituted) body template line for the structured layout.
+     *   title   — the line is exactly {{$certificateTitle}}: the header text is drawn
+     *             here, in the title style, instead of at the top of the page
      *   name    — the line holds only reviewer-name placeholders
      *   journal — the line holds only journal-name placeholders
      *   detail  — the line mentions a date or the certificate code
@@ -743,6 +807,9 @@ class CertificateGenerator {
         $detailVars = $placeholder(array('reviewDate', 'dateIssued', 'currentDate', 'certificateCode'));
 
         $trimmed = trim($line);
+        if (preg_match('/^' . $placeholder(array('certificateTitle')) . '$/', $trimmed)) {
+            return 'title';
+        }
         if (preg_match('/' . $nameVars . '/', $trimmed) && trim(preg_replace('/' . $nameVars . '/', '', $trimmed), " \t,.") === '') {
             return 'name';
         }
@@ -762,7 +829,7 @@ class CertificateGenerator {
      * @param array $variables
      * @return array of ['role' => string, 'text' => string, 'gapBefore' => bool]
      */
-    private function buildStructuredBlocks($template, $variables) {
+    private function buildStructuredBlocks($template, $variables, $headerText = '') {
         $blocks = array();
         $pendingGap = false;
         $lines = preg_split('/\r\n|\r|\n/', (string) $template);
@@ -771,13 +838,14 @@ class CertificateGenerator {
                 $pendingGap = !empty($blocks);
                 continue;
             }
-            $text = trim($this->replaceVariables($line, $variables));
+            $role = self::classifyBodyLine($line);
+            $text = $role === 'title' ? trim((string) $headerText) : trim($this->replaceVariables($line, $variables));
             if ($text === '') {
                 // A placeholder that resolved to nothing must not leave a styled gap
                 continue;
             }
             $blocks[] = array(
-                'role' => self::classifyBodyLine($line),
+                'role' => $role,
                 'text' => $text,
                 'gapBefore' => $pendingGap,
             );
@@ -794,6 +862,10 @@ class CertificateGenerator {
     private function fitFontSize($pdf, $text, $style, $size, $floor, $width) {
         $size = (float) $size;
         $floor = min($size, (float) $floor);
+        // MultiCell wraps against the width minus its cell padding, so measure
+        // against the same inner width or text that "fits" still wraps.
+        $padding = $pdf->getCellPaddings();
+        $width -= $padding['L'] + $padding['R'] + 0.01;
         while ($size > $floor) {
             $pdf->SetFont($this->effectiveFont, $style, $size);
             if ($pdf->GetStringWidth($text) <= $width) {
@@ -805,47 +877,23 @@ class CertificateGenerator {
     }
 
     /**
-     * Lay out (or, with $draw false, only measure) the structured certificate.
+     * Lay out (or, with $draw false, only measure) the flowing part of the
+     * structured certificate. A footer anchored to the bottom is drawn separately.
      * @return float Total height in mm
      */
     private function layoutStructured($pdf, $headerText, $blocks, $footerText, $code, $scale, $draw) {
-        $margins = $pdf->getMargins();
-        $width = $pdf->getPageWidth() - $margins['left'] - $margins['right'];
-        $x = $margins['left'];
-        $y = $margins['top'];
+        $sideMargin = $this->getTypographySetting('sideMargin');
+        $width = $pdf->getPageWidth() - 2 * $sideMargin;
+        $x = $sideMargin;
+        $y = $pdf->getMargins()['top'];
         $startY = $y;
 
-        $styles = array(
-            'title' => array($this->getTypographySetting('titleFontSize'), $this->getTypographySetting('titleBold') ? 'B' : '', true),
-            'name' => array($this->getTypographySetting('nameFontSize'), $this->getTypographySetting('nameBold') ? 'B' : '', true),
-            'journal' => array($this->getTypographySetting('journalFontSize'), $this->getTypographySetting('journalBold') ? 'B' : '', true),
-            'body' => array($this->getTypographySetting('bodyFontSize'), $this->getTypographySetting('bodyBold') ? 'B' : '', false),
-            'detail' => array($this->getTypographySetting('detailFontSize'), '', false),
-            'footer' => array($this->getTypographySetting('detailFontSize'), 'I', false),
-            'code' => array($this->getTypographySetting('detailFontSize'), '', false),
-        );
         $paragraphSpacing = $this->getTypographySetting('paragraphSpacing') * $scale;
         $nameSpacing = $this->getTypographySetting('nameSpacing') * $scale;
+        $footerFlows = $this->getFooterPosition() === 'flow';
 
-        $emit = function ($role, $text) use ($pdf, $styles, $scale, $width, $x, &$y, $draw) {
-            list($size, $style, $shrinkToFit) = $styles[$role];
-            $size = max(6, $size * $scale);
-            if ($shrinkToFit) {
-                // Long names and journal titles shrink to fit one line (down to 60%
-                // of their configured size) before they are allowed to wrap.
-                $size = $this->fitFontSize($pdf, $text, $style, $size, max(6, $size * 0.6), $width);
-            }
-            $pdf->SetFont($this->effectiveFont, $style, $size);
-            $height = $pdf->getStringHeight($width, $text);
-            if ($draw) {
-                $pdf->SetXY($x, $y);
-                $pdf->MultiCell($width, 0, $text, 0, 'C', false, 1);
-            }
-            $y += $height;
-        };
-
-        if ($headerText) {
-            $emit('title', $headerText);
+        if ($headerText && !$this->bodyPlacesTitle($blocks)) {
+            $y += $this->emitStructured($pdf, 'title', $headerText, $x, $y, $width, $scale, $draw);
             $y += 10 * $scale;
         }
 
@@ -864,52 +912,155 @@ class CertificateGenerator {
                     $y += $nameSpacing;
                 }
             }
-            $emit($block['role'], $block['text']);
+            $y += $this->emitStructured($pdf, $block['role'], $block['text'], $x, $y, $width, $scale, $draw);
             $previousRole = $block['role'];
         }
 
-        // Footer and certificate code sit below the main content in the small style
-        if ($footerText) {
+        // Footer (unless anchored to the page bottom) and certificate code sit
+        // below the main content
+        if ($footerText && $footerFlows) {
             $y += $paragraphSpacing * 2;
-            $emit('footer', $footerText);
+            $y += $this->emitStructured($pdf, 'footer', $footerText, $x, $y, $width, $scale, $draw);
         }
         if ($code !== null) {
-            $y += $footerText ? $paragraphSpacing : $paragraphSpacing * 2;
-            $emit('code', 'Certificate Code: ' . $code);
+            $y += ($footerText && $footerFlows) ? $paragraphSpacing : $paragraphSpacing * 2;
+            $y += $this->emitStructured($pdf, 'code', 'Certificate Code: ' . $code, $x, $y, $width, $scale, $draw);
         }
 
         return $y - $startY;
     }
 
     /**
-     * Structured layout: independent size/weight for title, reviewer name, journal
-     * name, body and detail lines, auto-shrinking the whole layout so it stays on
-     * one page.
+     * Draw (or measure) one structured-layout element and return its height.
+     * @return float
+     */
+    private function emitStructured($pdf, $role, $text, $x, $y, $width, $scale, $draw, $align = 'C') {
+        switch ($role) {
+            case 'title':
+                $size = $this->getTypographySetting('titleFontSize');
+                $style = $this->getTypographySetting('titleBold') ? 'B' : '';
+                $shrink = true;
+                break;
+            case 'name':
+                $size = $this->getTypographySetting('nameFontSize');
+                $style = $this->getTypographySetting('nameBold') ? 'B' : '';
+                $shrink = true;
+                if ($this->getTypographySetting('nameUppercase')) {
+                    $text = function_exists('mb_strtoupper') ? mb_strtoupper($text, 'UTF-8') : strtoupper($text);
+                }
+                break;
+            case 'journal':
+                $size = $this->getTypographySetting('journalFontSize');
+                $style = $this->getTypographySetting('journalBold') ? 'B' : '';
+                $shrink = true;
+                break;
+            case 'body':
+                $size = $this->getTypographySetting('bodyFontSize');
+                $style = $this->getTypographySetting('bodyBold') ? 'B' : '';
+                $shrink = false;
+                break;
+            case 'footer':
+                $size = $this->getTypographySetting('footerFontSize');
+                $style = $this->getTypographySetting('footerBold') ? 'B' : '';
+                $shrink = false;
+                break;
+            default: // detail, code
+                $size = $this->getTypographySetting('detailFontSize');
+                $style = '';
+                $shrink = false;
+        }
+        $size = max(6, $size * $scale);
+        if ($shrink) {
+            // Long titles, names and journal titles shrink to fit one line (down to
+            // 60% of their configured size) before they are allowed to wrap.
+            $size = $this->fitFontSize($pdf, $text, $style, $size, max(6, $size * 0.6), $width);
+        }
+        $pdf->SetFont($this->effectiveFont, $style, $size);
+        $height = $pdf->getStringHeight($width, $text);
+        if ($draw) {
+            $colorRole = in_array($role, array('detail', 'code'), true) ? 'detail' : $role;
+            list($r, $g, $b) = $this->getRoleColor($colorRole);
+            $pdf->SetTextColor($r, $g, $b);
+            $pdf->SetXY($x, $y);
+            $pdf->MultiCell($width, 0, $text, 0, $align, false, 1);
+            list($r, $g, $b) = $this->getRoleColor('');
+            $pdf->SetTextColor($r, $g, $b);
+        }
+        return $height;
+    }
+
+    /** @return bool Whether the body template places the title itself */
+    private function bodyPlacesTitle($blocks) {
+        foreach ($blocks as $block) {
+            if ($block['role'] === 'title') {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /** @return string flow, bottomLeft or bottomCenter */
+    private function getFooterPosition() {
+        return self::sanitizeStructuredStringSetting('footerPosition', $this->getTemplateSetting('footerPosition', 'flow'));
+    }
+
+    /**
+     * Structured layout: independent size/weight/colour for title, reviewer name,
+     * journal name, body, detail lines and footer, auto-shrinking the whole layout
+     * so it stays on one page.
      */
     private function addStructuredContent($pdf, $headerText, $footerText, $variables) {
         $blocks = $this->buildStructuredBlocks(
             $this->getTemplateSetting('bodyTemplate', $this->getDefaultBodyTemplate()),
-            $variables
+            $variables,
+            $headerText
         );
         $code = null;
         if ($this->certificate || $this->previewMode) {
             $code = $this->previewMode ? 'PREVIEW12345' : $this->certificate->getCertificateCode();
         }
 
-        $margins = $pdf->getMargins();
+        $top = $pdf->getMargins()['top'];
+        $sideMargin = $this->getTypographySetting('sideMargin');
+        $pageHeight = $pdf->getPageHeight();
         // Auto page break is off, so TCPDF's bottom margin is 0; mirror the 15 mm
-        // side margins instead.
-        $available = $pdf->getPageHeight() - $margins['top'] - 15;
+        // page margins instead.
+        $bottomLimit = $pageHeight - 15;
         if ($this->getTemplateSetting('includeQRCode', false)) {
             // Keep clear of the QR code band at the bottom of the page
-            $available -= 25;
+            $bottomLimit -= 25;
         }
 
+        // A footer anchored to the bottom (e.g. an editors' line in a band) sits at a
+        // fixed distance from the page edge; the flowing content must end above it.
+        $anchoredFooter = $footerText && $this->getFooterPosition() !== 'flow';
+        $footerY = null;
+        if ($anchoredFooter) {
+            $footerX = 15;
+            $footerWidth = $pdf->getPageWidth() - 30;
+            $this->setFooterFontForMeasure($pdf);
+            $footerHeight = $pdf->getStringHeight($footerWidth, $footerText);
+            $footerY = $pageHeight - $this->getTypographySetting('footerBottomSpacing') - $footerHeight;
+            $bottomLimit = min($bottomLimit, $footerY - 4);
+        }
+
+        $available = $bottomLimit - $top;
         $scale = 1.0;
         while ($scale > 0.5 && $this->layoutStructured($pdf, $headerText, $blocks, $footerText, $code, $scale, false) > $available) {
             $scale -= 0.05;
         }
         $this->layoutStructured($pdf, $headerText, $blocks, $footerText, $code, max(0.5, $scale), true);
+
+        if ($anchoredFooter) {
+            $align = $this->getFooterPosition() === 'bottomLeft' ? 'L' : 'C';
+            $this->emitStructured($pdf, 'footer', $footerText, $footerX, $footerY, $footerWidth, 1.0, true, $align);
+        }
+    }
+
+    /** Set the footer font so its height can be measured before drawing. */
+    private function setFooterFontForMeasure($pdf) {
+        $pdf->SetFont($this->effectiveFont, $this->getTypographySetting('footerBold') ? 'B' : '',
+            $this->getTypographySetting('footerFontSize'));
     }
 
     /**
@@ -985,6 +1136,7 @@ class CertificateGenerator {
             $variables['submissionId'] = '12345';
             $variables['reviewDate'] = date('F j, Y');
             $variables['reviewYear'] = date('Y');
+            $variables['reviewMonthYear'] = date('F Y');
             $variables['certificateCode'] = 'PREVIEW12345';
             $variables['dateIssued'] = date('F j, Y');
 
@@ -1057,6 +1209,7 @@ class CertificateGenerator {
                 if ($dateCompleted) {
                     $variables['reviewDate'] = date('F j, Y', strtotime($dateCompleted));
                     $variables['reviewYear'] = date('Y', strtotime($dateCompleted));
+                    $variables['reviewMonthYear'] = date('F Y', strtotime($dateCompleted));
                 }
             }
 

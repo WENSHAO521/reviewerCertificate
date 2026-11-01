@@ -66,6 +66,15 @@ class CertificateSettingsForm extends Form {
     }
 
     /**
+     * Structured-layout string settings (colours, footer position): name => default.
+     * @return array
+     */
+    private static function structuredStringSettings() {
+        require_once dirname(__DIR__) . '/CertificateGenerator.php';
+        return \APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::getStructuredStringSettingDefaults();
+    }
+
+    /**
      * @copydoc Form::initData()
      */
     public function initData() {
@@ -86,6 +95,9 @@ class CertificateSettingsForm extends Form {
             $this->setData('layoutMode', $this->plugin->getSetting($this->contextId, 'layoutMode') === 'structured' ? 'structured' : 'classic');
             foreach (self::typographySettings() as $field => $definition) {
                 $this->setData($field, $this->plugin->getSetting($this->contextId, $field) ?? $definition[0]);
+            }
+            foreach (self::structuredStringSettings() as $field => $default) {
+                $this->setData($field, $this->plugin->getSetting($this->contextId, $field) ?? $default);
             }
             // Acknowledgement email templates — show localized defaults so
             // editors see and can adjust the actual letter text
@@ -113,6 +125,9 @@ class CertificateSettingsForm extends Form {
             foreach (self::typographySettings() as $field => $definition) {
                 $this->setData($field, $definition[0]);
             }
+            foreach (self::structuredStringSettings() as $field => $default) {
+                $this->setData($field, $default);
+            }
         }
     }
 
@@ -137,7 +152,7 @@ class CertificateSettingsForm extends Form {
             'removeBackgroundImage',
             'ackEmailSubject',
             'ackEmailBody'
-        ), array_keys(self::typographySettings())));
+        ), array_keys(self::typographySettings()), array_keys(self::structuredStringSettings())));
 
         // Carry the stored background image forward, since the file input is empty on
         // every render. Unless the journal ticked "remove" — before Issue #73 this
@@ -159,7 +174,7 @@ class CertificateSettingsForm extends Form {
         foreach (array_merge(['headerText', 'bodyTemplate', 'footerText', 'fontFamily', 'fontSize',
             'minimumReviews', 'bodyTopOffset', 'textColorR', 'textColorG', 'textColorB',
             'includeQRCode', 'pageOrientation', 'removeBackgroundImage', 'ackEmailSubject', 'ackEmailBody',
-            'layoutMode'], array_keys(self::typographySettings())) as $field) {
+            'layoutMode'], array_keys(self::typographySettings()), array_keys(self::structuredStringSettings())) as $field) {
             $value = $this->getData($field);
             if ($value !== null && !is_scalar($value)) {
                 $this->addError($field, __('plugins.generic.reviewerCertificate.settings.invalidValue'));
@@ -250,6 +265,11 @@ class CertificateSettingsForm extends Form {
         );
         $templateMgr->assign('orientationOptions', $orientationOptions);
 
+        $templateMgr->assign('footerPositionOptions', array(
+            'flow' => __('plugins.generic.reviewerCertificate.settings.footerPosition.flow'),
+            'bottomLeft' => __('plugins.generic.reviewerCertificate.settings.footerPosition.bottomLeft'),
+            'bottomCenter' => __('plugins.generic.reviewerCertificate.settings.footerPosition.bottomCenter'),
+        ));
         $templateMgr->assign('layoutModeOptions', array(
             'classic' => __('plugins.generic.reviewerCertificate.settings.layoutMode.classic'),
             'structured' => __('plugins.generic.reviewerCertificate.settings.layoutMode.structured'),
@@ -265,6 +285,8 @@ class CertificateSettingsForm extends Form {
             '{{$submissionTitle}}',
             '{{$reviewDate}}',
             '{{$reviewYear}}',
+            '{{$reviewMonthYear}}',
+            '{{$certificateTitle}}',
             '{{$currentDate}}',
             '{{$currentYear}}',
             '{{$certificateCode}}',
@@ -408,6 +430,10 @@ class CertificateSettingsForm extends Form {
                         $value = $default;
                     }
                     $this->plugin->updateSetting($this->contextId, $field, max($min, min($max, (int) $value)), 'int');
+                }
+                foreach (array_keys(self::structuredStringSettings()) as $field) {
+                    $this->plugin->updateSetting($this->contextId, $field,
+                        \APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::sanitizeStructuredStringSetting($field, $this->getData($field)), 'string');
                 }
                 parent::execute(...$functionArgs);
             });

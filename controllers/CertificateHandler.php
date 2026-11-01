@@ -802,6 +802,8 @@ class CertificateHandler extends Handler {
         require_once dirname(__DIR__) . '/classes/CertificateGenerator.php';
         $settingNames = array_merge($settingNames, array_keys(
             \APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::getTypographySettingDefinitions()
+        ), array_keys(
+            \APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::getStructuredStringSettingDefaults()
         ));
 
         foreach ($settingNames as $name) {

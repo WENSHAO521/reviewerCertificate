@@ -327,7 +327,7 @@ msgid "plugins.generic.reviewerCertificate.settings.typography.title"
 msgstr "Certificate Title"
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.titleDescription"
-msgstr "Style of the header text in the structured layout. Suggested: 28–30 pt, bold."
+msgstr "Style of the header text. By default it is drawn at the top; put {{$certificateTitle}} on its own line in the body template to draw it there instead (for example below the journal name). Leave colour empty to use the general text colour. Suggested: 28–30 pt, bold."
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.name"
 msgstr "Reviewer Name"
@@ -348,10 +348,10 @@ msgid "plugins.generic.reviewerCertificate.settings.typography.bodyDescription"
 msgstr "Applies to all other body lines. Suggested: 12–14 pt."
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.detail"
-msgstr "Review Date, Footer and Certificate Code"
+msgstr "Review Date and Certificate Code"
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.detailDescription"
-msgstr "Applies to body lines containing a date or the certificate code, the footer text and the certificate code line. Suggested: 9–11 pt."
+msgstr "Applies to body lines containing a date or the certificate code, and to the certificate code line. Suggested: 9–11 pt."
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.size"
 msgstr "Size (pt)"
@@ -363,13 +363,43 @@ msgid "plugins.generic.reviewerCertificate.settings.typography.spacing"
 msgstr "Spacing (mm)"
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.spacingDescription"
-msgstr "Paragraph spacing is added for each blank line between body lines. Name spacing is extra space above and below the reviewer name."
+msgstr "Paragraph spacing is added for each blank line between body lines. Name spacing is extra space above and below the reviewer name. Side margin narrows the text area so text stays clear of logos in the background image."
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.paragraphSpacing"
 msgstr "Paragraph spacing"
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.nameSpacing"
 msgstr "Name spacing"
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.color"
+msgstr "Colour (#rrggbb)"
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.uppercase"
+msgstr "Uppercase"
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.footer"
+msgstr "Footer"
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.footerDescription"
+msgstr "Style and position of the footer text. \"Bottom left\" or \"Bottom centre\" pins it at a fixed distance from the bottom edge of the page (for example inside a band in your background image); the rest of the content is kept above it."
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.footerPosition"
+msgstr "Position"
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.footerBottomSpacing"
+msgstr "Distance from bottom (mm)"
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.sideMargin"
+msgstr "Side margin"
+
+msgid "plugins.generic.reviewerCertificate.settings.footerPosition.flow"
+msgstr "Below the content"
+
+msgid "plugins.generic.reviewerCertificate.settings.footerPosition.bottomLeft"
+msgstr "Bottom left"
+
+msgid "plugins.generic.reviewerCertificate.settings.footerPosition.bottomCenter"
+msgstr "Bottom centre"
 
 msgid "plugins.generic.reviewerCertificate.myCertificates.title"
 msgstr "Mano sertifikatai"

@@ -63,21 +63,31 @@ ală</message>
 	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.classic">Classic (single text block)</message>
 	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.structured">Structured (separate title, name, journal and detail styles)</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.title">Certificate Title</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.titleDescription">Style of the header text in the structured layout. Suggested: 28–30 pt, bold.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.titleDescription">Style of the header text. By default it is drawn at the top; put {{$certificateTitle}} on its own line in the body template to draw it there instead (for example below the journal name). Leave colour empty to use the general text colour. Suggested: 28–30 pt, bold.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.name">Reviewer Name</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.nameDescription">Applies to body lines that contain only the reviewer name. Suggested: 24–26 pt, bold.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.journal">Journal Name</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.journalDescription">Applies to body lines that contain only the journal name. Suggested: 16–18 pt.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.body">Acknowledgement Text</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.bodyDescription">Applies to all other body lines. Suggested: 12–14 pt.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.detail">Review Date, Footer and Certificate Code</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.detailDescription">Applies to body lines containing a date or the certificate code, the footer text and the certificate code line. Suggested: 9–11 pt.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.detail">Review Date and Certificate Code</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.detailDescription">Applies to body lines containing a date or the certificate code, and to the certificate code line. Suggested: 9–11 pt.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.size">Size (pt)</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.bold">Bold</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.spacing">Spacing (mm)</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.spacingDescription">Paragraph spacing is added for each blank line between body lines. Name spacing is extra space above and below the reviewer name.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.spacingDescription">Paragraph spacing is added for each blank line between body lines. Name spacing is extra space above and below the reviewer name. Side margin narrows the text area so text stays clear of logos in the background image.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.paragraphSpacing">Paragraph spacing</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.nameSpacing">Name spacing</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.color">Colour (#rrggbb)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.uppercase">Uppercase</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.footer">Footer</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.footerDescription">Style and position of the footer text. "Bottom left" or "Bottom centre" pins it at a fixed distance from the bottom edge of the page (for example inside a band in your background image); the rest of the content is kept above it.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.footerPosition">Position</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.footerBottomSpacing">Distance from bottom (mm)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.sideMargin">Side margin</message>
+	<message key="plugins.generic.reviewerCertificate.settings.footerPosition.flow">Below the content</message>
+	<message key="plugins.generic.reviewerCertificate.settings.footerPosition.bottomLeft">Bottom left</message>
+	<message key="plugins.generic.reviewerCertificate.settings.footerPosition.bottomCenter">Bottom centre</message>
 
 	<!-- Available Variables -->
 	<message key="plugins.generic.reviewerCertificate.settings.availableVariables">Variabile Șablon Disponibile</message>

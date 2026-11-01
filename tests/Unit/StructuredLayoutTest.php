@@ -48,7 +48,7 @@ class StructuredLayoutTest extends TestCase
         $pdf = new class($orientation, 'mm', 'A4', true, 'UTF-8', false) extends \TCPDF {
             public $cells = array();
             public function MultiCell($w, $h, $txt, $border = 0, $align = 'J', $fill = false, $ln = 1, $x = null, $y = null, $reseth = true, $stretch = 0, $ishtml = false, $autopadding = true, $maxh = 0, $valign = 'T', $fitcell = false) {
-                $this->cells[] = array($txt, $this->FontSizePt, $this->FontStyle, $this->GetY());
+                $this->cells[] = array($txt, $this->FontSizePt, $this->FontStyle, $this->GetY(), $this->TextColor, $align, $this->GetX());
                 return parent::MultiCell($w, $h, $txt, $border, $align, $fill, $ln, $x, $y, $reseth, $stretch, $ishtml, $autopadding, $maxh, $valign, $fitcell);
             }
         };
@@ -99,6 +99,8 @@ class StructuredLayoutTest extends TestCase
         $this->assertSame('journal', CertificateGenerator::classifyBodyLine('{{$journalName}} ({{$journalAcronym}})'));
         $this->assertSame('detail', CertificateGenerator::classifyBodyLine('Review completed on {{$reviewDate}}'));
         $this->assertSame('detail', CertificateGenerator::classifyBodyLine('Code: {{$certificateCode}}'));
+        $this->assertSame('title', CertificateGenerator::classifyBodyLine(' {{$certificateTitle}} '));
+        $this->assertSame('body', CertificateGenerator::classifyBodyLine('Awarded for 1 review in {{$reviewMonthYear}}'));
         $this->assertSame('body', CertificateGenerator::classifyBodyLine('This certificate is awarded to'));
         // A name embedded in a sentence is body text, not the emphasised name line
         $this->assertSame('body', CertificateGenerator::classifyBodyLine('Awarded to {{$reviewerName}} for reviewing'));
@@ -170,6 +172,12 @@ class StructuredLayoutTest extends TestCase
 
         // Too long even at the floor: stays at the floor and wraps
         $this->assertSame(15.0, $fit->invoke($generator, $pdf, $long, 'B', 25, 15, $width));
+
+        // Text exactly as wide as the cell still wraps in MultiCell because of the
+        // cell padding, so it must shrink rather than keep its size
+        $pdf->SetFont('helvetica', 'B', 25);
+        $exact = $pdf->GetStringWidth('Dr. Jane Smith');
+        $this->assertLessThan(25.0, $fit->invoke($generator, $pdf, 'Dr. Jane Smith', 'B', 25, 15, $exact));
     }
 
     public function testOverlongContentScalesDownToStayOnOnePage(): void
@@ -229,5 +237,90 @@ class StructuredLayoutTest extends TestCase
             $this->assertStringContainsString("'layoutMode'", $source);
             $this->assertStringContainsString('getTypographySettingDefinitions()', $source);
         }
+    }
+
+    private function recognitionSettings(array $overrides = array())
+    {
+        return $overrides + array(
+            'headerText' => 'Certificate of Reviewing',
+            'bodyTemplate' => "{{\$journalName}}\n\n{{\$certificateTitle}}\n\nAwarded for 1 review in {{\$reviewMonthYear}}\npresented to\n\n{{\$reviewerName}}\n\nin recognition of the review contributed to the journal",
+            'footerText' => 'The Editors of {{$journalName}}',
+            'titleFontSize' => 46, 'titleBold' => 0, 'titleColor' => '#1B6F8A',
+            'nameUppercase' => 1,
+            'footerFontSize' => 13, 'footerBold' => 1, 'footerPosition' => 'bottomLeft', 'footerBottomSpacing' => 24,
+            'sideMargin' => 55,
+        );
+    }
+
+    public function testTitlePlaceholderMovesTheTitleBelowTheJournalName(): void
+    {
+        list(, $cells) = $this->render($this->generator($this->recognitionSettings()));
+
+        $titles = array_values(array_filter($cells, function ($c) { return $c[0] === 'Certificate of Reviewing'; }));
+        $this->assertCount(1, $titles, 'The title is drawn once, where the placeholder is, not also at the top');
+        $this->assertGreaterThan($this->cell($cells, 'Journal of Testing')[3], $titles[0][3]);
+        $this->assertSame('', $titles[0][2], 'Title bold can be turned off');
+        foreach ($cells as $cell) {
+            $this->assertStringNotContainsString('certificateTitle', $cell[0]);
+        }
+    }
+
+    public function testRoleColourIsAppliedAndRestored(): void
+    {
+        list(, $cells) = $this->render($this->generator($this->recognitionSettings(array('textColorR' => 34, 'textColorG' => 34, 'textColorB' => 34))));
+
+        $this->assertStringContainsString(sprintf('%.6F %.6F %.6F rg', 27 / 255, 111 / 255, 138 / 255), $this->cell($cells, 'Certificate of Reviewing')[4]);
+        $default = sprintf('%.6F %.6F %.6F rg', 34 / 255, 34 / 255, 34 / 255);
+        $this->assertStringContainsString($default, $this->cell($cells, 'presented to')[4]);
+        $this->assertStringContainsString($default, $this->cell($cells, 'DR. JANE SMITH')[4]);
+    }
+
+    public function testReviewerNameCanBeUppercased(): void
+    {
+        list(, $cells) = $this->render($this->generator($this->recognitionSettings()));
+        $this->assertSame('B', $this->cell($cells, 'DR. JANE SMITH')[2]);
+    }
+
+    public function testFooterCanBeAnchoredBottomLeft(): void
+    {
+        list($pdf, $cells) = $this->render($this->generator($this->recognitionSettings()));
+        $footer = $this->cell($cells, 'The Editors of Journal of Testing');
+
+        $this->assertSame('L', $footer[5]);
+        $this->assertSame(13.0, (float) $footer[1]);
+        $this->assertSame('B', $footer[2]);
+        // Pinned near the bottom edge, below every flowing element
+        $this->assertGreaterThan($pdf->getPageHeight() * 0.75, $footer[3]);
+        foreach ($cells as $cell) {
+            if ($cell !== $footer) {
+                $this->assertLessThan($footer[3], $cell[3]);
+            }
+        }
+    }
+
+    public function testStructuredStringSettingsAreSanitised(): void
+    {
+        $this->assertSame('#1b6f8a', CertificateGenerator::sanitizeStructuredStringSetting('titleColor', '1B6F8A'));
+        $this->assertSame('#1b6f8a', CertificateGenerator::sanitizeStructuredStringSetting('titleColor', ' #1b6f8a '));
+        $this->assertSame('', CertificateGenerator::sanitizeStructuredStringSetting('titleColor', 'red'));
+        $this->assertSame('', CertificateGenerator::sanitizeStructuredStringSetting('titleColor', array('#000000')));
+        $this->assertSame('bottomLeft', CertificateGenerator::sanitizeStructuredStringSetting('footerPosition', 'bottomLeft'));
+        $this->assertSame('flow', CertificateGenerator::sanitizeStructuredStringSetting('footerPosition', 'top'));
+    }
+
+    public function testReviewMonthYearVariable(): void
+    {
+        $method = new \ReflectionMethod(CertificateGenerator::class, 'getTemplateVariables');
+        $method->setAccessible(true);
+        $this->assertSame(date('F Y'), $method->invoke($this->generator(array()))['reviewMonthYear']);
+    }
+
+    public function testTextThatFitsDoesNotWrap(): void
+    {
+        list(, $cells) = $this->render($this->generator($this->recognitionSettings()));
+        $title = $this->cell($cells, 'Certificate of Reviewing');
+        // One line: the next element starts within a single line height
+        $next = $this->cell($cells, 'Awarded for 1 review');
+        $this->assertLessThan($title[1] * 0.3528 * 1.25 * 1.5 + 12, $next[3] - $title[3]);
     }
 }

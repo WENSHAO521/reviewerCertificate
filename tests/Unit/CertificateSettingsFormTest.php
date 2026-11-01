@@ -283,6 +283,10 @@ class CertificateSettingsFormTest extends TestCase
             'journalFontSize' => '999',
             'bodyFontSize' => 'abc',
             'paragraphSpacing' => '-3',
+            'titleColor' => '1B6F8A',
+            'nameColor' => 'javascript:alert(1)',
+            'footerPosition' => 'bottomLeft',
+            'nameUppercase' => '1',
         ));
 
         $form = $this->makeForm();
@@ -298,6 +302,11 @@ class CertificateSettingsFormTest extends TestCase
         // Unchecked bold boxes are absent from the POST and must save as off
         $this->assertSame(0, $this->plugin->settings['titleBold']);
         $this->assertSame(28, $this->plugin->settings['titleFontSize'], 'Missing sizes use the suggested default');
+        $this->assertSame('#1b6f8a', $this->plugin->settings['titleColor']);
+        $this->assertSame('', $this->plugin->settings['nameColor'], 'Invalid colours are dropped');
+        $this->assertSame('bottomLeft', $this->plugin->settings['footerPosition']);
+        $this->assertSame(1, $this->plugin->settings['nameUppercase']);
+
     }
 
     public function testUnknownLayoutModeSavesAsClassic(): void

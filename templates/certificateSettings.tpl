@@ -244,7 +244,11 @@
 					<label for="titleFontSize">{translate key="plugins.generic.reviewerCertificate.settings.typography.size"}</label>
 					{fbvElement type="text" id="titleFontSize" value=$titleFontSize|default:28 size=$fbvStyles.size.SMALL inline=true}
 				</div>
-				<div style="float:left; padding-top: 18px;">
+				<div style="float:left; margin-right: 15px;">
+					<label for="titleColor">{translate key="plugins.generic.reviewerCertificate.settings.typography.color"}</label>
+					{fbvElement type="text" id="titleColor" value=$titleColor maxlength="7" size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; padding-top: 18px; margin-right: 15px;">
 					{fbvElement type="checkbox" id="titleBold" value="1" checked=$titleBold label="plugins.generic.reviewerCertificate.settings.typography.bold"}
 				</div>
 			</div>
@@ -256,8 +260,15 @@
 					<label for="nameFontSize">{translate key="plugins.generic.reviewerCertificate.settings.typography.size"}</label>
 					{fbvElement type="text" id="nameFontSize" value=$nameFontSize|default:25 size=$fbvStyles.size.SMALL inline=true}
 				</div>
-				<div style="float:left; padding-top: 18px;">
+				<div style="float:left; margin-right: 15px;">
+					<label for="nameColor">{translate key="plugins.generic.reviewerCertificate.settings.typography.color"}</label>
+					{fbvElement type="text" id="nameColor" value=$nameColor maxlength="7" size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; padding-top: 18px; margin-right: 15px;">
 					{fbvElement type="checkbox" id="nameBold" value="1" checked=$nameBold label="plugins.generic.reviewerCertificate.settings.typography.bold"}
+				</div>
+				<div style="float:left; padding-top: 18px; margin-right: 15px;">
+					{fbvElement type="checkbox" id="nameUppercase" value="1" checked=$nameUppercase label="plugins.generic.reviewerCertificate.settings.typography.uppercase"}
 				</div>
 			</div>
 		{/fbvFormSection}
@@ -268,7 +279,11 @@
 					<label for="journalFontSize">{translate key="plugins.generic.reviewerCertificate.settings.typography.size"}</label>
 					{fbvElement type="text" id="journalFontSize" value=$journalFontSize|default:17 size=$fbvStyles.size.SMALL inline=true}
 				</div>
-				<div style="float:left; padding-top: 18px;">
+				<div style="float:left; margin-right: 15px;">
+					<label for="journalColor">{translate key="plugins.generic.reviewerCertificate.settings.typography.color"}</label>
+					{fbvElement type="text" id="journalColor" value=$journalColor maxlength="7" size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; padding-top: 18px; margin-right: 15px;">
 					{fbvElement type="checkbox" id="journalBold" value="1" checked=$journalBold label="plugins.generic.reviewerCertificate.settings.typography.bold"}
 				</div>
 			</div>
@@ -280,7 +295,11 @@
 					<label for="bodyFontSize">{translate key="plugins.generic.reviewerCertificate.settings.typography.size"}</label>
 					{fbvElement type="text" id="bodyFontSize" value=$bodyFontSize|default:13 size=$fbvStyles.size.SMALL inline=true}
 				</div>
-				<div style="float:left; padding-top: 18px;">
+				<div style="float:left; margin-right: 15px;">
+					<label for="bodyColor">{translate key="plugins.generic.reviewerCertificate.settings.typography.color"}</label>
+					{fbvElement type="text" id="bodyColor" value=$bodyColor maxlength="7" size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; padding-top: 18px; margin-right: 15px;">
 					{fbvElement type="checkbox" id="bodyBold" value="1" checked=$bodyBold label="plugins.generic.reviewerCertificate.settings.typography.bold"}
 				</div>
 			</div>
@@ -292,6 +311,34 @@
 					<label for="detailFontSize">{translate key="plugins.generic.reviewerCertificate.settings.typography.size"}</label>
 					{fbvElement type="text" id="detailFontSize" value=$detailFontSize|default:10 size=$fbvStyles.size.SMALL inline=true}
 				</div>
+				<div style="float:left; margin-right: 15px;">
+					<label for="detailColor">{translate key="plugins.generic.reviewerCertificate.settings.typography.color"}</label>
+					{fbvElement type="text" id="detailColor" value=$detailColor maxlength="7" size=$fbvStyles.size.SMALL inline=true}
+				</div>
+			</div>
+		{/fbvFormSection}
+
+		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.typography.footer" description="plugins.generic.reviewerCertificate.settings.typography.footerDescription"}
+			<div class="pkp_helpers_clear">
+				<div style="float:left; margin-right: 15px;">
+					<label for="footerFontSize">{translate key="plugins.generic.reviewerCertificate.settings.typography.size"}</label>
+					{fbvElement type="text" id="footerFontSize" value=$footerFontSize|default:10 size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; margin-right: 15px;">
+					<label for="footerColor">{translate key="plugins.generic.reviewerCertificate.settings.typography.color"}</label>
+					{fbvElement type="text" id="footerColor" value=$footerColor maxlength="7" size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; padding-top: 18px; margin-right: 15px;">
+					{fbvElement type="checkbox" id="footerBold" value="1" checked=$footerBold label="plugins.generic.reviewerCertificate.settings.typography.bold"}
+				</div>
+				<div style="float:left; margin-right: 15px;">
+					<label for="footerPosition">{translate key="plugins.generic.reviewerCertificate.settings.typography.footerPosition"}</label>
+					{fbvElement type="select" id="footerPosition" from=$footerPositionOptions selected=$footerPosition translate=false defaultValue="flow" inline=true}
+				</div>
+				<div style="float:left;">
+					<label for="footerBottomSpacing">{translate key="plugins.generic.reviewerCertificate.settings.typography.footerBottomSpacing"}</label>
+					{fbvElement type="text" id="footerBottomSpacing" value=$footerBottomSpacing|default:20 size=$fbvStyles.size.SMALL inline=true}
+				</div>
 			</div>
 		{/fbvFormSection}
 
@@ -301,9 +348,13 @@
 					<label for="paragraphSpacing">{translate key="plugins.generic.reviewerCertificate.settings.typography.paragraphSpacing"}</label>
 					{fbvElement type="text" id="paragraphSpacing" value=$paragraphSpacing|default:4 size=$fbvStyles.size.SMALL inline=true}
 				</div>
-				<div style="float:left;">
+				<div style="float:left; margin-right: 15px;">
 					<label for="nameSpacing">{translate key="plugins.generic.reviewerCertificate.settings.typography.nameSpacing"}</label>
 					{fbvElement type="text" id="nameSpacing" value=$nameSpacing|default:4 size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left;">
+					<label for="sideMargin">{translate key="plugins.generic.reviewerCertificate.settings.typography.sideMargin"}</label>
+					{fbvElement type="text" id="sideMargin" value=$sideMargin|default:15 size=$fbvStyles.size.SMALL inline=true}
 				</div>
 			</div>
 		{/fbvFormSection}

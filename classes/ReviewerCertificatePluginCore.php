@@ -222,7 +222,10 @@ class ReviewerCertificatePlugin extends GenericPlugin {
                 );
                 // Typography settings: pass stored values through untouched (null means
                 // "use the default"); the generator applies defaults and clamping.
-                foreach (array_keys(\APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::getTypographySettingDefinitions()) as $typographySetting) {
+                foreach (array_merge(
+                    array_keys(\APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::getTypographySettingDefinitions()),
+                    array_keys(\APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::getStructuredStringSettingDefaults())
+                ) as $typographySetting) {
                     $templateSettings[$typographySetting] = $this->getSetting($context->getId(), $typographySetting);
                 }
 
