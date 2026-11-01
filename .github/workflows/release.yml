@@ -1,0 +1,79 @@
+name: Publish release
+# Run from the Actions tab ("Run workflow") after the version bump is merged.
+# Builds the OJS 3.3 / 3.4 / 3.5 packages from the selected ref with release.sh,
+# verifies them, and publishes one GitHub Release per OJS target
+# (v{version}-3.3, v{version}-3.4, v{version}-3.5) with its package attached.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to publish (must match version.xml), e.g. 1.11.0'
+        required: true
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      VERSION: ${{ inputs.version }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, gd, zip
+          tools: composer
+      - name: Check version input against version.xml
+        run: |
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Version must look like 1.11.0"; exit 1
+          fi
+          grep -q "<release>${VERSION}.0</release>" version.xml || {
+            echo "::error::version.xml does not declare ${VERSION}.0"; exit 1; }
+          for target in 3.3 3.4 3.5; do
+            if gh release view "v${VERSION}-${target}" >/dev/null 2>&1; then
+              echo "::error::Release v${VERSION}-${target} already exists"; exit 1
+            fi
+          done
+      - name: Unit tests
+        run: |
+          composer install --no-interaction --prefer-dist --no-progress
+          vendor/bin/phpunit
+      - name: Build and verify packages
+        run: |
+          bash release.sh "$VERSION"
+          php tests/check-release.php "$VERSION"
+          for target in 3_3 3_4 3_5; do
+            php tests/environment/check-release-pdf.php "reviewerCertificate-${VERSION}-${target}.tar.gz"
+          done
+          sha256sum reviewerCertificate-"$VERSION"-*.tar.gz | tee SHA256SUMS
+      - name: Publish GitHub Releases
+        run: |
+          # Release notes: this version's CHANGELOG section
+          awk -v v="$VERSION" '
+            $0 ~ "^## \\[" v "\\]" { found = 1; next }
+            found && /^## \[/ { exit }
+            found { print }
+          ' CHANGELOG.md > notes.md
+          for target in 3.3 3.4 3.5; do
+            archive="reviewerCertificate-${VERSION}-${target/./_}.tar.gz"
+            {
+              echo "Package for **OJS ${target}**. Upload \`${archive}\` in OJS: Settings → Website → Plugins → Upload a New Plugin."
+              echo
+              cat notes.md
+              echo
+              echo "SHA-256: \`$(sha256sum "$archive" | cut -d' ' -f1)\`"
+            } > "notes-${target}.md"
+            gh release create "v${VERSION}-${target}" "$archive" \
+              --target "$GITHUB_SHA" \
+              --title "Reviewer Certificate ${VERSION} for OJS ${target}" \
+              --notes-file "notes-${target}.md"
+          done
