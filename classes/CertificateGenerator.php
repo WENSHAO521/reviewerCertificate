@@ -120,6 +120,11 @@ class CertificateGenerator {
     /** JPEG quality for re-encoded backgrounds */
     const BG_JPEG_QUALITY = 82;
 
+    /** QR code: side length, distance from the page edges, and the code line below it (mm) */
+    const QR_SIZE = 15;
+    const QR_MARGIN = 10;
+    const QR_LABEL_HEIGHT = 4;
+
     /**
      * Downscale/re-encode an oversized background image before embedding.
      *
@@ -615,9 +620,9 @@ class CertificateGenerator {
                 return array($pageWidth - $edge - $width, $edge);
             default: // seal
                 if ($this->getTemplateSetting('includeQRCode', false)) {
-                    // QR code occupies the bottom-right 30 x 35 mm (see addQRCode)
-                    $qrLeft = $pageWidth - 30 - 10 - 10;
-                    return array($qrLeft - 12 - $width, $pageHeight - 20 - $height);
+                    // The QR code sits in the bottom-right corner (see addQRCode)
+                    $qrLeft = $pageWidth - self::QR_SIZE - self::QR_MARGIN;
+                    return array($qrLeft - 8 - $width, $pageHeight - 20 - $height);
                 }
                 return array($pageWidth - $edge - $width, $pageHeight - $edge - $height);
         }
@@ -739,8 +744,8 @@ class CertificateGenerator {
             $pdf->Ln(5);
         }
 
-        // Certificate code
-        if ($this->certificate || $this->previewMode) {
+        // Certificate code (printed under the QR code instead when that is on)
+        if (($this->certificate || $this->previewMode) && !$this->getTemplateSetting('includeQRCode', false)) {
             $code = $this->previewMode ? 'PREVIEW12345' : $this->certificate->getCertificateCode();
             $pdf->SetFont($this->effectiveFont, '', $codeSize);
             $pdf->Cell(0, 5, 'Certificate Code: ' . $code, 0, 1, 'C');
@@ -1124,7 +1129,8 @@ class CertificateGenerator {
         }
         $blocks = $this->buildStructuredBlocks($bodyTemplate, $variables, $headerText);
         $code = null;
-        if ($this->certificate || $this->previewMode) {
+        // With the QR code on, the code is printed under it instead
+        if (($this->certificate || $this->previewMode) && !$this->getTemplateSetting('includeQRCode', false)) {
             $code = $this->previewMode ? 'PREVIEW12345' : $this->certificate->getCertificateCode();
         }
 
@@ -1135,8 +1141,9 @@ class CertificateGenerator {
         // page margins instead.
         $bottomLimit = $pageHeight - 15;
         if ($this->getTemplateSetting('includeQRCode', false)) {
-            // Keep clear of the QR code band at the bottom of the page
-            $bottomLimit -= 25;
+            // Keep clear of the QR code in the bottom-right corner
+            $bottomLimit = min($bottomLimit,
+                $pageHeight - self::QR_MARGIN - self::QR_LABEL_HEIGHT - self::QR_SIZE - 2);
         }
 
         // A footer anchored to the bottom (e.g. an editors' line in a band) sits at a
@@ -1197,35 +1204,28 @@ class CertificateGenerator {
         $verificationUrl = $baseUrl . '/index.php/' . $contextPath . '/certificate/verify/' . $code;
 
 
-        // Position QR code in bottom right corner — dynamic for portrait/landscape
+        // A small QR code in the bottom-right corner with the certificate code
+        // right-aligned beneath it, so the two read as one verification mark
         $pageWidth = $pdf->getPageWidth();
         $pageHeight = $pdf->getPageHeight();
-        $qrSize = 30;
-        $margin = 10;
+        $qrX = $pageWidth - self::QR_SIZE - self::QR_MARGIN;
+        $qrY = $pageHeight - self::QR_MARGIN - self::QR_LABEL_HEIGHT - self::QR_SIZE;
 
-        $qrX = $pageWidth - $qrSize - $margin;
-        $qrY = $pageHeight - $qrSize - $margin - 5; // 5mm extra for label below
+        // Level M keeps the modules large enough to scan at this size. TCPDF
+        // shrinks a barcode to fit inside the right page margin, so lift the
+        // margin while drawing or the code comes out smaller than QR_SIZE.
+        $margins = $pdf->getMargins();
+        $pdf->SetRightMargin(0);
+        $pdf->write2DBarcode($verificationUrl, 'QRCODE,M', $qrX, $qrY, self::QR_SIZE, self::QR_SIZE, array(), 'N');
+        $pdf->SetRightMargin($margins['right']);
 
-        $pdf->write2DBarcode(
-            $verificationUrl,
-            'QRCODE,H',
-            $qrX,
-            $qrY,
-            $qrSize,
-            $qrSize,
-            array(),
-            'N'
-        );
-
-        // Add verification URL text
-        // Use proportional font size for QR code label
-        $baseFontSize = $this->getTemplateSetting('fontSize', 12);
-        $qrLabelSize = round($baseFontSize * 0.5);     // 0.5x base (default: 6)
-
-        $labelY = $qrY + $qrSize + 2;
-        $pdf->SetXY($qrX - 10, $labelY);
-        $pdf->SetFont($this->effectiveFont ?: $pdf->getFontFamily(), '', $qrLabelSize);
-        $pdf->Cell(50, 3, 'Scan to verify', 0, 0, 'C');
+        $labelWidth = 90;
+        $pdf->SetXY($qrX + self::QR_SIZE - $labelWidth, $qrY + self::QR_SIZE + 1);
+        $pdf->SetFont($this->effectiveFont ?: $pdf->getFontFamily(), '', 6.5);
+        $paddings = $pdf->getCellPaddings();
+        $pdf->setCellPaddings(0, 0, 0, 0);
+        $pdf->Cell($labelWidth, 3, 'Certificate Code: ' . $code, 0, 0, 'R');
+        $pdf->setCellPaddings($paddings['L'], $paddings['T'], $paddings['R'], $paddings['B']);
     }
 
     /**

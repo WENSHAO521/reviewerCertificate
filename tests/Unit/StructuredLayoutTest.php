@@ -386,8 +386,18 @@ class StructuredLayoutTest extends TestCase
     public function testSealMovesLeftOfTheQrCode(): void
     {
         list($pdf, $images) = $this->overlays(array('includeQRCode' => true));
-        $qrLeft = $pdf->getPageWidth() - 30 - 10 - 10; // QR plus its label (see addQRCode)
+        $qrLeft = $pdf->getPageWidth() - CertificateGenerator::QR_SIZE - CertificateGenerator::QR_MARGIN;
         $this->assertLessThan($qrLeft, $images['seal'][0] + $images['seal'][2], 'Seal must end before the QR code starts');
+    }
+
+    public function testCertificateCodeMovesUnderTheQrCode(): void
+    {
+        list(, $cells) = $this->render($this->generator(array('includeQRCode' => true)));
+        foreach ($cells as $cell) {
+            $this->assertStringNotContainsString('Certificate Code', $cell[0], 'With the QR code on, the code is printed under it, not in the body');
+        }
+        list(, $cells) = $this->render($this->generator(array()));
+        $this->assertSame('Certificate Code: PREVIEW12345', $this->cell($cells, 'Certificate Code')[0], 'Without the QR code the code stays in the body');
     }
 
     public function testOverlayManualPositionAndPortraitSafety(): void
