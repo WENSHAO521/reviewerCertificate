@@ -182,7 +182,13 @@ class ReviewerCertificatePlugin extends GenericPlugin {
                         if (!$saved) { $this->notifySettingsFailure($request); }
                         $request->redirect(null, 'management', 'settings', ['website']);
                     }
-                    return $this->createJSONMessage((bool) $saved, $saved ? '' : $form->fetch($request));
+                    if ($saved) {
+                        // The page stays open after an AJAX save; send the fresh
+                        // form back so the image badges show what was stored.
+                        $form = new \APP\plugins\generic\reviewerCertificate\classes\form\CertificateSettingsForm($this, $context->getId());
+                        $form->initData();
+                    }
+                    return $this->createJSONMessage((bool) $saved, $form->fetch($request));
                 }
                 $form->initData();
                 return $this->createJSONMessage(true, $form->fetch($request));
