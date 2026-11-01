@@ -34,15 +34,15 @@
 
 	<!-- Background Image -->
 	<message key="plugins.generic.reviewerCertificate.settings.backgroundImage">Obraz Tła</message>
-	<message key="plugins.generic.reviewerCertificate.settings.backgroundImageDescription">Prześlij obraz tła dla certyfikatu (JPG lub PNG, zalecany rozmiar: 2100x2970 pikseli dla A4)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.backgroundImageDescription">Fills the whole page behind everything else, e.g. a border or a coloured band. 2970 × 2100 px for A4 landscape, 2100 × 2970 px for portrait.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.currentImage">Bieżący obraz tła</message>
 	<message key="plugins.generic.reviewerCertificate.settings.removeBackgroundImage">Remove the background image</message>
 	<message key="plugins.generic.reviewerCertificate.settings.logoImage">Logo</message>
-	<message key="plugins.generic.reviewerCertificate.settings.logoImageDescription">Optional PNG or JPEG (max 5 MB), drawn over the background. A PNG with a transparent background works best. Width in mm keeps the image's proportions. Leave X and Y at -1 for the automatic position (top left).</message>
+	<message key="plugins.generic.reviewerCertificate.settings.logoImageDescription">Placed top left unless you set X and Y. A PNG with a transparent background works best.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.coverImage">Journal Cover</message>
-	<message key="plugins.generic.reviewerCertificate.settings.coverImageDescription">Optional PNG or JPEG (max 5 MB), drawn over the background. Width in mm keeps the image's proportions. Leave X and Y at -1 for the automatic position (top right).</message>
+	<message key="plugins.generic.reviewerCertificate.settings.coverImageDescription">Placed top right unless you set X and Y. Swap it here when a new issue comes out.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.sealImage">Seal</message>
-	<message key="plugins.generic.reviewerCertificate.settings.sealImageDescription">Optional PNG or JPEG (max 5 MB), drawn over the background; use a PNG with a transparent background for a round seal. Width in mm keeps the image's proportions. Leave X and Y at -1 for the automatic position: bottom right, or just left of the QR code when the QR code is enabled.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.sealImageDescription">Placed bottom right, or just left of the QR code when that is on. Use a transparent PNG for a round seal.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.removeImage">Remove this image</message>
 	<message key="plugins.generic.reviewerCertificate.settings.image.width">Width (mm)</message>
 	<message key="plugins.generic.reviewerCertificate.settings.image.x">X from left (mm, -1 = auto)</message>
@@ -68,31 +68,52 @@
 	<message key="plugins.generic.reviewerCertificate.settings.typography">Typography (Structured Layout)</message>
 	<message key="plugins.generic.reviewerCertificate.settings.layoutMode">Certificate Layout</message>
 	<message key="plugins.generic.reviewerCertificate.settings.layoutModeDescription">Classic renders the body template as one block of text, as in earlier versions. Structured gives each line its own style: a line holding only {{$reviewerName}} (or first/last name) uses the reviewer name style, a line holding only {{$journalName}} uses the journal name style, lines with a date or {{$certificateCode}} use the detail style, and all other lines use the body text style. Blank lines in the template add paragraph spacing. Long names and titles shrink to fit one line, then wrap, and the whole layout scales down if needed to stay on one page.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.classic">Classic (single text block)</message>
-	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.structured">Structured (separate title, name, journal and detail styles)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.classic">Classic</message>
+	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.structured">Structured</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.title">Certificate Title</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.titleDescription">Style of the header text. By default it is drawn at the top; put {{$certificateTitle}} on its own line in the body template to draw it there instead (for example below the journal name). Leave colour empty to use the general text colour. Suggested: 28–30 pt, bold.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.titleDescription">The line starting with #. Suggested 28–46 pt.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.name">Reviewer Name</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.nameDescription">Applies to body lines that contain only the reviewer name. Suggested: 24–26 pt, bold.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.nameDescription">A line holding only {{$reviewerName}}. Suggested 24–26 pt, bold.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.journal">Journal Name</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.journalDescription">Applies to body lines that contain only the journal name. Suggested: 16–18 pt.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.journalDescription">A line holding only {{$journalName}}. Suggested 16–20 pt.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.body">Acknowledgement Text</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.bodyDescription">Applies to all other body lines. Suggested: 12–14 pt.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.bodyDescription">All other lines. Suggested 12–16 pt.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.detail">Review Date and Certificate Code</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.detailDescription">Applies to body lines containing a date or the certificate code, and to the certificate code line. Suggested: 9–11 pt.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.detailDescription">Lines with a date, and the certificate code. Suggested 8–11 pt.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.size">Size (pt)</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.bold">Bold</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.spacing">Spacing (mm)</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.spacingDescription">Paragraph spacing is added for each blank line between body lines. Name spacing is extra space above and below the reviewer name. Side margin narrows the text area so text stays clear of logos in the background image.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.paragraphSpacing">Paragraph spacing</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.nameSpacing">Name spacing</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.paragraphSpacing">Paragraph spacing (mm)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.nameSpacing">Name spacing (mm)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.layout">Layout and text</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.layoutDescription">Choose how the certificate is laid out and write what it says.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.classicHint">One block of text, as in earlier versions. Existing certificates keep this look.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.structuredHint">Title, reviewer name, journal and details each get their own style, like a printed award.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.titleLineHint">Start a line with # to make it the certificate title, e.g. "# Certificate of Reviewing". A line with only {{$reviewerName}} uses the name style, a line with only {{$journalName}} the journal style, and lines with a date the small detail style. Lines below a line of three dashes (---) form the footer.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.insertVariable">Insert:</message>
+	<message key="plugins.generic.reviewerCertificate.settings.useRecognitionTemplate">Use recognition-style template</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.images">Background, logo, cover and seal</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.imagesDescription">PNG or JPEG, up to 5 MB each. The background fills the page; the other images are placed on top. Leave X and Y empty for the automatic position.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.image.none">Not set</message>
+	<message key="plugins.generic.reviewerCertificate.settings.image.xShort">X (mm)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.image.yShort">Y (mm)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.image.auto">auto</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.typographyDescription">Size, colour and weight for each part of a structured certificate.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.classicNotice">These controls apply to the structured layout. Choose "Structured" in step 1 to use them.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.element">Element</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.style">Style</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.defaultColor">default</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.page">Page and colours</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.pageDescription">Paper orientation, font and the default text colour.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.previewHint">The preview uses the last saved settings, so save first.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.color">Colour (#rrggbb)</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.uppercase">Uppercase</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.footer">Footer</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.footerDescription">Style and position of the footer text. "Bottom left" or "Bottom centre" pins it at a fixed distance from the bottom edge of the page (for example inside a band in your background image); the rest of the content is kept above it.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.footerDescription">Lines below the --- line. Position and distance are set below.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.footerPosition">Position</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.footerBottomSpacing">Distance from bottom (mm)</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.sideMargin">Side margin</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.sideMargin">Side margin (mm)</message>
 	<message key="plugins.generic.reviewerCertificate.settings.footerPosition.flow">Below the content</message>
 	<message key="plugins.generic.reviewerCertificate.settings.footerPosition.bottomLeft">Bottom left</message>
 	<message key="plugins.generic.reviewerCertificate.settings.footerPosition.bottomCenter">Bottom centre</message>
@@ -115,7 +136,7 @@
 	<message key="plugins.generic.reviewerCertificate.settings.pageOrientationDescription">Wybierz pionowy (portret) lub poziomy (pejzaż) układ certyfikatu</message>
 	<message key="plugins.generic.reviewerCertificate.settings.orientation.portrait">Pionowa (portret)</message>
 	<message key="plugins.generic.reviewerCertificate.settings.orientation.landscape">Pozioma (pejzaż)</message>
-	<message key="plugins.generic.reviewerCertificate.settings.textColor">Kolor Tekstu (RGB)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.textColor">Default text colour</message>
 	<message key="plugins.generic.reviewerCertificate.settings.textColorDescription">Określ kolor tekstu używając wartości RGB (0-255 dla każdego składnika)</message>
 
 	<!-- Eligibility settings -->
@@ -235,4 +256,6 @@ Pobierz Certyfikat: {{$certificateUrl}}
 
 {{$journalName}}
 {{$journalUrl}}</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.email">Acknowledgement email</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.eligibilityDescription">Who can receive a certificate, and how it is verified.</message>
 </locale>

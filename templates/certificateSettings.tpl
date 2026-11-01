@@ -6,535 +6,666 @@
  *
  * Certificate settings form template
  *}
+<style>
+{literal}
+.rc-settings, .rc-panel {
+	--rc-ink: #1f2933;
+	--rc-muted: #5f6b7a;
+	--rc-line: #dde3ea;
+	--rc-soft: #f5f7fa;
+	--rc-accent: #006798;
+	--rc-accent-soft: #e6f1f7;
+	--rc-radius: 8px;
+	color: var(--rc-ink);
+	max-width: 1100px;
+}
+.rc-settings .rc-intro { color: var(--rc-muted); margin: 0 0 16px; }
+.rc-errors { border: 1px solid #e3a4a4; background: #fdf2f2; color: #8a1f1f; border-radius: var(--rc-radius); padding: 12px 16px; margin-bottom: 16px; }
+.rc-errors ul { margin: 6px 0 0 18px; }
+
+.rc-card { background: #fff; border: 1px solid var(--rc-line); border-radius: var(--rc-radius); padding: 20px 24px 8px; margin-bottom: 16px; box-shadow: 0 1px 2px rgba(16, 24, 40, .04); }
+.rc-card__head { display: flex; gap: 14px; align-items: flex-start; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid var(--rc-line); }
+.rc-card__head h3 { margin: 0 0 2px; font-size: 1.05rem; font-weight: 700; }
+.rc-card__head p { margin: 0; color: var(--rc-muted); font-size: .875rem; }
+.rc-step { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--rc-accent); color: #fff; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; font-size: .875rem; }
+
+.rc-field { display: block; margin-bottom: 16px; }
+.rc-label, .rc-settings .rc-field > .rc-label { display: block; font-weight: 600; font-size: .875rem; margin-bottom: 6px; }
+.rc-label-row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.rc-required { color: #b42318; }
+.rc-hint { color: var(--rc-muted); font-size: .8125rem; margin: 6px 0 0; line-height: 1.45; }
+.rc-input { box-sizing: border-box; width: 100%; padding: 8px 10px; border: 1px solid #c4ccd6; border-radius: 6px; font: inherit; font-size: .9rem; background: #fff; color: var(--rc-ink); }
+.rc-input:focus { outline: 2px solid var(--rc-accent-soft); border-color: var(--rc-accent); }
+.rc-textarea { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .85rem; line-height: 1.55; min-height: 190px; resize: vertical; }
+.rc-input--num { width: 84px; }
+.rc-inline .rc-input--num { width: 100%; }
+.rc-link { background: none; border: 0; padding: 0; color: var(--rc-accent); font-size: .8125rem; cursor: pointer; text-decoration: underline; white-space: nowrap; }
+.rc-actions { display: inline-flex; flex-wrap: wrap; gap: 6px 14px; }
+
+/* Layout chooser */
+.rc-layout-choice { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.rc-layout-option { position: relative; cursor: pointer; }
+.rc-layout-option input { position: absolute; opacity: 0; }
+.rc-layout-option__body { display: grid; grid-template-columns: 120px 1fr; grid-template-rows: auto 1fr; column-gap: 14px; padding: 12px; border: 1.5px solid var(--rc-line); border-radius: var(--rc-radius); background: #fff; height: 100%; box-sizing: border-box; }
+.rc-layout-option__body svg { grid-row: span 2; width: 120px; height: 84px; }
+.rc-layout-option__body strong { font-size: .9rem; align-self: end; }
+.rc-layout-option__body small { color: var(--rc-muted); font-size: .8rem; line-height: 1.4; }
+.rc-layout-option input:checked + .rc-layout-option__body { border-color: var(--rc-accent); background: var(--rc-accent-soft); box-shadow: 0 0 0 1px var(--rc-accent); }
+.rc-layout-option input:focus-visible + .rc-layout-option__body { outline: 2px solid var(--rc-accent); outline-offset: 2px; }
+.rc-thumb-page { fill: #fff; stroke: #c4ccd6; }
+.rc-thumb-line { fill: #c9d1db; }
+.rc-thumb-strong { fill: #5f6b7a; }
+.rc-thumb-accent { fill: #2f86a8; }
+.rc-thumb-band { fill: #eef1f4; }
+.rc-thumb-seal { fill: #d4a64a; }
+
+/* Variable chips */
+.rc-chips { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-top: 10px; }
+.rc-chips__label { color: var(--rc-muted); font-size: .8rem; margin-right: 4px; }
+.rc-chip { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .75rem; padding: 3px 8px; border-radius: 999px; border: 1px solid var(--rc-line); background: var(--rc-soft); color: var(--rc-ink); cursor: pointer; }
+.rc-chip:hover { border-color: var(--rc-accent); color: var(--rc-accent); }
+
+/* Images */
+.rc-image-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+.rc-image { border: 1px solid var(--rc-line); border-radius: var(--rc-radius); padding: 14px; background: var(--rc-soft); }
+.rc-image--wide { grid-column: 1 / -1; }
+.rc-image__head { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+.rc-image .rc-hint { margin: 4px 0 10px; }
+.rc-badge { font-size: .75rem; padding: 2px 8px; border-radius: 999px; background: #e3f4ea; color: #1f6b3b; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rc-badge--empty { background: #eceff3; color: var(--rc-muted); }
+.rc-file { display: block; width: 100%; font-size: .8125rem; padding: 10px; border: 1.5px dashed #b8c2cd; border-radius: 6px; background: #fff; box-sizing: border-box; cursor: pointer; }
+.rc-file:hover { border-color: var(--rc-accent); }
+.rc-file-chosen { display: block; margin-top: 6px; font-size: .8rem; color: #1f6b3b; }
+.rc-check { display: block; margin-top: 8px; font-size: .8125rem; }
+.rc-inline { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+.rc-inline label { flex: 1 1 60px; display: flex; flex-direction: column; gap: 4px; font-size: .75rem; color: var(--rc-muted); }
+
+/* Typography table */
+.rc-type-table { width: 100%; border-collapse: collapse; margin-bottom: 18px; }
+.rc-type-table th, .rc-type-table td { padding: 10px 8px; border-bottom: 1px solid var(--rc-line); text-align: left; vertical-align: middle; }
+.rc-type-table thead th { font-size: .75rem; text-transform: uppercase; letter-spacing: .04em; color: var(--rc-muted); font-weight: 600; background: var(--rc-soft); }
+.rc-type-table tbody th { font-weight: 600; font-size: .875rem; width: 42%; }
+.rc-type-table tbody th small { display: block; font-weight: 400; color: var(--rc-muted); font-size: .75rem; margin-top: 2px; line-height: 1.35; }
+.rc-color { display: inline-flex; align-items: center; gap: 6px; }
+.rc-color__swatch { width: 34px; height: 34px; padding: 0; border: 1px solid #c4ccd6; border-radius: 6px; background: #fff; cursor: pointer; }
+.rc-color__hex { width: 96px; font-family: ui-monospace, Menlo, Consolas, monospace; }
+.rc-color__value { font-size: .8rem; color: var(--rc-muted); }
+.rc-style-cell { white-space: nowrap; }
+.rc-toggle { display: inline-flex; align-items: center; gap: 6px; margin-right: 12px; font-size: .8125rem; cursor: pointer; }
+.rc-toggle--block { display: flex; margin-top: 8px; }
+
+.rc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0 16px; }
+.rc-notice { background: var(--rc-soft); border: 1px dashed var(--rc-line); border-radius: var(--rc-radius); padding: 12px 14px; color: var(--rc-muted); font-size: .875rem; margin: 0 0 16px; }
+
+/* Show only what applies to the chosen layout */
+.rc-settings[data-layout="structured"] .rc-only-classic,
+.rc-settings:not([data-layout="structured"]) .rc-only-structured { display: none !important; }
+
+/* Save bar */
+.rc-savebar { margin-top: 20px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 12px 16px; background: #fff; border: 1px solid var(--rc-line); border-radius: var(--rc-radius); }
+.rc-savebar .formButtons { margin: 0 0 0 auto; padding: 0; border: 0; }
+.rc-savebar__hint { color: var(--rc-muted); font-size: .8rem; }
+
+/* Statistics and batch tools below the form */
+.rc-panel { background: #fff; border: 1px solid var(--rc-line); border-radius: var(--rc-radius); padding: 20px 24px; margin-top: 20px; max-width: 1100px; box-sizing: border-box; }
+.rc-panel h2 { margin-top: 0; font-size: 1.05rem; }
+.rc-panel > p { color: var(--rc-muted); font-size: .875rem; line-height: 1.5; }
+.rc-panel .rc-input[multiple] { padding: 6px; }
+.rc-panel .rc-toggle { margin: 10px 0 0; }
+.rc-panel__actions { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
+.rc-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 14px 0 0; }
+.rc-stat { background: var(--rc-soft, #f5f7fa); border-radius: 8px; padding: 16px; }
+.rc-stat strong { display: block; font-size: 1.75rem; line-height: 1.1; color: #006798; }
+.rc-stat span { color: #5f6b7a; font-size: .8125rem; }
+
+@media (max-width: 900px) {
+	.rc-image-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+	.rc-card { padding: 16px 14px 4px; }
+	.rc-layout-option__body { grid-template-columns: 80px 1fr; column-gap: 10px; }
+	.rc-layout-option__body svg { width: 80px; height: 56px; }
+	.rc-type-table thead { display: none; }
+	.rc-type-table tr { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--rc-line); }
+	.rc-type-table tbody th { grid-column: 1 / -1; width: auto; border: 0; }
+	.rc-type-table td { border: 0; min-width: 0; }
+	.rc-type-table .rc-style-cell { grid-column: 1 / -1; padding-top: 0; }
+}
+{/literal}
+</style>
+
 <script>
-	$(function() {ldelim}
-		// Flag to track if file is selected
-		var fileSelected = false;
+{literal}
+$(function() {
+	var $form = $('#certificateSettingsForm');
+	$form.pkpHandler('$.pkp.controllers.form.AjaxFormHandler');
 
-		// Initially setup as AJAX form
-		$('#certificateSettingsForm').pkpHandler('$.pkp.controllers.form.AjaxFormHandler');
+	var $body = $('#bodyTemplate');
+	var $header = $('#headerText');
+	var $footer = $('#footerText');
+	var imageInputs = '#backgroundImage, #logoImage, #coverImage, #sealImage';
 
-		// Handle image file selection (background, logo, cover, seal)
-		$('#backgroundImage, #logoImage, #coverImage, #sealImage').on('change', function(e) {ldelim}
-			var file = e.target.files[0];
-			if (file) {ldelim}
-				// Validate file type
-				if (!file.type.match('image.*')) {ldelim}
-					alert('Please select an image file (JPEG or PNG)');
-					$(this).val('');
-					return;
-				{rdelim}
-				// Validate file size (max 5MB)
-				if (file.size > 5 * 1024 * 1024) {ldelim}
-					alert('Image file size must be less than 5MB');
-					$(this).val('');
-					return;
-				{rdelim}
-				// Show filename
-				var fileName = file.name;
-				var previewId = this.id + 'PreviewText';
-				if ($('#' + previewId).length === 0) {ldelim}
-					$(this).after('<p id="' + previewId + '" class="description" style="color: #28a745; margin-top: 5px;"></p>');
-				{rdelim}
-				$('#' + previewId).text('Selected: ' + fileName);
+	// ---- Layout mode: show the controls that apply, and fold the header into the body
+	function bodyHasTitleLine() {
+		return /^\s*#\s*\S/m.test($body.val());
+	}
+	function foldHeaderIntoBody() {
+		var header = $.trim($header.val());
+		if (!header) { return; }
+		var text = $body.val();
+		if (/^\s*\{\{?\$certificateTitle\}\}?\s*$/m.test(text)) {
+			text = text.replace(/^\s*\{\{?\$certificateTitle\}\}?\s*$/m, '# ' + header);
+		} else if (!bodyHasTitleLine()) {
+			text = '# ' + header + '\n\n' + text;
+		}
+		$body.val(text);
+		$header.val('');
+	}
+	function foldFooterIntoBody() {
+		var footer = $.trim($footer.val());
+		if (!footer) { return; }
+		var text = $body.val();
+		if (!/^[ \t]*-{3,}[ \t]*$/m.test(text)) {
+			$body.val(text.replace(/\s+$/, '') + '\n\n---\n' + footer);
+		}
+		$footer.val('');
+	}
+	// Back to classic: the classic layout has its own header and footer fields
+	function unfoldBody() {
+		var text = $body.val();
+		var parts = text.split(/^[ \t]*-{3,}[ \t]*$/m);
+		if (parts.length > 1) {
+			if (!$.trim($footer.val())) { $footer.val($.trim(parts.slice(1).join('---'))); }
+			text = parts[0];
+		}
+		var title = text.match(/^[ \t]*#[ \t]*(\S.*)$/m);
+		if (title) {
+			if (!$.trim($header.val())) { $header.val($.trim(title[1])); }
+			text = text.replace(title[0], '');
+		}
+		$body.val($.trim(text));
+	}
+	function applyLayout(event) {
+		var mode = $form.find('input[name="layoutMode"]:checked').val() || 'classic';
+		$form.attr('data-layout', mode);
+		if (mode === 'structured') { foldHeaderIntoBody(); foldFooterIntoBody(); }
+		else if (event) { unfoldBody(); }
+	}
+	$form.on('change', 'input[name="layoutMode"]', applyLayout);
+	applyLayout();
 
-				// Disable AJAX submission when file is selected
-				fileSelected = true;
-				console.log('ReviewerCertificate: File selected, will use regular form submission');
-			{rdelim} else {ldelim}
-				$('#' + this.id + 'PreviewText').remove();
-			{rdelim}
-			// Use a regular POST while any image input holds a file
-			fileSelected = $('#backgroundImage, #logoImage, #coverImage, #sealImage').filter(function() {ldelim}
-				return this.files && this.files.length > 0;
-			{rdelim}).length > 0;
-		{rdelim});
+	// ---- Template helpers
+	$form.on('click', '.rc-chip', function() {
+		var el = $body.get(0), token = $(this).attr('data-insert');
+		var start = el.selectionStart || 0, end = el.selectionEnd || 0;
+		el.value = el.value.slice(0, start) + token + el.value.slice(end);
+		el.focus();
+		el.selectionStart = el.selectionEnd = start + token.length;
+	});
+	$('#rcUseDefaultBody').on('click', function() {
+		var text = $('#defaultBodyTemplate').val();
+		if ($form.attr('data-layout') === 'structured') {
+			// Keep the title line and the footer the user already wrote
+			var current = $body.val();
+			var title = current.match(/^[ \t]*#[ \t]*\S.*$/m);
+			var footer = current.split(/^[ \t]*-{3,}[ \t]*$/m)[1];
+			text = $.trim(title ? title[0] : '# Certificate of Recognition') + '\n\n' + text;
+			if (footer && $.trim(footer)) { text += '\n\n---\n' + $.trim(footer); }
+		}
+		$body.val(text);
+	});
+	var recognitionPreset = {
+		titleFontSize: 46, titleBold: false, titleColor: '#1b6f8a',
+		nameFontSize: 24, nameBold: true, nameUppercase: true,
+		journalFontSize: 20, journalBold: false, bodyFontSize: 16, bodyBold: false,
+		detailFontSize: 8, footerFontSize: 13, footerBold: true,
+		footerPosition: 'bottomLeft', footerBottomSpacing: 24,
+		paragraphSpacing: 9, nameSpacing: 2, sideMargin: 55, bodyTopOffset: 22
+	};
+	$('#rcUseRecognition').on('click', function() {
+		$body.val($('#recognitionBodyTemplate').val());
+		$header.val('');
+		$footer.val('');
+		$.each(recognitionPreset, function(name, value) {
+			var $field = $form.find('[name="' + name + '"]');
+			if ($field.is(':checkbox')) { $field.prop('checked', value); }
+			else { $field.val(value).trigger('input'); }
+		});
+		$form.find('select[name="pageOrientation"]').val('L');
+	});
 
-		// Intercept form submission BEFORE AjaxFormHandler
-		$('#certificateSettingsForm').on('submit.fileUpload', function(e) {ldelim}
-			fileSelected = $('#backgroundImage, #logoImage, #coverImage, #sealImage').filter(function() {ldelim}
-				return this.files && this.files.length > 0;
-			{rdelim}).length > 0;
-			if (fileSelected) {ldelim}
-				console.log('ReviewerCertificate: File selected - destroying AjaxFormHandler for regular submission');
-				// Stop event propagation to prevent AjaxFormHandler from handling it
-				e.stopImmediatePropagation();
+	// ---- Colour fields: swatch and hex text stay in sync; empty hex = default colour
+	$form.find('.rc-color').each(function() {
+		var $swatch = $(this).find('.rc-color__swatch'), $hex = $(this).find('.rc-color__hex');
+		if (!$hex.length) { return; }
+		$swatch.on('input change', function() { $hex.val($swatch.val()); });
+		$hex.on('input', function() {
+			var v = $.trim($hex.val());
+			if (/^#?[0-9a-f]{6}$/i.test(v)) { $swatch.val(v.charAt(0) === '#' ? v : '#' + v); }
+		}).trigger('input');
+	});
 
-				// Unbind AjaxFormHandler
-				$(this).off('.pkpHandler');
+	// General text colour is stored as R/G/B
+	function toHex(n) { return ('0' + Math.max(0, Math.min(255, parseInt(n, 10) || 0)).toString(16)).slice(-2); }
+	var $picker = $('#colorPicker');
+	function showRgb() {
+		var hex = '#' + toHex($('#textColorR').val()) + toHex($('#textColorG').val()) + toHex($('#textColorB').val());
+		$picker.val(hex);
+		$('#colorHex').text(hex);
+	}
+	$picker.on('input change', function() {
+		var v = $picker.val();
+		$('#textColorR').val(parseInt(v.substr(1, 2), 16));
+		$('#textColorG').val(parseInt(v.substr(3, 2), 16));
+		$('#textColorB').val(parseInt(v.substr(5, 2), 16));
+		$('#colorHex').text(v);
+	});
+	showRgb();
 
-				// Submit form normally
-				console.log('ReviewerCertificate: Submitting form with regular POST');
-				this.submit();
-
-				// Prevent default to avoid double submission
-				return false;
-			{rdelim}
-			// For non-file submissions, let AJAX handler process it
-		{rdelim});
-
-		// Initialize color picker from RGB values
-		function rgbToHex(r, g, b) {ldelim}
-			return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);
-		{rdelim}
-
-		function hexToRgb(hex) {ldelim}
-			var result = /^#?([a-f\d]{ldelim}2{rdelim})([a-f\d]{ldelim}2{rdelim})([a-f\d]{ldelim}2{rdelim})$/i.exec(hex);
-			return result ? {ldelim}
-				r: parseInt(result[1], 16),
-				g: parseInt(result[2], 16),
-				b: parseInt(result[3], 16)
-			{rdelim} : null;
-		{rdelim}
-
-		// Use attribute selectors to handle OJS's dynamic ID suffixes
-		var $rInput = $('input[id^="textColorR"]');
-		var $gInput = $('input[id^="textColorG"]');
-		var $bInput = $('input[id^="textColorB"]');
-
-		// Set initial color picker value from RGB inputs
-		var r = parseInt($rInput.val()) || 0;
-		var g = parseInt($gInput.val()) || 0;
-		var b = parseInt($bInput.val()) || 0;
-		$('#colorPicker').val(rgbToHex(r, g, b));
-		$('#colorPreview').css('background-color', rgbToHex(r, g, b));
-
-		// Update RGB values when color picker changes
-		// Use 'change' and 'blur' events to ensure values are set before form serialization
-		$('#colorPicker').on('input change blur', function() {ldelim}
-			var rgb = hexToRgb($(this).val());
-			if (rgb) {ldelim}
-				$rInput.val(rgb.r);
-				$gInput.val(rgb.g);
-				$bInput.val(rgb.b);
-				$('#colorPreview').css('background-color', $(this).val());
-			{rdelim}
-		{rdelim});
-
-		// Update color picker when RGB values change manually
-		$rInput.add($gInput).add($bInput).on('input change blur', function() {ldelim}
-			// Get values and constrain to 0-255 range
-			var r = Math.max(0, Math.min(255, parseInt($rInput.val()) || 0));
-			var g = Math.max(0, Math.min(255, parseInt($gInput.val()) || 0));
-			var b = Math.max(0, Math.min(255, parseInt($bInput.val()) || 0));
-
-			// Update the input values if they were out of range
-			$rInput.val(r);
-			$gInput.val(g);
-			$bInput.val(b);
-
-			// Update color picker and preview
-			$('#colorPicker').val(rgbToHex(r, g, b));
-			$('#colorPreview').css('background-color', rgbToHex(r, g, b));
-		{rdelim});
-	{rdelim});
+	// ---- Image files: show the chosen name; uploads need a regular (non-AJAX) POST
+	$form.on('change', imageInputs, function(e) {
+		var file = e.target.files[0], $info = $(this).siblings('.rc-file-chosen');
+		if (file && (!file.type.match('image.*') || file.size > 5 * 1024 * 1024)) {
+			alert('Please choose a PNG or JPEG image under 5 MB.');
+			$(this).val('');
+			file = null;
+		}
+		if (!$info.length) { $info = $('<span class="rc-file-chosen"></span>').insertAfter(this); }
+		$info.text(file ? file.name : '').toggle(!!file);
+	});
+	$form.on('submit.fileUpload', function(e) {
+		var hasFile = $(imageInputs).filter(function() { return this.files && this.files.length > 0; }).length > 0;
+		if (hasFile) {
+			e.stopImmediatePropagation();
+			$(this).off('.pkpHandler');
+			this.submit();
+			return false;
+		}
+	});
+});
+{/literal}
 </script>
 
-<form class="pkp_form" id="certificateSettingsForm" method="post" action="{url router=$smarty.const.ROUTE_COMPONENT op="manage" category="generic" plugin=$pluginName verb="settings" save=true}" enctype="multipart/form-data">
+{assign var=rcKey value="plugins.generic.reviewerCertificate.settings."}
+{capture assign=rcRecognitionBody}{literal}{{$journalName}}
+
+# Certificate of Reviewing
+
+Awarded for 1 review in {{$reviewMonthYear}}
+presented to
+
+{{$reviewerName}}
+
+in recognition of the review contributed to the journal
+
+---
+The Editors of {{$journalName}}{/literal}{/capture}
+
+<form class="pkp_form rc-settings" id="certificateSettingsForm" method="post" action="{url router=$smarty.const.ROUTE_COMPONENT op="manage" category="generic" plugin=$pluginName verb="settings" save=true}" enctype="multipart/form-data" data-layout="{$layoutMode|escape}">
 	{csrf}
 	{include file="controllers/notification/inPlaceNotification.tpl" notificationId="certificateSettingsFormNotification"}
 
-	<div id="description">
-		<p>{translate key="plugins.generic.reviewerCertificate.settings.description"}</p>
-	</div>
+	{if $isError}
+		<div class="rc-errors" role="alert">
+			<strong>{translate key="form.errorsOccurred"}</strong>
+			<ul>{foreach from=$errors key=field item=message}<li>{$message|escape}</li>{/foreach}</ul>
+		</div>
+	{/if}
 
-	{fbvFormArea id="certificateTemplateSettings" title="plugins.generic.reviewerCertificate.settings.templateSettings"}
+	<p class="rc-intro">{translate key="plugins.generic.reviewerCertificate.settings.description"}</p>
 
-		{* Background Image Upload *}
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.backgroundImage" description="plugins.generic.reviewerCertificate.settings.backgroundImageDescription"}
-			<input type="file" id="backgroundImage" name="backgroundImage" accept="image/*" class="pkp_form_file" />
-			{if $backgroundImage}
-				<p class="description">{translate key="plugins.generic.reviewerCertificate.settings.currentImage"}: {$backgroundImageName|escape}</p>
-				{* Ticking this clears the setting without needing a replacement upload (Issue #73) *}
-				{fbvElement type="checkbox" id="removeBackgroundImage" value="1" label="plugins.generic.reviewerCertificate.settings.removeBackgroundImage"}
-			{/if}
-		{/fbvFormSection}
-
-		{* Logo image, drawn over the background *}
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.logoImage" description="plugins.generic.reviewerCertificate.settings.logoImageDescription"}
-			<input type="file" id="logoImage" name="logoImage" accept="image/png,image/jpeg" class="pkp_form_file" />
-			{if $logoImage}
-				<p class="description">{translate key="plugins.generic.reviewerCertificate.settings.currentImage"}: {$logoImageName|escape}</p>
-				{fbvElement type="checkbox" id="removeLogoImage" value="1" label="plugins.generic.reviewerCertificate.settings.removeImage"}
-			{/if}
-			<div class="pkp_helpers_clear" style="margin-top: 8px;">
-				<div style="float:left; margin-right: 15px;">
-					<label for="logoWidth">{translate key="plugins.generic.reviewerCertificate.settings.image.width"}</label>
-					{fbvElement type="text" id="logoWidth" value=$logoWidth size=$fbvStyles.size.SMALL inline=true}
-				</div>
-				<div style="float:left; margin-right: 15px;">
-					<label for="logoX">{translate key="plugins.generic.reviewerCertificate.settings.image.x"}</label>
-					{fbvElement type="text" id="logoX" value=$logoX size=$fbvStyles.size.SMALL inline=true}
-				</div>
-				<div style="float:left;">
-					<label for="logoY">{translate key="plugins.generic.reviewerCertificate.settings.image.y"}</label>
-					{fbvElement type="text" id="logoY" value=$logoY size=$fbvStyles.size.SMALL inline=true}
-				</div>
+	{* ------------------------------------------------------------ 1. Layout and text *}
+	<section class="rc-card" id="rcLayoutCard">
+		<header class="rc-card__head">
+			<span class="rc-step">1</span>
+			<div>
+				<h3>{translate key="`$rcKey`section.layout"}</h3>
+				<p>{translate key="`$rcKey`section.layoutDescription"}</p>
 			</div>
-		{/fbvFormSection}
+		</header>
 
-		{* Cover image, drawn over the background *}
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.coverImage" description="plugins.generic.reviewerCertificate.settings.coverImageDescription"}
-			<input type="file" id="coverImage" name="coverImage" accept="image/png,image/jpeg" class="pkp_form_file" />
-			{if $coverImage}
-				<p class="description">{translate key="plugins.generic.reviewerCertificate.settings.currentImage"}: {$coverImageName|escape}</p>
-				{fbvElement type="checkbox" id="removeCoverImage" value="1" label="plugins.generic.reviewerCertificate.settings.removeImage"}
-			{/if}
-			<div class="pkp_helpers_clear" style="margin-top: 8px;">
-				<div style="float:left; margin-right: 15px;">
-					<label for="coverWidth">{translate key="plugins.generic.reviewerCertificate.settings.image.width"}</label>
-					{fbvElement type="text" id="coverWidth" value=$coverWidth size=$fbvStyles.size.SMALL inline=true}
-				</div>
-				<div style="float:left; margin-right: 15px;">
-					<label for="coverX">{translate key="plugins.generic.reviewerCertificate.settings.image.x"}</label>
-					{fbvElement type="text" id="coverX" value=$coverX size=$fbvStyles.size.SMALL inline=true}
-				</div>
-				<div style="float:left;">
-					<label for="coverY">{translate key="plugins.generic.reviewerCertificate.settings.image.y"}</label>
-					{fbvElement type="text" id="coverY" value=$coverY size=$fbvStyles.size.SMALL inline=true}
-				</div>
+		<div class="rc-field">
+			<span class="rc-label">{translate key="`$rcKey`layoutMode"}</span>
+			<div class="rc-layout-choice" role="radiogroup">
+				<label class="rc-layout-option">
+					<input type="radio" name="layoutMode" value="classic" {if $layoutMode != 'structured'}checked{/if} />
+					<span class="rc-layout-option__body">
+						<svg viewBox="0 0 120 84" aria-hidden="true"><rect x="1" y="1" width="118" height="82" rx="4" class="rc-thumb-page"/><rect x="34" y="12" width="52" height="7" rx="2" class="rc-thumb-strong"/>{section name=l loop=6}<rect x="22" y="{$smarty.section.l.index*8+28}" width="76" height="3.5" rx="1.5" class="rc-thumb-line"/>{/section}</svg>
+						<strong>{translate key="`$rcKey`layoutMode.classic"}</strong>
+						<small>{translate key="`$rcKey`layoutMode.classicHint"}</small>
+					</span>
+				</label>
+				<label class="rc-layout-option">
+					<input type="radio" name="layoutMode" value="structured" {if $layoutMode == 'structured'}checked{/if} />
+					<span class="rc-layout-option__body">
+						<svg viewBox="0 0 120 84" aria-hidden="true"><rect x="1" y="1" width="118" height="82" rx="4" class="rc-thumb-page"/><rect x="8" y="8" width="14" height="14" rx="2" class="rc-thumb-line"/><rect x="100" y="8" width="12" height="16" rx="1" class="rc-thumb-line"/><rect x="42" y="12" width="36" height="3.5" rx="1.5" class="rc-thumb-line"/><rect x="26" y="21" width="68" height="9" rx="2" class="rc-thumb-accent"/><rect x="40" y="36" width="40" height="3" rx="1.5" class="rc-thumb-line"/><rect x="38" y="44" width="44" height="7" rx="2" class="rc-thumb-strong"/><rect x="30" y="56" width="60" height="3" rx="1.5" class="rc-thumb-line"/><rect x="0" y="66" width="120" height="17" class="rc-thumb-band"/><circle cx="96" cy="68" r="7" class="rc-thumb-seal"/></svg>
+						<strong>{translate key="`$rcKey`layoutMode.structured"}</strong>
+						<small>{translate key="`$rcKey`layoutMode.structuredHint"}</small>
+					</span>
+				</label>
 			</div>
-		{/fbvFormSection}
+		</div>
 
-		{* Seal image, drawn over the background *}
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.sealImage" description="plugins.generic.reviewerCertificate.settings.sealImageDescription"}
-			<input type="file" id="sealImage" name="sealImage" accept="image/png,image/jpeg" class="pkp_form_file" />
-			{if $sealImage}
-				<p class="description">{translate key="plugins.generic.reviewerCertificate.settings.currentImage"}: {$sealImageName|escape}</p>
-				{fbvElement type="checkbox" id="removeSealImage" value="1" label="plugins.generic.reviewerCertificate.settings.removeImage"}
-			{/if}
-			<div class="pkp_helpers_clear" style="margin-top: 8px;">
-				<div style="float:left; margin-right: 15px;">
-					<label for="sealWidth">{translate key="plugins.generic.reviewerCertificate.settings.image.width"}</label>
-					{fbvElement type="text" id="sealWidth" value=$sealWidth size=$fbvStyles.size.SMALL inline=true}
-				</div>
-				<div style="float:left; margin-right: 15px;">
-					<label for="sealX">{translate key="plugins.generic.reviewerCertificate.settings.image.x"}</label>
-					{fbvElement type="text" id="sealX" value=$sealX size=$fbvStyles.size.SMALL inline=true}
-				</div>
-				<div style="float:left;">
-					<label for="sealY">{translate key="plugins.generic.reviewerCertificate.settings.image.y"}</label>
-					{fbvElement type="text" id="sealY" value=$sealY size=$fbvStyles.size.SMALL inline=true}
-				</div>
+		<div class="rc-field rc-only-classic" id="rcHeaderField">
+			<label class="rc-label" for="headerText">{translate key="`$rcKey`headerText"}</label>
+			<input type="text" class="rc-input" id="headerText" name="headerText" value="{$headerText|escape}" maxlength="255" />
+			<p class="rc-hint">{translate key="`$rcKey`headerTextDescription"}</p>
+		</div>
+
+		<div class="rc-field">
+			<div class="rc-label-row">
+				<label class="rc-label" for="bodyTemplate">{translate key="`$rcKey`bodyTemplate"} <span class="rc-required">*</span></label>
+				<span class="rc-actions">
+					<button type="button" class="rc-link" id="rcUseDefaultBody">{translate key="`$rcKey`useDefaultTemplate"}</button>
+					<button type="button" class="rc-link rc-only-structured" id="rcUseRecognition">{translate key="`$rcKey`useRecognitionTemplate"}</button>
+				</span>
 			</div>
-		{/fbvFormSection}
+			<textarea class="rc-input rc-textarea" id="bodyTemplate" name="bodyTemplate" rows="14" spellcheck="false">{$bodyTemplate|escape}</textarea>
+			<p class="rc-hint rc-only-structured">{translate key="`$rcKey`titleLineHint"}</p>
+			<div class="rc-chips" aria-label="{translate key="`$rcKey`availableVariables"}">
+				<span class="rc-chips__label">{translate key="`$rcKey`insertVariable"}</span>
+				{foreach from=$templateVariables item=variable}
+					<button type="button" class="rc-chip" data-insert="{$variable|escape}">{$variable|escape}</button>
+				{/foreach}
+			</div>
+			<textarea id="defaultBodyTemplate" hidden>{$defaultBodyTemplate|escape}</textarea>
+			<textarea id="recognitionBodyTemplate" hidden>{$rcRecognitionBody|escape}</textarea>
+		</div>
 
-		{* Header Text *}
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.headerText" description="plugins.generic.reviewerCertificate.settings.headerTextDescription"}
-			{fbvElement type="text" id="headerText" value=$headerText maxlength="255" size=$fbvStyles.size.LARGE}
-		{/fbvFormSection}
+		<div class="rc-field rc-only-classic">
+			<label class="rc-label" for="footerText">{translate key="`$rcKey`footerText"}</label>
+			<textarea class="rc-input" id="footerText" name="footerText" rows="2">{$footerText|escape}</textarea>
+			<p class="rc-hint">{translate key="`$rcKey`footerTextDescription"}</p>
+		</div>
+	</section>
 
-		{* Body Template *}
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.bodyTemplate" description="plugins.generic.reviewerCertificate.settings.bodyTemplateDescription" required=true}
-			{fbvElement type="textarea" id="bodyTemplate" value=$bodyTemplate height=$fbvStyles.height.TALL rich=false}
-			<p class="description">
-				{translate key="plugins.generic.reviewerCertificate.settings.defaultTemplate"}:
-				<a href="#" onclick="$('[id^=bodyTemplate]').not('#defaultBodyTemplate').val($('#defaultBodyTemplate').val()); return false;">
-					{translate key="plugins.generic.reviewerCertificate.settings.useDefaultTemplate"}
-				</a>
-			</p>
-			<textarea id="defaultBodyTemplate" style="display:none;">{$defaultBodyTemplate}</textarea>
-		{/fbvFormSection}
+	{* ------------------------------------------------------------ 2. Images *}
+	<section class="rc-card">
+		<header class="rc-card__head">
+			<span class="rc-step">2</span>
+			<div>
+				<h3>{translate key="`$rcKey`section.images"}</h3>
+				<p>{translate key="`$rcKey`section.imagesDescription"}</p>
+			</div>
+		</header>
 
-		{* Footer Text *}
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.footerText" description="plugins.generic.reviewerCertificate.settings.footerTextDescription"}
-			{fbvElement type="textarea" id="footerText" value=$footerText height=$fbvStyles.height.SHORT}
-		{/fbvFormSection}
+		<div class="rc-image-grid">
+			<div class="rc-image rc-image--wide">
+				<div class="rc-image__head">
+					<strong>{translate key="`$rcKey`backgroundImage"}</strong>
+					{if $backgroundImage}<span class="rc-badge">{$backgroundImageName|escape}</span>{else}<span class="rc-badge rc-badge--empty">{translate key="`$rcKey`image.none"}</span>{/if}
+				</div>
+				<p class="rc-hint">{translate key="`$rcKey`backgroundImageDescription"}</p>
+				<input type="file" id="backgroundImage" name="backgroundImage" accept="image/png,image/jpeg" class="rc-file" />
+				{if $backgroundImage}
+					<label class="rc-check"><input type="checkbox" id="removeBackgroundImage" name="removeBackgroundImage" value="1" /> {translate key="`$rcKey`removeBackgroundImage"}</label>
+				{/if}
+			</div>
+			{foreach from=$overlayImages key=field item=name}
+				<div class="rc-image">
+					<div class="rc-image__head">
+						<strong>{translate key="`$rcKey``$field`"}</strong>
+						{if $field == 'logoImage' && $logoImage}<span class="rc-badge">{$logoImageName|escape}</span>
+						{elseif $field == 'coverImage' && $coverImage}<span class="rc-badge">{$coverImageName|escape}</span>
+						{elseif $field == 'sealImage' && $sealImage}<span class="rc-badge">{$sealImageName|escape}</span>
+						{else}<span class="rc-badge rc-badge--empty">{translate key="`$rcKey`image.none"}</span>{/if}
+					</div>
+					<p class="rc-hint">{translate key="`$rcKey``$field`Description"}</p>
+					<input type="file" id="{$field}" name="{$field}" accept="image/png,image/jpeg" class="rc-file" />
+					{if ($field == 'logoImage' && $logoImage) || ($field == 'coverImage' && $coverImage) || ($field == 'sealImage' && $sealImage)}
+						{if $field == 'logoImage'}{assign var=removeField value='removeLogoImage'}{elseif $field == 'coverImage'}{assign var=removeField value='removeCoverImage'}{else}{assign var=removeField value='removeSealImage'}{/if}
+						<label class="rc-check"><input type="checkbox" id="{$removeField}" name="{$removeField}" value="1" /> {translate key="`$rcKey`removeImage"}</label>
+					{/if}
+					{if $name == 'logo'}{assign var=w value=$logoWidth}{assign var=x value=$logoX}{assign var=y value=$logoY}
+					{elseif $name == 'cover'}{assign var=w value=$coverWidth}{assign var=x value=$coverX}{assign var=y value=$coverY}
+					{else}{assign var=w value=$sealWidth}{assign var=x value=$sealX}{assign var=y value=$sealY}{/if}
+					<div class="rc-inline">
+						<label>{translate key="`$rcKey`image.width"}<input type="number" class="rc-input rc-input--num" name="{$name}Width" value="{$w|escape}" min="5" max="200" /></label>
+						<label>{translate key="`$rcKey`image.xShort"}<input type="number" class="rc-input rc-input--num" name="{$name}X" value="{if $x >= 0}{$x|escape}{/if}" min="0" max="297" placeholder="{translate key="`$rcKey`image.auto"}" /></label>
+						<label>{translate key="`$rcKey`image.yShort"}<input type="number" class="rc-input rc-input--num" name="{$name}Y" value="{if $y >= 0}{$y|escape}{/if}" min="0" max="297" placeholder="{translate key="`$rcKey`image.auto"}" /></label>
+					</div>
+				</div>
+			{/foreach}
+		</div>
+	</section>
 
-		{* Available Variables *}
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.availableVariables"}
-			<div class="pkp_helpers_clear">
-				<p class="description">{translate key="plugins.generic.reviewerCertificate.settings.availableVariablesDescription"}</p>
-				<ul class="template-variables">
-					{foreach from=$templateVariables item=variable}
-						<li><code>{$variable}</code></li>
+	{* ------------------------------------------------------------ 3. Typography *}
+	<section class="rc-card">
+		<header class="rc-card__head">
+			<span class="rc-step">3</span>
+			<div>
+				<h3>{translate key="`$rcKey`typography"}</h3>
+				<p>{translate key="`$rcKey`section.typographyDescription"}</p>
+			</div>
+		</header>
+
+		<p class="rc-notice rc-only-classic">{translate key="`$rcKey`typography.classicNotice"}</p>
+
+		<div class="rc-only-structured">
+			<table class="rc-type-table">
+				<thead>
+					<tr>
+						<th>{translate key="`$rcKey`typography.element"}</th>
+						<th>{translate key="`$rcKey`typography.size"}</th>
+						<th>{translate key="`$rcKey`typography.color"}</th>
+						<th>{translate key="`$rcKey`typography.style"}</th>
+					</tr>
+				</thead>
+				<tbody>
+					{foreach from=$typographyRows item=row}
+						{assign var=sizeField value="`$row.role`FontSize"}
+						{assign var=colorField value="`$row.role`Color"}
+						{assign var=boldField value="`$row.role`Bold"}
+						<tr>
+							<th scope="row">
+								{translate key="`$rcKey`typography.`$row.role`"}
+								<small>{translate key="`$rcKey`typography.`$row.role`Description"}</small>
+							</th>
+							<td><input type="number" class="rc-input rc-input--num" name="{$sizeField}" value="{$row.size|escape}" min="6" max="72" aria-label="{translate key="`$rcKey`typography.size"}" /></td>
+							<td>
+								<span class="rc-color">
+									<input type="color" class="rc-color__swatch" value="{if $row.color}{$row.color|escape}{else}#222222{/if}" aria-label="{translate key="`$rcKey`typography.color"}" />
+									<input type="text" class="rc-input rc-color__hex" name="{$colorField}" value="{$row.color|escape}" maxlength="7" placeholder="{translate key="`$rcKey`typography.defaultColor"}" />
+								</span>
+							</td>
+							<td class="rc-style-cell">
+								{if $row.hasBold}<label class="rc-toggle"><input type="checkbox" name="{$boldField}" value="1" {if $row.bold}checked{/if} /><span>{translate key="`$rcKey`typography.bold"}</span></label>{/if}
+								{if $row.role == 'name'}<label class="rc-toggle"><input type="checkbox" name="nameUppercase" value="1" {if $nameUppercase}checked{/if} /><span>{translate key="`$rcKey`typography.uppercase"}</span></label>{/if}
+							</td>
+						</tr>
 					{/foreach}
-				</ul>
+				</tbody>
+			</table>
+
+			<div class="rc-grid">
+				<label class="rc-field">
+					<span class="rc-label">{translate key="`$rcKey`typography.footerPosition"}</span>
+					<select class="rc-input" name="footerPosition">
+						{foreach from=$footerPositionOptions key=value item=label}
+							<option value="{$value|escape}" {if $footerPosition == $value}selected{/if}>{$label|escape}</option>
+						{/foreach}
+					</select>
+				</label>
+				<label class="rc-field">
+					<span class="rc-label">{translate key="`$rcKey`typography.footerBottomSpacing"}</span>
+					<input type="number" class="rc-input" name="footerBottomSpacing" value="{$footerBottomSpacing|escape}" min="5" max="150" />
+				</label>
+				<label class="rc-field">
+					<span class="rc-label">{translate key="`$rcKey`typography.paragraphSpacing"}</span>
+					<input type="number" class="rc-input" name="paragraphSpacing" value="{$paragraphSpacing|escape}" min="0" max="50" />
+				</label>
+				<label class="rc-field">
+					<span class="rc-label">{translate key="`$rcKey`typography.nameSpacing"}</span>
+					<input type="number" class="rc-input" name="nameSpacing" value="{$nameSpacing|escape}" min="0" max="50" />
+				</label>
+				<label class="rc-field">
+					<span class="rc-label">{translate key="`$rcKey`typography.sideMargin"}</span>
+					<input type="number" class="rc-input" name="sideMargin" value="{$sideMargin|escape}" min="10" max="120" />
+				</label>
 			</div>
-		{/fbvFormSection}
+			<p class="rc-hint">{translate key="`$rcKey`typography.spacingDescription"}</p>
+		</div>
+	</section>
 
-	{/fbvFormArea}
-
-	{fbvFormArea id="certificateAppearance" title="plugins.generic.reviewerCertificate.settings.appearance"}
-
-		{* Font Family *}
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.fontFamily"}
-			{fbvElement type="select" id="fontFamily" from=$fontOptions selected=$fontFamily translate=false defaultValue="helvetica"}
-			<p class="description" style="color: #996600; margin-top: 5px;">
-				{translate key="plugins.generic.reviewerCertificate.settings.fontUnicodeWarning"}
-			</p>
-		{/fbvFormSection}
-
-		{* Font Size *}
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.fontSize"}
-			{fbvElement type="text" id="fontSize" value=$fontSize|default:12 size=$fbvStyles.size.SMALL}
-		{/fbvFormSection}
-
-		{* Body Top Offset *}
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.bodyTopOffset" description="plugins.generic.reviewerCertificate.settings.bodyTopOffsetDescription"}
-			{fbvElement type="text" id="bodyTopOffset" value=$bodyTopOffset|default:0 size=$fbvStyles.size.SMALL}
-		{/fbvFormSection}
-
-		{* Page Orientation *}
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.pageOrientation" description="plugins.generic.reviewerCertificate.settings.pageOrientationDescription"}
-			{fbvElement type="select" id="pageOrientation" from=$orientationOptions selected=$pageOrientation translate=false defaultValue="P"}
-		{/fbvFormSection}
-
-		{* Text Color *}
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.textColor" description="plugins.generic.reviewerCertificate.settings.textColorDescription"}
-			<div class="pkp_helpers_clear">
-				<div style="margin-bottom: 10px;">
-					<label for="colorPicker">Color Picker:</label>
-					<input type="color" id="colorPicker" style="width: 60px; height: 30px; border: 1px solid #ccc; cursor: pointer;" />
-					<span id="colorPreview" style="display: inline-block; width: 30px; height: 30px; border: 1px solid #ccc; margin-left: 5px; vertical-align: middle;"></span>
-				</div>
-				<div style="float:left; margin-right: 10px;">
-					<label for="textColorR">R:</label>
-					{fbvElement type="text" id="textColorR" value=$textColorR|default:0 size=$fbvStyles.size.SMALL inline=true}
-				</div>
-				<div style="float:left; margin-right: 10px;">
-					<label for="textColorG">G:</label>
-					{fbvElement type="text" id="textColorG" value=$textColorG|default:0 size=$fbvStyles.size.SMALL inline=true}
-				</div>
-				<div style="float:left;">
-					<label for="textColorB">B:</label>
-					{fbvElement type="text" id="textColorB" value=$textColorB|default:0 size=$fbvStyles.size.SMALL inline=true}
-				</div>
+	{* ------------------------------------------------------------ 4. Page *}
+	<section class="rc-card">
+		<header class="rc-card__head">
+			<span class="rc-step">4</span>
+			<div>
+				<h3>{translate key="`$rcKey`section.page"}</h3>
+				<p>{translate key="`$rcKey`section.pageDescription"}</p>
 			</div>
-		{/fbvFormSection}
+		</header>
+		<div class="rc-grid">
+			<label class="rc-field">
+				<span class="rc-label">{translate key="`$rcKey`pageOrientation"}</span>
+				<select class="rc-input" name="pageOrientation">
+					{foreach from=$orientationOptions key=value item=label}
+						<option value="{$value|escape}" {if $pageOrientation == $value}selected{/if}>{$label|escape}</option>
+					{/foreach}
+				</select>
+			</label>
+			<label class="rc-field">
+				<span class="rc-label">{translate key="`$rcKey`fontFamily"}</span>
+				<select class="rc-input" name="fontFamily">
+					{foreach from=$fontOptions key=value item=label}
+						<option value="{$value|escape}" {if $fontFamily == $value}selected{/if}>{$label|escape}</option>
+					{/foreach}
+				</select>
+			</label>
+			<label class="rc-field">
+				<span class="rc-label">{translate key="`$rcKey`textColor"}</span>
+				<span class="rc-color">
+					<input type="color" id="colorPicker" class="rc-color__swatch" aria-label="{translate key="`$rcKey`textColor"}" />
+					<input type="hidden" id="textColorR" name="textColorR" value="{$textColorR|default:0|escape}" />
+					<input type="hidden" id="textColorG" name="textColorG" value="{$textColorG|default:0|escape}" />
+					<input type="hidden" id="textColorB" name="textColorB" value="{$textColorB|default:0|escape}" />
+					<code id="colorHex" class="rc-color__value"></code>
+				</span>
+			</label>
+			<label class="rc-field rc-only-classic">
+				<span class="rc-label">{translate key="`$rcKey`fontSize"}</span>
+				<input type="number" class="rc-input" name="fontSize" value="{$fontSize|default:12|escape}" min="6" max="72" />
+			</label>
+			<label class="rc-field">
+				<span class="rc-label">{translate key="`$rcKey`bodyTopOffset"}</span>
+				<input type="number" class="rc-input" name="bodyTopOffset" value="{$bodyTopOffset|default:0|escape}" min="0" max="100" />
+			</label>
+		</div>
+		<p class="rc-hint">{translate key="`$rcKey`fontUnicodeWarning"}</p>
+	</section>
 
-	{/fbvFormArea}
-
-	{fbvFormArea id="certificateTypography" title="plugins.generic.reviewerCertificate.settings.typography"}
-
-		{* Layout mode: classic keeps the single-block body; structured styles each line by role *}
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.layoutMode" description="plugins.generic.reviewerCertificate.settings.layoutModeDescription"}
-			{fbvElement type="select" id="layoutMode" from=$layoutModeOptions selected=$layoutMode translate=false defaultValue="classic"}
-		{/fbvFormSection}
-
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.typography.title" description="plugins.generic.reviewerCertificate.settings.typography.titleDescription"}
-			<div class="pkp_helpers_clear">
-				<div style="float:left; margin-right: 15px;">
-					<label for="titleFontSize">{translate key="plugins.generic.reviewerCertificate.settings.typography.size"}</label>
-					{fbvElement type="text" id="titleFontSize" value=$titleFontSize|default:28 size=$fbvStyles.size.SMALL inline=true}
-				</div>
-				<div style="float:left; margin-right: 15px;">
-					<label for="titleColor">{translate key="plugins.generic.reviewerCertificate.settings.typography.color"}</label>
-					{fbvElement type="text" id="titleColor" value=$titleColor maxlength="7" size=$fbvStyles.size.SMALL inline=true}
-				</div>
-				<div style="float:left; padding-top: 18px; margin-right: 15px;">
-					{fbvElement type="checkbox" id="titleBold" value="1" checked=$titleBold label="plugins.generic.reviewerCertificate.settings.typography.bold"}
-				</div>
+	{* ------------------------------------------------------------ 5. Eligibility and verification *}
+	<section class="rc-card">
+		<header class="rc-card__head">
+			<span class="rc-step">5</span>
+			<div>
+				<h3>{translate key="`$rcKey`eligibility"}</h3>
+				<p>{translate key="`$rcKey`section.eligibilityDescription"}</p>
 			</div>
-		{/fbvFormSection}
-
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.typography.name" description="plugins.generic.reviewerCertificate.settings.typography.nameDescription"}
-			<div class="pkp_helpers_clear">
-				<div style="float:left; margin-right: 15px;">
-					<label for="nameFontSize">{translate key="plugins.generic.reviewerCertificate.settings.typography.size"}</label>
-					{fbvElement type="text" id="nameFontSize" value=$nameFontSize|default:25 size=$fbvStyles.size.SMALL inline=true}
-				</div>
-				<div style="float:left; margin-right: 15px;">
-					<label for="nameColor">{translate key="plugins.generic.reviewerCertificate.settings.typography.color"}</label>
-					{fbvElement type="text" id="nameColor" value=$nameColor maxlength="7" size=$fbvStyles.size.SMALL inline=true}
-				</div>
-				<div style="float:left; padding-top: 18px; margin-right: 15px;">
-					{fbvElement type="checkbox" id="nameBold" value="1" checked=$nameBold label="plugins.generic.reviewerCertificate.settings.typography.bold"}
-				</div>
-				<div style="float:left; padding-top: 18px; margin-right: 15px;">
-					{fbvElement type="checkbox" id="nameUppercase" value="1" checked=$nameUppercase label="plugins.generic.reviewerCertificate.settings.typography.uppercase"}
-				</div>
+		</header>
+		<div class="rc-grid">
+			<label class="rc-field">
+				<span class="rc-label">{translate key="`$rcKey`minimumReviews"} <span class="rc-required">*</span></span>
+				<input type="number" class="rc-input" name="minimumReviews" value="{$minimumReviews|default:1|escape}" min="1" required />
+			</label>
+			<div class="rc-field">
+				<span class="rc-label">{translate key="`$rcKey`verification"}</span>
+				<label class="rc-toggle rc-toggle--block"><input type="checkbox" name="includeQRCode" value="1" {if $includeQRCode}checked{/if} /><span>{translate key="`$rcKey`includeQRCode"}</span></label>
 			</div>
-		{/fbvFormSection}
+		</div>
+	</section>
 
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.typography.journal" description="plugins.generic.reviewerCertificate.settings.typography.journalDescription"}
-			<div class="pkp_helpers_clear">
-				<div style="float:left; margin-right: 15px;">
-					<label for="journalFontSize">{translate key="plugins.generic.reviewerCertificate.settings.typography.size"}</label>
-					{fbvElement type="text" id="journalFontSize" value=$journalFontSize|default:17 size=$fbvStyles.size.SMALL inline=true}
-				</div>
-				<div style="float:left; margin-right: 15px;">
-					<label for="journalColor">{translate key="plugins.generic.reviewerCertificate.settings.typography.color"}</label>
-					{fbvElement type="text" id="journalColor" value=$journalColor maxlength="7" size=$fbvStyles.size.SMALL inline=true}
-				</div>
-				<div style="float:left; padding-top: 18px; margin-right: 15px;">
-					{fbvElement type="checkbox" id="journalBold" value="1" checked=$journalBold label="plugins.generic.reviewerCertificate.settings.typography.bold"}
-				</div>
+	{* ------------------------------------------------------------ 6. Acknowledgement email *}
+	<section class="rc-card">
+		<header class="rc-card__head">
+			<span class="rc-step">6</span>
+			<div>
+				<h3>{translate key="`$rcKey`section.email"}</h3>
+				<p>{translate key="`$rcKey`ackEmailDescription"}</p>
 			</div>
-		{/fbvFormSection}
+		</header>
+		<div class="rc-field">
+			<label class="rc-label" for="ackEmailSubject">{translate key="`$rcKey`ackEmailSubject"}</label>
+			<input type="text" class="rc-input" id="ackEmailSubject" name="ackEmailSubject" value="{$ackEmailSubject|escape}" maxlength="255" />
+		</div>
+		<div class="rc-field">
+			<label class="rc-label" for="ackEmailBody">{translate key="`$rcKey`ackEmailBody"}</label>
+			<textarea class="rc-input rc-textarea" id="ackEmailBody" name="ackEmailBody" rows="8">{$ackEmailBody|escape}</textarea>
+		</div>
+	</section>
 
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.typography.body" description="plugins.generic.reviewerCertificate.settings.typography.bodyDescription"}
-			<div class="pkp_helpers_clear">
-				<div style="float:left; margin-right: 15px;">
-					<label for="bodyFontSize">{translate key="plugins.generic.reviewerCertificate.settings.typography.size"}</label>
-					{fbvElement type="text" id="bodyFontSize" value=$bodyFontSize|default:13 size=$fbvStyles.size.SMALL inline=true}
-				</div>
-				<div style="float:left; margin-right: 15px;">
-					<label for="bodyColor">{translate key="plugins.generic.reviewerCertificate.settings.typography.color"}</label>
-					{fbvElement type="text" id="bodyColor" value=$bodyColor maxlength="7" size=$fbvStyles.size.SMALL inline=true}
-				</div>
-				<div style="float:left; padding-top: 18px; margin-right: 15px;">
-					{fbvElement type="checkbox" id="bodyBold" value="1" checked=$bodyBold label="plugins.generic.reviewerCertificate.settings.typography.bold"}
-				</div>
-			</div>
-		{/fbvFormSection}
-
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.typography.detail" description="plugins.generic.reviewerCertificate.settings.typography.detailDescription"}
-			<div class="pkp_helpers_clear">
-				<div style="float:left; margin-right: 15px;">
-					<label for="detailFontSize">{translate key="plugins.generic.reviewerCertificate.settings.typography.size"}</label>
-					{fbvElement type="text" id="detailFontSize" value=$detailFontSize|default:10 size=$fbvStyles.size.SMALL inline=true}
-				</div>
-				<div style="float:left; margin-right: 15px;">
-					<label for="detailColor">{translate key="plugins.generic.reviewerCertificate.settings.typography.color"}</label>
-					{fbvElement type="text" id="detailColor" value=$detailColor maxlength="7" size=$fbvStyles.size.SMALL inline=true}
-				</div>
-			</div>
-		{/fbvFormSection}
-
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.typography.footer" description="plugins.generic.reviewerCertificate.settings.typography.footerDescription"}
-			<div class="pkp_helpers_clear">
-				<div style="float:left; margin-right: 15px;">
-					<label for="footerFontSize">{translate key="plugins.generic.reviewerCertificate.settings.typography.size"}</label>
-					{fbvElement type="text" id="footerFontSize" value=$footerFontSize|default:10 size=$fbvStyles.size.SMALL inline=true}
-				</div>
-				<div style="float:left; margin-right: 15px;">
-					<label for="footerColor">{translate key="plugins.generic.reviewerCertificate.settings.typography.color"}</label>
-					{fbvElement type="text" id="footerColor" value=$footerColor maxlength="7" size=$fbvStyles.size.SMALL inline=true}
-				</div>
-				<div style="float:left; padding-top: 18px; margin-right: 15px;">
-					{fbvElement type="checkbox" id="footerBold" value="1" checked=$footerBold label="plugins.generic.reviewerCertificate.settings.typography.bold"}
-				</div>
-				<div style="float:left; margin-right: 15px;">
-					<label for="footerPosition">{translate key="plugins.generic.reviewerCertificate.settings.typography.footerPosition"}</label>
-					{fbvElement type="select" id="footerPosition" from=$footerPositionOptions selected=$footerPosition translate=false defaultValue="flow" inline=true}
-				</div>
-				<div style="float:left;">
-					<label for="footerBottomSpacing">{translate key="plugins.generic.reviewerCertificate.settings.typography.footerBottomSpacing"}</label>
-					{fbvElement type="text" id="footerBottomSpacing" value=$footerBottomSpacing|default:20 size=$fbvStyles.size.SMALL inline=true}
-				</div>
-			</div>
-		{/fbvFormSection}
-
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.typography.spacing" description="plugins.generic.reviewerCertificate.settings.typography.spacingDescription"}
-			<div class="pkp_helpers_clear">
-				<div style="float:left; margin-right: 15px;">
-					<label for="paragraphSpacing">{translate key="plugins.generic.reviewerCertificate.settings.typography.paragraphSpacing"}</label>
-					{fbvElement type="text" id="paragraphSpacing" value=$paragraphSpacing|default:4 size=$fbvStyles.size.SMALL inline=true}
-				</div>
-				<div style="float:left; margin-right: 15px;">
-					<label for="nameSpacing">{translate key="plugins.generic.reviewerCertificate.settings.typography.nameSpacing"}</label>
-					{fbvElement type="text" id="nameSpacing" value=$nameSpacing|default:4 size=$fbvStyles.size.SMALL inline=true}
-				</div>
-				<div style="float:left;">
-					<label for="sideMargin">{translate key="plugins.generic.reviewerCertificate.settings.typography.sideMargin"}</label>
-					{fbvElement type="text" id="sideMargin" value=$sideMargin|default:15 size=$fbvStyles.size.SMALL inline=true}
-				</div>
-			</div>
-		{/fbvFormSection}
-
-	{/fbvFormArea}
-
-	{fbvFormArea id="certificateEligibility" title="plugins.generic.reviewerCertificate.settings.eligibility"}
-
-		{* Minimum Reviews *}
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.minimumReviews" description="plugins.generic.reviewerCertificate.settings.minimumReviewsDescription" required=true}
-			{fbvElement type="text" id="minimumReviews" value=$minimumReviews|default:1 size=$fbvStyles.size.SMALL}
-		{/fbvFormSection}
-
-		{* Include QR Code *}
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.verification" list=true}
-			{fbvElement type="checkbox" id="includeQRCode" value="1" checked=$includeQRCode label="plugins.generic.reviewerCertificate.settings.includeQRCode"}
-		{/fbvFormSection}
-
-	{/fbvFormArea}
-
-	{fbvFormArea id="certificateAckEmail" title="plugins.generic.reviewerCertificate.settings.ackEmailBody"}
-
-		{* Acknowledgement email sent from the My Certificates page *}
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.ackEmailSubject" description="plugins.generic.reviewerCertificate.settings.ackEmailDescription"}
-			{fbvElement type="text" id="ackEmailSubject" value=$ackEmailSubject maxlength="255" size=$fbvStyles.size.LARGE}
-		{/fbvFormSection}
-
-		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.ackEmailBody"}
-			{fbvElement type="textarea" id="ackEmailBody" value=$ackEmailBody height=$fbvStyles.height.TALL rich=false}
-		{/fbvFormSection}
-
-	{/fbvFormArea}
-
-	{fbvFormButtons}
-	<p>
-		<a href="{url router=$smarty.const.ROUTE_COMPONENT op="manage" category="generic" plugin=$pluginName verb="preview"}" target="_blank" class="pkp_button">
-			{translate key="plugins.generic.reviewerCertificate.settings.previewCertificate"}
+	<div class="rc-savebar">
+		<a href="{url router=$smarty.const.ROUTE_COMPONENT op="manage" category="generic" plugin=$pluginName verb="preview"}" target="_blank" class="pkp_button rc-preview">
+			{translate key="`$rcKey`previewCertificate"}
 		</a>
-	</p>
+		<span class="rc-savebar__hint">{translate key="`$rcKey`previewHint"}</span>
+		{fbvFormButtons hideCancel=true}
+	</div>
 </form>
 
+
 <!-- Certificate Statistics -->
-<div class="section" style="margin-top: 40px;">
+<div class="rc-panel">
 	<h2>{translate key="plugins.generic.reviewerCertificate.statistics.title"}</h2>
 	<p class="description">{translate key="plugins.generic.reviewerCertificate.statistics.description"}</p>
-
-	<div class="statistics-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin: 20px 0;">
-		<div class="stat-card" style="background: #f5f5f5; padding: 20px; border-radius: 5px; text-align: center;">
-			<h3 style="font-size: 2em; margin: 0; color: #007bff;">{$totalCertificates|default:0}</h3>
-			<p style="margin: 5px 0 0 0; color: #666;">{translate key="plugins.generic.reviewerCertificate.statistics.totalCertificates"}</p>
-		</div>
-		<div class="stat-card" style="background: #f5f5f5; padding: 20px; border-radius: 5px; text-align: center;">
-			<h3 style="font-size: 2em; margin: 0; color: #28a745;">{$totalDownloads|default:0}</h3>
-			<p style="margin: 5px 0 0 0; color: #666;">{translate key="plugins.generic.reviewerCertificate.statistics.totalDownloads"}</p>
-		</div>
-		<div class="stat-card" style="background: #f5f5f5; padding: 20px; border-radius: 5px; text-align: center;">
-			<h3 style="font-size: 2em; margin: 0; color: #ffc107;">{$uniqueReviewers|default:0}</h3>
-			<p style="margin: 5px 0 0 0; color: #666;">{translate key="plugins.generic.reviewerCertificate.statistics.uniqueReviewers"}</p>
-		</div>
+	<div class="rc-stats">
+		<div class="rc-stat"><strong>{$totalCertificates|default:0}</strong><span>{translate key="plugins.generic.reviewerCertificate.statistics.totalCertificates"}</span></div>
+		<div class="rc-stat"><strong>{$totalDownloads|default:0}</strong><span>{translate key="plugins.generic.reviewerCertificate.statistics.totalDownloads"}</span></div>
+		<div class="rc-stat"><strong>{$uniqueReviewers|default:0}</strong><span>{translate key="plugins.generic.reviewerCertificate.statistics.uniqueReviewers"}</span></div>
 	</div>
 </div>
 
 <!-- Batch Certificate Generation -->
-<div class="section" style="margin-top: 40px; padding: 20px; background: #f9f9f9; border-radius: 5px;">
+<div class="rc-panel">
 	<h2>{translate key="plugins.generic.reviewerCertificate.batch.title"}</h2>
-	<p class="description">{translate key="plugins.generic.reviewerCertificate.batch.description"}</p>
+	<p>{translate key="plugins.generic.reviewerCertificate.batch.description"}</p>
 
-	<form id="batchGenerateForm" style="margin-top: 20px;">
-		<div style="margin-bottom: 15px;">
-			<label>{translate key="plugins.generic.reviewerCertificate.batch.selectReviewers"}</label>
-			<select id="batchReviewers" name="reviewerIds[]" multiple size="10" style="width: 100%; padding: 10px;">
-				{if $eligibleReviewers}
+	{if $eligibleReviewers}
+		<form id="batchGenerateForm">
+			<div class="rc-field">
+				<label class="rc-label" for="batchReviewers">{translate key="plugins.generic.reviewerCertificate.batch.selectReviewers"}</label>
+				<select id="batchReviewers" class="rc-input" name="reviewerIds[]" multiple size="8">
 					{foreach from=$eligibleReviewers item=reviewer}
 						<option value="{$reviewer.id|escape}">{$reviewer.name|escape} ({$reviewer.completedReviews|escape} {translate key="plugins.generic.reviewerCertificate.batch.completedReviews"})</option>
 					{/foreach}
-				{else}
-					<option disabled>{translate key="plugins.generic.reviewerCertificate.batch.noEligibleReviewers"}</option>
-				{/if}
-			</select>
-			<p class="description" style="margin-top: 5px;">{translate key="plugins.generic.reviewerCertificate.batch.selectMultipleHint"}</p>
-		</div>
+				</select>
+				<p class="rc-hint">{translate key="plugins.generic.reviewerCertificate.batch.selectMultipleHint"}</p>
+			</div>
+			<div class="rc-panel__actions">
+				<button type="button" id="generateBatchBtn" class="pkp_button pkp_button_primary">
+					{translate key="plugins.generic.reviewerCertificate.batch.generate"}
+				</button>
+				<span id="batchProgress" style="display: none;">
+					<span class="pkp_spinner"></span> {translate key="plugins.generic.reviewerCertificate.batch.generating"}
+				</span>
+			</div>
+		</form>
+	{else}
+		<p class="rc-notice">{translate key="plugins.generic.reviewerCertificate.batch.noEligibleReviewers"}</p>
+	{/if}
 
-		<button type="button" id="generateBatchBtn" class="pkp_button" style="background: #28a745; color: white;">
-			{translate key="plugins.generic.reviewerCertificate.batch.generate"}
-		</button>
-		<span id="batchProgress" style="margin-left: 15px; display: none;">
-			<span class="pkp_spinner"></span> {translate key="plugins.generic.reviewerCertificate.batch.generating"}
-		</span>
-	</form>
-
-	<div id="batchResult" style="margin-top: 20px; display: none;"></div>
+	<div id="batchResult" style="margin-top: 16px; display: none;"></div>
 </div>
 
-<div class="section" style="margin-top: 30px;">
-    <h2>{translate key="plugins.generic.reviewerCertificate.notifications.title"}</h2>
-    <p>{translate key="plugins.generic.reviewerCertificate.notifications.description"}</p>
-    <label for="notificationReviewers">{translate key="plugins.generic.reviewerCertificate.batch.selectReviewers"}</label>
-    <select id="notificationReviewers" multiple size="8" style="width:100%">
-        {foreach from=$notificationReviewers item=reviewer}
-            <option value="{$reviewer.id|escape}">{$reviewer.name|escape}</option>
-        {/foreach}
-    </select>
-    <label><input type="checkbox" id="retryNotifications" /> {translate key="plugins.generic.reviewerCertificate.notifications.retry"}</label>
-    <p>{translate key="plugins.generic.reviewerCertificate.notifications.retryWarning"}</p>
-    <button type="button" id="notifyBatchBtn" class="pkp_button">{translate key="plugins.generic.reviewerCertificate.notifications.send"}</button>
-    <div id="notificationResult" role="status"></div>
+<div class="rc-panel">
+	<h2>{translate key="plugins.generic.reviewerCertificate.notifications.title"}</h2>
+	<p>{translate key="plugins.generic.reviewerCertificate.notifications.description"}</p>
+	<div class="rc-field">
+		<label class="rc-label" for="notificationReviewers">{translate key="plugins.generic.reviewerCertificate.batch.selectReviewers"}</label>
+		<select id="notificationReviewers" class="rc-input" multiple size="6">
+			{foreach from=$notificationReviewers item=reviewer}
+				<option value="{$reviewer.id|escape}">{$reviewer.name|escape}</option>
+			{/foreach}
+		</select>
+		<p class="rc-hint">{translate key="plugins.generic.reviewerCertificate.batch.selectMultipleHint"}</p>
+		<label class="rc-toggle"><input type="checkbox" id="retryNotifications" /> {translate key="plugins.generic.reviewerCertificate.notifications.retry"}</label>
+		<p class="rc-hint">{translate key="plugins.generic.reviewerCertificate.notifications.retryWarning"}</p>
+	</div>
+	<div class="rc-panel__actions">
+		<button type="button" id="notifyBatchBtn" class="pkp_button">{translate key="plugins.generic.reviewerCertificate.notifications.send"}</button>
+	</div>
+	<div id="notificationResult" role="status"></div>
 </div>
 <script>
 $(function() {ldelim}
@@ -586,26 +717,3 @@ $(function() {ldelim}
     {rdelim});
 {rdelim});
 </script>
-
-<style>
-.template-variables {
-	display: grid;
-	grid-template-columns: repeat(3, 1fr);
-	gap: 5px;
-	list-style: none;
-	padding: 10px;
-	background: #f5f5f5;
-	border-radius: 3px;
-}
-
-.template-variables li {
-	font-size: 0.9em;
-}
-
-.template-variables code {
-	background: #fff;
-	padding: 2px 5px;
-	border-radius: 2px;
-	font-family: monospace;
-}
-</style>

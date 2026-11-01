@@ -344,6 +344,20 @@ class CertificateSettingsForm extends Form {
                 $templateMgr->assign($field . 'Name', basename($image));
             }
         }
+        // One row per element in the structured-layout typography table
+        $definitions = self::typographySettings();
+        $typographyRows = array();
+        foreach (array('title', 'name', 'journal', 'body', 'detail', 'footer') as $role) {
+            $size = $this->getData($role . 'FontSize');
+            $typographyRows[] = array(
+                'role' => $role,
+                'size' => ($size === null || $size === '') ? $definitions[$role . 'FontSize'][0] : $size,
+                'color' => (string) $this->getData($role . 'Color'),
+                'hasBold' => isset($definitions[$role . 'Bold']),
+                'bold' => (bool) $this->getData($role . 'Bold'),
+            );
+        }
+        $templateMgr->assign('typographyRows', $typographyRows);
         $templateMgr->assign('overlayImages', array(
             'logoImage' => 'logo',
             'coverImage' => 'cover',

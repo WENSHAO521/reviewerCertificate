@@ -5,6 +5,13 @@ All notable changes to the Reviewer Certificate Plugin will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.12.0] - 2026-11-01
+
+### Changed
+
+- Settings page redesigned as six numbered sections (layout and text, images, typography, page, eligibility, email) with a visual layout chooser, click-to-insert template variables, image cards, a typography table with colour pickers, and a save/preview bar at the end of the form. Only the controls that apply to the chosen layout are shown.
+- In the structured layout the certificate title is written in the body template as a line starting with `#`; the separate Header Text field is folded into the body automatically. The footer is written the same way, below a `---` line at the end of the body, and the separate Footer Text field is folded in too. "Use recognition-style template" fills in the body and the matching typography in one click.
+
 ## [1.11.0] - 2026-11-01
 
 ### Added
