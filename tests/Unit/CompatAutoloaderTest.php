@@ -3,6 +3,7 @@
  * @file tests/Unit/CompatAutoloaderTest.php
  *
  * Copyright (c) 2024
+ * Modifications copyright (c) 2026 WENSHAO521 (https://github.com/WENSHAO521)
  * Distributed under the GNU GPL v3.
  *
  * @brief Tests for the OJS 3.3 Compatibility Autoloader

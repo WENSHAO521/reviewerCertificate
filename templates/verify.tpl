@@ -2,6 +2,7 @@
  * plugins/generic/reviewerCertificate/templates/verify.tpl
  *
  * Copyright (c) 2024
+ * Modifications copyright (c) 2026 WENSHAO521 (https://github.com/WENSHAO521)
  * Distributed under the GNU GPL v3.
  *
  * Certificate verification page
