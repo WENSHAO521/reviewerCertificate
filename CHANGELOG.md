@@ -5,6 +5,15 @@ All notable changes to the Reviewer Certificate Plugin will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Fixed
+
+- Settings page: saving no longer reloads the page or leaves the settings when an image is chosen. The whole form, files included, is saved in the background and a "saved" message appears next to the Save button.
+- Settings page: the save button reads "Save" instead of "OK" and uses the primary colour.
+- Settings page: OJS's own form styles no longer override the plugin's controls, so checkboxes keep their spacing, number and colour fields keep their width, and the two hidden template copies no longer show under the body template.
+- Settings page: the form and the statistics/batch panels now use the full width of the page instead of stopping at 1100px.
+
 ## [1.12.0] - 2026-11-01
 
 ### Changed
