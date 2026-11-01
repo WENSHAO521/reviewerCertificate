@@ -39,7 +39,8 @@ See [integration testing](tests/environment/README.md) for reproducible checks a
 
 ## Author
 
-**WENSHAO521** ([GitHub](https://github.com/WENSHAO521)) — maintainer of this fork
+**Panorama Scholarly Group Ltd.**  
+Email: contact@panorama-sg.com
 
 ### Original author
 
@@ -49,7 +50,7 @@ This plugin is a fork of [ssemerikov/reviewerCertificate](https://github.com/sse
 Academy of Cognitive and Natural Sciences  
 Email: semerikov@gmail.com
 
-Releases up to 1.10.x are the original author's work. Later versions are modified by WENSHAO521; see [CHANGELOG.md](CHANGELOG.md) for the changes.
+Releases up to 1.10.x are the original author's work. Later versions are modified by Panorama Scholarly Group Ltd.; see [CHANGELOG.md](CHANGELOG.md) for the changes.
 
 ## Development
 
@@ -445,7 +446,7 @@ Contributions are welcome! Please:
 This plugin is licensed under the GNU General Public License v3.0.
 
 Copyright (c) 2025-2026 Serhiy O. Semerikov, Academy of Cognitive and Natural Sciences (original work)  
-Copyright (c) 2026 WENSHAO521 (modifications)
+Copyright (c) 2026 Panorama Scholarly Group Ltd. (modifications)
 
 This is a modified version of the original plugin, distributed under the same license.
 
@@ -467,7 +468,7 @@ Thank you to everyone in the PKP Community Forum who provided feedback and helpe
 
 ## Credits
 
-**Author**: WENSHAO521 ([GitHub](https://github.com/WENSHAO521))  
+**Author**: Panorama Scholarly Group Ltd., contact@panorama-sg.com  
 **Original author**: Serhiy O. Semerikov (Academy of Cognitive and Natural Sciences), semerikov@gmail.com, [ssemerikov/reviewerCertificate](https://github.com/ssemerikov/reviewerCertificate)
 
 Developed for the Open Journal Systems community to support and recognize peer reviewers' contributions to scholarly publishing.

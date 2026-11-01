@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
-- Author and maintainer are now WENSHAO521 (https://github.com/WENSHAO521). Serhiy O. Semerikov is credited as the original author in README.md, version.xml, composer.json and the source file headers; the original copyright notices are kept. Repository, release and issue links point to this fork.
+- Author and maintainer are now Panorama Scholarly Group Ltd. <contact@panorama-sg.com>. Serhiy O. Semerikov is credited as the original author in README.md, version.xml, composer.json and the source file headers; the original copyright notices are kept. Repository, release and issue links point to this fork.
 
 ## [1.13.0] - 2026-11-01
 

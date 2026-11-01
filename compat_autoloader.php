@@ -3,7 +3,7 @@
  * @file plugins/generic/reviewerCertificate/compat_autoloader.php
  *
  * Copyright (c) 2024
- * Modifications copyright (c) 2026 WENSHAO521 (https://github.com/WENSHAO521)
+ * Modifications copyright (c) 2026 Panorama Scholarly Group Ltd. <contact@panorama-sg.com>
  * Distributed under the GNU GPL v3.
  *
  * @brief OJS 3.3 Compatibility Autoloader
