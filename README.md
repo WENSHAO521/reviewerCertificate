@@ -8,6 +8,7 @@ The Reviewer Certificate Plugin enables reviewers to generate and download perso
 
 **Changes in v1.12.1**:
 
+- Smaller QR code in the bottom-right corner with the certificate code beneath it.
 - Settings page: saving stays on the page (images included), the button reads "Save", the form uses the full page width, and OJS's form styles no longer override the plugin's controls.
 
 **Changes in v1.12.0**:

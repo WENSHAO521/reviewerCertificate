@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.12.1] - 2026-11-01
 
+### Changed
+
+- The QR code is now a small 15 mm mark in the bottom-right corner, with the certificate code printed right under it. With the QR code on, the code is no longer repeated in the certificate body. Without the QR code nothing changes.
+
 ### Fixed
 
 - Settings page: saving no longer reloads the page or leaves the settings when an image is chosen. The whole form, files included, is saved in the background and a "saved" message appears next to the Save button.
