@@ -14,8 +14,8 @@
 		// Initially setup as AJAX form
 		$('#certificateSettingsForm').pkpHandler('$.pkp.controllers.form.AjaxFormHandler');
 
-		// Handle background image preview and file selection
-		$('#backgroundImage').on('change', function(e) {ldelim}
+		// Handle image file selection (background, logo, cover, seal)
+		$('#backgroundImage, #logoImage, #coverImage, #sealImage').on('change', function(e) {ldelim}
 			var file = e.target.files[0];
 			if (file) {ldelim}
 				// Validate file type
@@ -32,24 +32,29 @@
 				{rdelim}
 				// Show filename
 				var fileName = file.name;
-				if ($('#imagePreviewText').length === 0) {ldelim}
-					$(this).after('<p id="imagePreviewText" class="description" style="color: #28a745; margin-top: 5px;"></p>');
+				var previewId = this.id + 'PreviewText';
+				if ($('#' + previewId).length === 0) {ldelim}
+					$(this).after('<p id="' + previewId + '" class="description" style="color: #28a745; margin-top: 5px;"></p>');
 				{rdelim}
-				$('#imagePreviewText').text('Selected: ' + fileName);
+				$('#' + previewId).text('Selected: ' + fileName);
 
 				// Disable AJAX submission when file is selected
 				fileSelected = true;
 				console.log('ReviewerCertificate: File selected, will use regular form submission');
 			{rdelim} else {ldelim}
-				fileSelected = false;
-				if ($('#imagePreviewText').length) {ldelim}
-					$('#imagePreviewText').remove();
-				{rdelim}
+				$('#' + this.id + 'PreviewText').remove();
 			{rdelim}
+			// Use a regular POST while any image input holds a file
+			fileSelected = $('#backgroundImage, #logoImage, #coverImage, #sealImage').filter(function() {ldelim}
+				return this.files && this.files.length > 0;
+			{rdelim}).length > 0;
 		{rdelim});
 
 		// Intercept form submission BEFORE AjaxFormHandler
 		$('#certificateSettingsForm').on('submit.fileUpload', function(e) {ldelim}
+			fileSelected = $('#backgroundImage, #logoImage, #coverImage, #sealImage').filter(function() {ldelim}
+				return this.files && this.files.length > 0;
+			{rdelim}).length > 0;
 			if (fileSelected) {ldelim}
 				console.log('ReviewerCertificate: File selected - destroying AjaxFormHandler for regular submission');
 				// Stop event propagation to prevent AjaxFormHandler from handling it
@@ -145,6 +150,75 @@
 			{/if}
 		{/fbvFormSection}
 
+		{* Logo image, drawn over the background *}
+		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.logoImage" description="plugins.generic.reviewerCertificate.settings.logoImageDescription"}
+			<input type="file" id="logoImage" name="logoImage" accept="image/png,image/jpeg" class="pkp_form_file" />
+			{if $logoImage}
+				<p class="description">{translate key="plugins.generic.reviewerCertificate.settings.currentImage"}: {$logoImageName|escape}</p>
+				{fbvElement type="checkbox" id="removeLogoImage" value="1" label="plugins.generic.reviewerCertificate.settings.removeImage"}
+			{/if}
+			<div class="pkp_helpers_clear" style="margin-top: 8px;">
+				<div style="float:left; margin-right: 15px;">
+					<label for="logoWidth">{translate key="plugins.generic.reviewerCertificate.settings.image.width"}</label>
+					{fbvElement type="text" id="logoWidth" value=$logoWidth size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; margin-right: 15px;">
+					<label for="logoX">{translate key="plugins.generic.reviewerCertificate.settings.image.x"}</label>
+					{fbvElement type="text" id="logoX" value=$logoX size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left;">
+					<label for="logoY">{translate key="plugins.generic.reviewerCertificate.settings.image.y"}</label>
+					{fbvElement type="text" id="logoY" value=$logoY size=$fbvStyles.size.SMALL inline=true}
+				</div>
+			</div>
+		{/fbvFormSection}
+
+		{* Cover image, drawn over the background *}
+		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.coverImage" description="plugins.generic.reviewerCertificate.settings.coverImageDescription"}
+			<input type="file" id="coverImage" name="coverImage" accept="image/png,image/jpeg" class="pkp_form_file" />
+			{if $coverImage}
+				<p class="description">{translate key="plugins.generic.reviewerCertificate.settings.currentImage"}: {$coverImageName|escape}</p>
+				{fbvElement type="checkbox" id="removeCoverImage" value="1" label="plugins.generic.reviewerCertificate.settings.removeImage"}
+			{/if}
+			<div class="pkp_helpers_clear" style="margin-top: 8px;">
+				<div style="float:left; margin-right: 15px;">
+					<label for="coverWidth">{translate key="plugins.generic.reviewerCertificate.settings.image.width"}</label>
+					{fbvElement type="text" id="coverWidth" value=$coverWidth size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; margin-right: 15px;">
+					<label for="coverX">{translate key="plugins.generic.reviewerCertificate.settings.image.x"}</label>
+					{fbvElement type="text" id="coverX" value=$coverX size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left;">
+					<label for="coverY">{translate key="plugins.generic.reviewerCertificate.settings.image.y"}</label>
+					{fbvElement type="text" id="coverY" value=$coverY size=$fbvStyles.size.SMALL inline=true}
+				</div>
+			</div>
+		{/fbvFormSection}
+
+		{* Seal image, drawn over the background *}
+		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.sealImage" description="plugins.generic.reviewerCertificate.settings.sealImageDescription"}
+			<input type="file" id="sealImage" name="sealImage" accept="image/png,image/jpeg" class="pkp_form_file" />
+			{if $sealImage}
+				<p class="description">{translate key="plugins.generic.reviewerCertificate.settings.currentImage"}: {$sealImageName|escape}</p>
+				{fbvElement type="checkbox" id="removeSealImage" value="1" label="plugins.generic.reviewerCertificate.settings.removeImage"}
+			{/if}
+			<div class="pkp_helpers_clear" style="margin-top: 8px;">
+				<div style="float:left; margin-right: 15px;">
+					<label for="sealWidth">{translate key="plugins.generic.reviewerCertificate.settings.image.width"}</label>
+					{fbvElement type="text" id="sealWidth" value=$sealWidth size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; margin-right: 15px;">
+					<label for="sealX">{translate key="plugins.generic.reviewerCertificate.settings.image.x"}</label>
+					{fbvElement type="text" id="sealX" value=$sealX size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left;">
+					<label for="sealY">{translate key="plugins.generic.reviewerCertificate.settings.image.y"}</label>
+					{fbvElement type="text" id="sealY" value=$sealY size=$fbvStyles.size.SMALL inline=true}
+				</div>
+			</div>
+		{/fbvFormSection}
+
 		{* Header Text *}
 		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.headerText" description="plugins.generic.reviewerCertificate.settings.headerTextDescription"}
 			{fbvElement type="text" id="headerText" value=$headerText maxlength="255" size=$fbvStyles.size.LARGE}
@@ -225,6 +299,136 @@
 				<div style="float:left;">
 					<label for="textColorB">B:</label>
 					{fbvElement type="text" id="textColorB" value=$textColorB|default:0 size=$fbvStyles.size.SMALL inline=true}
+				</div>
+			</div>
+		{/fbvFormSection}
+
+	{/fbvFormArea}
+
+	{fbvFormArea id="certificateTypography" title="plugins.generic.reviewerCertificate.settings.typography"}
+
+		{* Layout mode: classic keeps the single-block body; structured styles each line by role *}
+		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.layoutMode" description="plugins.generic.reviewerCertificate.settings.layoutModeDescription"}
+			{fbvElement type="select" id="layoutMode" from=$layoutModeOptions selected=$layoutMode translate=false defaultValue="classic"}
+		{/fbvFormSection}
+
+		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.typography.title" description="plugins.generic.reviewerCertificate.settings.typography.titleDescription"}
+			<div class="pkp_helpers_clear">
+				<div style="float:left; margin-right: 15px;">
+					<label for="titleFontSize">{translate key="plugins.generic.reviewerCertificate.settings.typography.size"}</label>
+					{fbvElement type="text" id="titleFontSize" value=$titleFontSize|default:28 size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; margin-right: 15px;">
+					<label for="titleColor">{translate key="plugins.generic.reviewerCertificate.settings.typography.color"}</label>
+					{fbvElement type="text" id="titleColor" value=$titleColor maxlength="7" size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; padding-top: 18px; margin-right: 15px;">
+					{fbvElement type="checkbox" id="titleBold" value="1" checked=$titleBold label="plugins.generic.reviewerCertificate.settings.typography.bold"}
+				</div>
+			</div>
+		{/fbvFormSection}
+
+		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.typography.name" description="plugins.generic.reviewerCertificate.settings.typography.nameDescription"}
+			<div class="pkp_helpers_clear">
+				<div style="float:left; margin-right: 15px;">
+					<label for="nameFontSize">{translate key="plugins.generic.reviewerCertificate.settings.typography.size"}</label>
+					{fbvElement type="text" id="nameFontSize" value=$nameFontSize|default:25 size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; margin-right: 15px;">
+					<label for="nameColor">{translate key="plugins.generic.reviewerCertificate.settings.typography.color"}</label>
+					{fbvElement type="text" id="nameColor" value=$nameColor maxlength="7" size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; padding-top: 18px; margin-right: 15px;">
+					{fbvElement type="checkbox" id="nameBold" value="1" checked=$nameBold label="plugins.generic.reviewerCertificate.settings.typography.bold"}
+				</div>
+				<div style="float:left; padding-top: 18px; margin-right: 15px;">
+					{fbvElement type="checkbox" id="nameUppercase" value="1" checked=$nameUppercase label="plugins.generic.reviewerCertificate.settings.typography.uppercase"}
+				</div>
+			</div>
+		{/fbvFormSection}
+
+		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.typography.journal" description="plugins.generic.reviewerCertificate.settings.typography.journalDescription"}
+			<div class="pkp_helpers_clear">
+				<div style="float:left; margin-right: 15px;">
+					<label for="journalFontSize">{translate key="plugins.generic.reviewerCertificate.settings.typography.size"}</label>
+					{fbvElement type="text" id="journalFontSize" value=$journalFontSize|default:17 size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; margin-right: 15px;">
+					<label for="journalColor">{translate key="plugins.generic.reviewerCertificate.settings.typography.color"}</label>
+					{fbvElement type="text" id="journalColor" value=$journalColor maxlength="7" size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; padding-top: 18px; margin-right: 15px;">
+					{fbvElement type="checkbox" id="journalBold" value="1" checked=$journalBold label="plugins.generic.reviewerCertificate.settings.typography.bold"}
+				</div>
+			</div>
+		{/fbvFormSection}
+
+		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.typography.body" description="plugins.generic.reviewerCertificate.settings.typography.bodyDescription"}
+			<div class="pkp_helpers_clear">
+				<div style="float:left; margin-right: 15px;">
+					<label for="bodyFontSize">{translate key="plugins.generic.reviewerCertificate.settings.typography.size"}</label>
+					{fbvElement type="text" id="bodyFontSize" value=$bodyFontSize|default:13 size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; margin-right: 15px;">
+					<label for="bodyColor">{translate key="plugins.generic.reviewerCertificate.settings.typography.color"}</label>
+					{fbvElement type="text" id="bodyColor" value=$bodyColor maxlength="7" size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; padding-top: 18px; margin-right: 15px;">
+					{fbvElement type="checkbox" id="bodyBold" value="1" checked=$bodyBold label="plugins.generic.reviewerCertificate.settings.typography.bold"}
+				</div>
+			</div>
+		{/fbvFormSection}
+
+		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.typography.detail" description="plugins.generic.reviewerCertificate.settings.typography.detailDescription"}
+			<div class="pkp_helpers_clear">
+				<div style="float:left; margin-right: 15px;">
+					<label for="detailFontSize">{translate key="plugins.generic.reviewerCertificate.settings.typography.size"}</label>
+					{fbvElement type="text" id="detailFontSize" value=$detailFontSize|default:10 size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; margin-right: 15px;">
+					<label for="detailColor">{translate key="plugins.generic.reviewerCertificate.settings.typography.color"}</label>
+					{fbvElement type="text" id="detailColor" value=$detailColor maxlength="7" size=$fbvStyles.size.SMALL inline=true}
+				</div>
+			</div>
+		{/fbvFormSection}
+
+		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.typography.footer" description="plugins.generic.reviewerCertificate.settings.typography.footerDescription"}
+			<div class="pkp_helpers_clear">
+				<div style="float:left; margin-right: 15px;">
+					<label for="footerFontSize">{translate key="plugins.generic.reviewerCertificate.settings.typography.size"}</label>
+					{fbvElement type="text" id="footerFontSize" value=$footerFontSize|default:10 size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; margin-right: 15px;">
+					<label for="footerColor">{translate key="plugins.generic.reviewerCertificate.settings.typography.color"}</label>
+					{fbvElement type="text" id="footerColor" value=$footerColor maxlength="7" size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; padding-top: 18px; margin-right: 15px;">
+					{fbvElement type="checkbox" id="footerBold" value="1" checked=$footerBold label="plugins.generic.reviewerCertificate.settings.typography.bold"}
+				</div>
+				<div style="float:left; margin-right: 15px;">
+					<label for="footerPosition">{translate key="plugins.generic.reviewerCertificate.settings.typography.footerPosition"}</label>
+					{fbvElement type="select" id="footerPosition" from=$footerPositionOptions selected=$footerPosition translate=false defaultValue="flow" inline=true}
+				</div>
+				<div style="float:left;">
+					<label for="footerBottomSpacing">{translate key="plugins.generic.reviewerCertificate.settings.typography.footerBottomSpacing"}</label>
+					{fbvElement type="text" id="footerBottomSpacing" value=$footerBottomSpacing|default:20 size=$fbvStyles.size.SMALL inline=true}
+				</div>
+			</div>
+		{/fbvFormSection}
+
+		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.typography.spacing" description="plugins.generic.reviewerCertificate.settings.typography.spacingDescription"}
+			<div class="pkp_helpers_clear">
+				<div style="float:left; margin-right: 15px;">
+					<label for="paragraphSpacing">{translate key="plugins.generic.reviewerCertificate.settings.typography.paragraphSpacing"}</label>
+					{fbvElement type="text" id="paragraphSpacing" value=$paragraphSpacing|default:4 size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; margin-right: 15px;">
+					<label for="nameSpacing">{translate key="plugins.generic.reviewerCertificate.settings.typography.nameSpacing"}</label>
+					{fbvElement type="text" id="nameSpacing" value=$nameSpacing|default:4 size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left;">
+					<label for="sideMargin">{translate key="plugins.generic.reviewerCertificate.settings.typography.sideMargin"}</label>
+					{fbvElement type="text" id="sideMargin" value=$sideMargin|default:15 size=$fbvStyles.size.SMALL inline=true}
 				</div>
 			</div>
 		{/fbvFormSection}

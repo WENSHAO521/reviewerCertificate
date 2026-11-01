@@ -38,6 +38,16 @@
 	<message key="plugins.generic.reviewerCertificate.settings.backgroundImageDescription">Lataa taustakuva todistukselle (JPG tai PNG, suositeltu koko: 2100x2970 pikseliä A4:lle)</message>
 	<message key="plugins.generic.reviewerCertificate.settings.currentImage">Nykyinen taustakuva</message>
 	<message key="plugins.generic.reviewerCertificate.settings.removeBackgroundImage">Remove the background image</message>
+	<message key="plugins.generic.reviewerCertificate.settings.logoImage">Logo</message>
+	<message key="plugins.generic.reviewerCertificate.settings.logoImageDescription">Optional PNG or JPEG (max 5 MB), drawn over the background. A PNG with a transparent background works best. Width in mm keeps the image's proportions. Leave X and Y at -1 for the automatic position (top left).</message>
+	<message key="plugins.generic.reviewerCertificate.settings.coverImage">Journal Cover</message>
+	<message key="plugins.generic.reviewerCertificate.settings.coverImageDescription">Optional PNG or JPEG (max 5 MB), drawn over the background. Width in mm keeps the image's proportions. Leave X and Y at -1 for the automatic position (top right).</message>
+	<message key="plugins.generic.reviewerCertificate.settings.sealImage">Seal</message>
+	<message key="plugins.generic.reviewerCertificate.settings.sealImageDescription">Optional PNG or JPEG (max 5 MB), drawn over the background; use a PNG with a transparent background for a round seal. Width in mm keeps the image's proportions. Leave X and Y at -1 for the automatic position: bottom right, or just left of the QR code when the QR code is enabled.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.removeImage">Remove this image</message>
+	<message key="plugins.generic.reviewerCertificate.settings.image.width">Width (mm)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.image.x">X from left (mm, -1 = auto)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.image.y">Y from top (mm, -1 = auto)</message>
 
 	<!-- Header Text -->
 	<message key="plugins.generic.reviewerCertificate.settings.headerText">Otsikkoteksti</message>
@@ -56,6 +66,37 @@
 	<!-- Body Top Offset -->
 	<message key="plugins.generic.reviewerCertificate.settings.bodyTopOffset">Body Top Spacing (mm)</message>
 	<message key="plugins.generic.reviewerCertificate.settings.bodyTopOffsetDescription">Extra blank space in millimetres above the body text. Use this to move the body down the page; blank lines typed at the start of the body template are removed when the form is saved.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography">Typography (Structured Layout)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.layoutMode">Certificate Layout</message>
+	<message key="plugins.generic.reviewerCertificate.settings.layoutModeDescription">Classic renders the body template as one block of text, as in earlier versions. Structured gives each line its own style: a line holding only {{$reviewerName}} (or first/last name) uses the reviewer name style, a line holding only {{$journalName}} uses the journal name style, lines with a date or {{$certificateCode}} use the detail style, and all other lines use the body text style. Blank lines in the template add paragraph spacing. Long names and titles shrink to fit one line, then wrap, and the whole layout scales down if needed to stay on one page.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.classic">Classic (single text block)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.structured">Structured (separate title, name, journal and detail styles)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.title">Certificate Title</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.titleDescription">Style of the header text. By default it is drawn at the top; put {{$certificateTitle}} on its own line in the body template to draw it there instead (for example below the journal name). Leave colour empty to use the general text colour. Suggested: 28–30 pt, bold.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.name">Reviewer Name</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.nameDescription">Applies to body lines that contain only the reviewer name. Suggested: 24–26 pt, bold.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.journal">Journal Name</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.journalDescription">Applies to body lines that contain only the journal name. Suggested: 16–18 pt.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.body">Acknowledgement Text</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.bodyDescription">Applies to all other body lines. Suggested: 12–14 pt.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.detail">Review Date and Certificate Code</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.detailDescription">Applies to body lines containing a date or the certificate code, and to the certificate code line. Suggested: 9–11 pt.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.size">Size (pt)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.bold">Bold</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.spacing">Spacing (mm)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.spacingDescription">Paragraph spacing is added for each blank line between body lines. Name spacing is extra space above and below the reviewer name. Side margin narrows the text area so text stays clear of logos in the background image.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.paragraphSpacing">Paragraph spacing</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.nameSpacing">Name spacing</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.color">Colour (#rrggbb)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.uppercase">Uppercase</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.footer">Footer</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.footerDescription">Style and position of the footer text. "Bottom left" or "Bottom centre" pins it at a fixed distance from the bottom edge of the page (for example inside a band in your background image); the rest of the content is kept above it.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.footerPosition">Position</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.footerBottomSpacing">Distance from bottom (mm)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.sideMargin">Side margin</message>
+	<message key="plugins.generic.reviewerCertificate.settings.footerPosition.flow">Below the content</message>
+	<message key="plugins.generic.reviewerCertificate.settings.footerPosition.bottomLeft">Bottom left</message>
+	<message key="plugins.generic.reviewerCertificate.settings.footerPosition.bottomCenter">Bottom centre</message>
 
 	<!-- Available Variables -->
 	<message key="plugins.generic.reviewerCertificate.settings.availableVariables">Käytettävissä Olevat Pohjamuuttujat</message>

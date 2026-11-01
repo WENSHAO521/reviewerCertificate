@@ -57,7 +57,7 @@ class CertificateSettingsFormTest extends TestCase
 
         $this->plugin = new FakeSettingsPlugin();
         \PKP\form\Form::$mockUserVars = array('bodyTemplate' => 'Body', 'minimumReviews' => '1');
-        unset($_FILES['backgroundImage']);
+        unset($_FILES['backgroundImage'], $_FILES['logoImage'], $_FILES['coverImage'], $_FILES['sealImage']);
 
         $this->uploadDir = sys_get_temp_dir() . '/rc-settings-form-test-' . getmypid();
         if (!is_dir($this->uploadDir)) {
@@ -68,7 +68,7 @@ class CertificateSettingsFormTest extends TestCase
     protected function tearDown(): void
     {
         \PKP\form\Form::$mockUserVars = array();
-        unset($_FILES['backgroundImage']);
+        unset($_FILES['backgroundImage'], $_FILES['logoImage'], $_FILES['coverImage'], $_FILES['sealImage']);
 
         foreach (glob($this->uploadDir . '/*') ?: array() as $file) {
             @unlink($file);
@@ -272,5 +272,108 @@ class CertificateSettingsFormTest extends TestCase
             $this->plugin->settings['bodyTemplate'],
             'OJS Core::cleanVar() trims user vars, so blank lines cannot position the body'
         );
+    }
+
+    public function testTypographySettingsAreSavedAndClamped(): void
+    {
+        \PKP\form\Form::$mockUserVars = array_merge(\PKP\form\Form::$mockUserVars, array(
+            'layoutMode' => 'structured',
+            'nameFontSize' => '26',
+            'nameBold' => '1',
+            'journalFontSize' => '999',
+            'bodyFontSize' => 'abc',
+            'paragraphSpacing' => '-3',
+            'titleColor' => '1B6F8A',
+            'nameColor' => 'javascript:alert(1)',
+            'footerPosition' => 'bottomLeft',
+            'nameUppercase' => '1',
+        ));
+
+        $form = $this->makeForm();
+        $form->readInputData();
+        $form->execute();
+
+        $this->assertSame('structured', $this->plugin->settings['layoutMode']);
+        $this->assertSame(26, $this->plugin->settings['nameFontSize']);
+        $this->assertSame(1, $this->plugin->settings['nameBold']);
+        $this->assertSame(72, $this->plugin->settings['journalFontSize']);
+        $this->assertSame(13, $this->plugin->settings['bodyFontSize'], 'Invalid input falls back to the default');
+        $this->assertSame(0, $this->plugin->settings['paragraphSpacing']);
+        // Unchecked bold boxes are absent from the POST and must save as off
+        $this->assertSame(0, $this->plugin->settings['titleBold']);
+        $this->assertSame(28, $this->plugin->settings['titleFontSize'], 'Missing sizes use the suggested default');
+        $this->assertSame('#1b6f8a', $this->plugin->settings['titleColor']);
+        $this->assertSame('', $this->plugin->settings['nameColor'], 'Invalid colours are dropped');
+        $this->assertSame('bottomLeft', $this->plugin->settings['footerPosition']);
+        $this->assertSame(1, $this->plugin->settings['nameUppercase']);
+
+    }
+
+    public function testUnknownLayoutModeSavesAsClassic(): void
+    {
+        \PKP\form\Form::$mockUserVars['layoutMode'] = '<script>';
+
+        $form = $this->makeForm();
+        $form->readInputData();
+        $form->execute();
+
+        $this->assertSame('classic', $this->plugin->settings['layoutMode']);
+    }
+
+    public function testTypographyDefaultsShownForFreshInstall(): void
+    {
+        $form = $this->makeForm();
+        $form->initData();
+
+        $this->assertSame('classic', $form->getData('layoutMode'));
+        $this->assertSame(28, $form->getData('titleFontSize'));
+        $this->assertSame(1, $form->getData('titleBold'));
+        $this->assertSame(25, $form->getData('nameFontSize'));
+        $this->assertSame(17, $form->getData('journalFontSize'));
+        $this->assertSame(13, $form->getData('bodyFontSize'));
+        $this->assertSame(10, $form->getData('detailFontSize'));
+    }
+
+    // ------------------------------------------------- logo / cover / seal images
+
+    public function testOverlayImagesArePreservedAndCanBeRemovedIndependently(): void
+    {
+        $this->plugin->settings['logoImage'] = '/files/journals/1/reviewerCertificate/logo_1.png';
+        $this->plugin->settings['coverImage'] = '/files/journals/1/reviewerCertificate/cover_1.jpg';
+        $this->plugin->settings['sealImage'] = '/files/journals/1/reviewerCertificate/seal_1.png';
+        \PKP\form\Form::$mockUserVars['removeCoverImage'] = '1';
+
+        $form = $this->makeForm();
+        $form->readInputData();
+        $form->execute();
+
+        $this->assertSame('/files/journals/1/reviewerCertificate/logo_1.png', $this->plugin->settings['logoImage']);
+        $this->assertSame('', $this->plugin->settings['coverImage']);
+        $this->assertSame('/files/journals/1/reviewerCertificate/seal_1.png', $this->plugin->settings['sealImage']);
+    }
+
+    public function testFailedOverlayUploadRejectsTheSave(): void
+    {
+        $_FILES['sealImage'] = ['error' => UPLOAD_ERR_INI_SIZE, 'tmp_name' => '', 'size' => 0];
+        $form = $this->makeForm();
+        $form->readInputData();
+        $this->assertFalse($form->validate());
+        $this->assertSame([], $this->plugin->settings);
+    }
+
+    public function testOverlayPositionsDefaultToAutomaticAndAreClamped(): void
+    {
+        \PKP\form\Form::$mockUserVars['logoWidth'] = '500';
+        \PKP\form\Form::$mockUserVars['sealX'] = '200';
+        \PKP\form\Form::$mockUserVars['sealY'] = '';
+
+        $form = $this->makeForm();
+        $form->readInputData();
+        $form->execute();
+
+        $this->assertSame(200, $this->plugin->settings['logoWidth']);
+        $this->assertSame(-1, $this->plugin->settings['logoX'], 'Untouched positions stay automatic');
+        $this->assertSame(200, $this->plugin->settings['sealX']);
+        $this->assertSame(-1, $this->plugin->settings['sealY']);
     }
 }

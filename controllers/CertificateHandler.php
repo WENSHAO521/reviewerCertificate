@@ -796,8 +796,18 @@ class CertificateHandler extends Handler {
             'includeQRCode',
             'minimumReviews',
             'pageOrientation',
-            'bodyTopOffset'
+            'bodyTopOffset',
+            'layoutMode',
+            'logoImage',
+            'coverImage',
+            'sealImage'
         );
+        require_once dirname(__DIR__) . '/classes/CertificateGenerator.php';
+        $settingNames = array_merge($settingNames, array_keys(
+            \APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::getTypographySettingDefinitions()
+        ), array_keys(
+            \APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::getStructuredStringSettingDefaults()
+        ));
 
         foreach ($settingNames as $name) {
             $settings[$name] = $plugin->getSetting($context->getId(), $name);

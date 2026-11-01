@@ -161,7 +161,8 @@ class ReviewerCertificatePlugin extends GenericPlugin {
                 // render raw {"status":...} text (Issue #71). Any $_FILES
                 // entry (even a failed upload, e.g. UPLOAD_ERR_INI_SIZE)
                 // means we are on that non-AJAX path and must redirect.
-                $isNonAjaxUpload = isset($_FILES['backgroundImage'])
+                $isNonAjaxUpload = (isset($_FILES['backgroundImage']) || isset($_FILES['logoImage'])
+                        || isset($_FILES['coverImage']) || isset($_FILES['sealImage']))
                     && (empty($_SERVER['HTTP_X_REQUESTED_WITH'])
                         || strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) !== 'xmlhttprequest');
 
@@ -218,7 +219,19 @@ class ReviewerCertificatePlugin extends GenericPlugin {
                     'includeQRCode' => $this->getSetting($context->getId(), 'includeQRCode') ?: false,
                     'pageOrientation' => $this->getSetting($context->getId(), 'pageOrientation') ?: 'P',
                     'bodyTopOffset' => $this->getSetting($context->getId(), 'bodyTopOffset') ?: 0,
+                    'layoutMode' => $this->getSetting($context->getId(), 'layoutMode') ?: 'classic',
+                    'logoImage' => $this->getSetting($context->getId(), 'logoImage'),
+                    'coverImage' => $this->getSetting($context->getId(), 'coverImage'),
+                    'sealImage' => $this->getSetting($context->getId(), 'sealImage'),
                 );
+                // Typography settings: pass stored values through untouched (null means
+                // "use the default"); the generator applies defaults and clamping.
+                foreach (array_merge(
+                    array_keys(\APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::getTypographySettingDefinitions()),
+                    array_keys(\APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::getStructuredStringSettingDefaults())
+                ) as $typographySetting) {
+                    $templateSettings[$typographySetting] = $this->getSetting($context->getId(), $typographySetting);
+                }
 
                 $generator->setContext($context);
                 $generator->setTemplateSettings($templateSettings);
