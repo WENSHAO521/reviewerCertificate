@@ -231,6 +231,85 @@
 
 	{/fbvFormArea}
 
+	{fbvFormArea id="certificateTypography" title="plugins.generic.reviewerCertificate.settings.typography"}
+
+		{* Layout mode: classic keeps the single-block body; structured styles each line by role *}
+		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.layoutMode" description="plugins.generic.reviewerCertificate.settings.layoutModeDescription"}
+			{fbvElement type="select" id="layoutMode" from=$layoutModeOptions selected=$layoutMode translate=false defaultValue="classic"}
+		{/fbvFormSection}
+
+		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.typography.title" description="plugins.generic.reviewerCertificate.settings.typography.titleDescription"}
+			<div class="pkp_helpers_clear">
+				<div style="float:left; margin-right: 15px;">
+					<label for="titleFontSize">{translate key="plugins.generic.reviewerCertificate.settings.typography.size"}</label>
+					{fbvElement type="text" id="titleFontSize" value=$titleFontSize|default:28 size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; padding-top: 18px;">
+					{fbvElement type="checkbox" id="titleBold" value="1" checked=$titleBold label="plugins.generic.reviewerCertificate.settings.typography.bold"}
+				</div>
+			</div>
+		{/fbvFormSection}
+
+		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.typography.name" description="plugins.generic.reviewerCertificate.settings.typography.nameDescription"}
+			<div class="pkp_helpers_clear">
+				<div style="float:left; margin-right: 15px;">
+					<label for="nameFontSize">{translate key="plugins.generic.reviewerCertificate.settings.typography.size"}</label>
+					{fbvElement type="text" id="nameFontSize" value=$nameFontSize|default:25 size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; padding-top: 18px;">
+					{fbvElement type="checkbox" id="nameBold" value="1" checked=$nameBold label="plugins.generic.reviewerCertificate.settings.typography.bold"}
+				</div>
+			</div>
+		{/fbvFormSection}
+
+		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.typography.journal" description="plugins.generic.reviewerCertificate.settings.typography.journalDescription"}
+			<div class="pkp_helpers_clear">
+				<div style="float:left; margin-right: 15px;">
+					<label for="journalFontSize">{translate key="plugins.generic.reviewerCertificate.settings.typography.size"}</label>
+					{fbvElement type="text" id="journalFontSize" value=$journalFontSize|default:17 size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; padding-top: 18px;">
+					{fbvElement type="checkbox" id="journalBold" value="1" checked=$journalBold label="plugins.generic.reviewerCertificate.settings.typography.bold"}
+				</div>
+			</div>
+		{/fbvFormSection}
+
+		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.typography.body" description="plugins.generic.reviewerCertificate.settings.typography.bodyDescription"}
+			<div class="pkp_helpers_clear">
+				<div style="float:left; margin-right: 15px;">
+					<label for="bodyFontSize">{translate key="plugins.generic.reviewerCertificate.settings.typography.size"}</label>
+					{fbvElement type="text" id="bodyFontSize" value=$bodyFontSize|default:13 size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; padding-top: 18px;">
+					{fbvElement type="checkbox" id="bodyBold" value="1" checked=$bodyBold label="plugins.generic.reviewerCertificate.settings.typography.bold"}
+				</div>
+			</div>
+		{/fbvFormSection}
+
+		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.typography.detail" description="plugins.generic.reviewerCertificate.settings.typography.detailDescription"}
+			<div class="pkp_helpers_clear">
+				<div style="float:left; margin-right: 15px;">
+					<label for="detailFontSize">{translate key="plugins.generic.reviewerCertificate.settings.typography.size"}</label>
+					{fbvElement type="text" id="detailFontSize" value=$detailFontSize|default:10 size=$fbvStyles.size.SMALL inline=true}
+				</div>
+			</div>
+		{/fbvFormSection}
+
+		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.typography.spacing" description="plugins.generic.reviewerCertificate.settings.typography.spacingDescription"}
+			<div class="pkp_helpers_clear">
+				<div style="float:left; margin-right: 15px;">
+					<label for="paragraphSpacing">{translate key="plugins.generic.reviewerCertificate.settings.typography.paragraphSpacing"}</label>
+					{fbvElement type="text" id="paragraphSpacing" value=$paragraphSpacing|default:4 size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left;">
+					<label for="nameSpacing">{translate key="plugins.generic.reviewerCertificate.settings.typography.nameSpacing"}</label>
+					{fbvElement type="text" id="nameSpacing" value=$nameSpacing|default:4 size=$fbvStyles.size.SMALL inline=true}
+				</div>
+			</div>
+		{/fbvFormSection}
+
+	{/fbvFormArea}
+
 	{fbvFormArea id="certificateEligibility" title="plugins.generic.reviewerCertificate.settings.eligibility"}
 
 		{* Minimum Reviews *}

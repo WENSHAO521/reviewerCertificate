@@ -149,6 +149,22 @@ The iterative development approach with Claude Code enabled rapid prototyping, t
 - **Body Top Spacing (mm)**: Extra blank space above the body text, 0-100 mm (default: 0). Use this rather than typing blank lines at the start of the body template — OJS trims leading whitespace when the form is saved, so blank lines never reach the PDF.
 - **Page Orientation**: Portrait or landscape
 
+#### Typography (Structured Layout)
+
+Set **Certificate Layout** to *Structured* to give the reviewer name, journal name and other parts of the certificate their own size and weight. *Classic* (the default) keeps the single-block body used by earlier versions, so existing certificates do not change until you opt in.
+
+In the structured layout each line of the body template is styled by what it contains:
+
+| Element | Which lines | Default |
+|---|---|---|
+| Certificate title | Header text | 28 pt, bold |
+| Reviewer name | A line containing only `{{$reviewerName}}` (or first/last name) | 25 pt, bold |
+| Journal name | A line containing only `{{$journalName}}` (optionally with `{{$journalAcronym}}`) | 17 pt |
+| Acknowledgement text | Every other line | 13 pt |
+| Review date, footer, certificate code | Lines with a date variable or `{{$certificateCode}}`, the footer, and the certificate code line | 10 pt |
+
+Blank lines in the template add **paragraph spacing**, and **name spacing** adds extra room above and below the reviewer name (both in mm, default 4). Long names and journal titles first shrink (down to 60% of their size) to fit on one line, then wrap; if the content is still too tall, the whole layout scales down so the certificate stays on one page. The certificate code and QR verification are unchanged.
+
 #### Eligibility Criteria
 
 - **Minimum Reviews**: Set how many completed reviews are required (default: 1)

@@ -218,7 +218,13 @@ class ReviewerCertificatePlugin extends GenericPlugin {
                     'includeQRCode' => $this->getSetting($context->getId(), 'includeQRCode') ?: false,
                     'pageOrientation' => $this->getSetting($context->getId(), 'pageOrientation') ?: 'P',
                     'bodyTopOffset' => $this->getSetting($context->getId(), 'bodyTopOffset') ?: 0,
+                    'layoutMode' => $this->getSetting($context->getId(), 'layoutMode') ?: 'classic',
                 );
+                // Typography settings: pass stored values through untouched (null means
+                // "use the default"); the generator applies defaults and clamping.
+                foreach (array_keys(\APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::getTypographySettingDefinitions()) as $typographySetting) {
+                    $templateSettings[$typographySetting] = $this->getSetting($context->getId(), $typographySetting);
+                }
 
                 $generator->setContext($context);
                 $generator->setTemplateSettings($templateSettings);

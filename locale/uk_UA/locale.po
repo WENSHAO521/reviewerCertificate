@@ -308,6 +308,69 @@ msgstr "Відступ зверху для основного тексту (мм
 msgid "plugins.generic.reviewerCertificate.settings.bodyTopOffsetDescription"
 msgstr "Додатковий порожній простір у міліметрах над основним текстом. Використовуйте його, щоб опустити текст нижче на сторінці; порожні рядки на початку шаблону основного тексту видаляються під час збереження форми."
 
+msgid "plugins.generic.reviewerCertificate.settings.typography"
+msgstr "Typography (Structured Layout)"
+
+msgid "plugins.generic.reviewerCertificate.settings.layoutMode"
+msgstr "Certificate Layout"
+
+msgid "plugins.generic.reviewerCertificate.settings.layoutModeDescription"
+msgstr "Classic renders the body template as one block of text, as in earlier versions. Structured gives each line its own style: a line holding only {{$reviewerName}} (or first/last name) uses the reviewer name style, a line holding only {{$journalName}} uses the journal name style, lines with a date or {{$certificateCode}} use the detail style, and all other lines use the body text style. Blank lines in the template add paragraph spacing. Long names and titles shrink to fit one line, then wrap, and the whole layout scales down if needed to stay on one page."
+
+msgid "plugins.generic.reviewerCertificate.settings.layoutMode.classic"
+msgstr "Classic (single text block)"
+
+msgid "plugins.generic.reviewerCertificate.settings.layoutMode.structured"
+msgstr "Structured (separate title, name, journal and detail styles)"
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.title"
+msgstr "Certificate Title"
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.titleDescription"
+msgstr "Style of the header text in the structured layout. Suggested: 28–30 pt, bold."
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.name"
+msgstr "Reviewer Name"
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.nameDescription"
+msgstr "Applies to body lines that contain only the reviewer name. Suggested: 24–26 pt, bold."
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.journal"
+msgstr "Journal Name"
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.journalDescription"
+msgstr "Applies to body lines that contain only the journal name. Suggested: 16–18 pt."
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.body"
+msgstr "Acknowledgement Text"
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.bodyDescription"
+msgstr "Applies to all other body lines. Suggested: 12–14 pt."
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.detail"
+msgstr "Review Date, Footer and Certificate Code"
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.detailDescription"
+msgstr "Applies to body lines containing a date or the certificate code, the footer text and the certificate code line. Suggested: 9–11 pt."
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.size"
+msgstr "Size (pt)"
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.bold"
+msgstr "Bold"
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.spacing"
+msgstr "Spacing (mm)"
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.spacingDescription"
+msgstr "Paragraph spacing is added for each blank line between body lines. Name spacing is extra space above and below the reviewer name."
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.paragraphSpacing"
+msgstr "Paragraph spacing"
+
+msgid "plugins.generic.reviewerCertificate.settings.typography.nameSpacing"
+msgstr "Name spacing"
+
 msgid "plugins.generic.reviewerCertificate.myCertificates.title"
 msgstr "Мої сертифікати"
 

@@ -57,6 +57,15 @@ class CertificateSettingsForm extends Form {
     }
 
     /**
+     * Structured-layout typography settings: name => [default, min, max].
+     * @return array
+     */
+    private static function typographySettings() {
+        require_once dirname(__DIR__) . '/CertificateGenerator.php';
+        return \APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::getTypographySettingDefinitions();
+    }
+
+    /**
      * @copydoc Form::initData()
      */
     public function initData() {
@@ -74,6 +83,10 @@ class CertificateSettingsForm extends Form {
             $this->setData('includeQRCode', $this->plugin->getSetting($this->contextId, 'includeQRCode') ?? false);
             $this->setData('pageOrientation', $this->plugin->getSetting($this->contextId, 'pageOrientation') ?? 'P');
             $this->setData('backgroundImage', $this->plugin->getSetting($this->contextId, 'backgroundImage') ?? '');
+            $this->setData('layoutMode', $this->plugin->getSetting($this->contextId, 'layoutMode') === 'structured' ? 'structured' : 'classic');
+            foreach (self::typographySettings() as $field => $definition) {
+                $this->setData($field, $this->plugin->getSetting($this->contextId, $field) ?? $definition[0]);
+            }
             // Acknowledgement email templates — show localized defaults so
             // editors see and can adjust the actual letter text
             $this->setData('ackEmailSubject', $this->plugin->getSetting($this->contextId, 'ackEmailSubject')
@@ -96,6 +109,10 @@ class CertificateSettingsForm extends Form {
             $this->setData('includeQRCode', false);
             $this->setData('pageOrientation', 'P');
             $this->setData('backgroundImage', '');
+            $this->setData('layoutMode', 'classic');
+            foreach (self::typographySettings() as $field => $definition) {
+                $this->setData($field, $definition[0]);
+            }
         }
     }
 
@@ -103,7 +120,8 @@ class CertificateSettingsForm extends Form {
      * @copydoc Form::readInputData()
      */
     public function readInputData() {
-        $this->readUserVars(array(
+        $this->readUserVars(array_merge(array(
+            'layoutMode',
             'headerText',
             'bodyTemplate',
             'footerText',
@@ -119,7 +137,7 @@ class CertificateSettingsForm extends Form {
             'removeBackgroundImage',
             'ackEmailSubject',
             'ackEmailBody'
-        ));
+        ), array_keys(self::typographySettings())));
 
         // Carry the stored background image forward, since the file input is empty on
         // every render. Unless the journal ticked "remove" — before Issue #73 this
@@ -138,9 +156,10 @@ class CertificateSettingsForm extends Form {
 
     public function validate($callHooks = true) {
         $valid = parent::validate($callHooks);
-        foreach (['headerText', 'bodyTemplate', 'footerText', 'fontFamily', 'fontSize',
+        foreach (array_merge(['headerText', 'bodyTemplate', 'footerText', 'fontFamily', 'fontSize',
             'minimumReviews', 'bodyTopOffset', 'textColorR', 'textColorG', 'textColorB',
-            'includeQRCode', 'pageOrientation', 'removeBackgroundImage', 'ackEmailSubject', 'ackEmailBody'] as $field) {
+            'includeQRCode', 'pageOrientation', 'removeBackgroundImage', 'ackEmailSubject', 'ackEmailBody',
+            'layoutMode'], array_keys(self::typographySettings())) as $field) {
             $value = $this->getData($field);
             if ($value !== null && !is_scalar($value)) {
                 $this->addError($field, __('plugins.generic.reviewerCertificate.settings.invalidValue'));
@@ -230,6 +249,11 @@ class CertificateSettingsForm extends Form {
             'L' => __('plugins.generic.reviewerCertificate.settings.orientation.landscape'),
         );
         $templateMgr->assign('orientationOptions', $orientationOptions);
+
+        $templateMgr->assign('layoutModeOptions', array(
+            'classic' => __('plugins.generic.reviewerCertificate.settings.layoutMode.classic'),
+            'structured' => __('plugins.generic.reviewerCertificate.settings.layoutMode.structured'),
+        ));
 
         // Available template variables
         $templateVariables = array(
@@ -372,6 +396,19 @@ class CertificateSettingsForm extends Form {
                     $this->plugin->updateSetting($this->contextId, $field, max($range[0], min($range[1], (int) $this->getData($field))), 'int');
                 }
                 $this->plugin->updateSetting($this->contextId, 'includeQRCode', (bool) $this->getData('includeQRCode'), 'bool');
+                $this->plugin->updateSetting($this->contextId, 'layoutMode',
+                    $this->getData('layoutMode') === 'structured' ? 'structured' : 'classic', 'string');
+                foreach (self::typographySettings() as $field => $definition) {
+                    list($default, $min, $max) = $definition;
+                    $value = $this->getData($field);
+                    if ($max === 1) {
+                        // Bold checkboxes: an unchecked box is simply absent from the POST
+                        $value = $value ? 1 : 0;
+                    } elseif ($value === null || $value === '' || !is_numeric($value)) {
+                        $value = $default;
+                    }
+                    $this->plugin->updateSetting($this->contextId, $field, max($min, min($max, (int) $value)), 'int');
+                }
                 parent::execute(...$functionArgs);
             });
             $committed = true;

@@ -273,4 +273,55 @@ class CertificateSettingsFormTest extends TestCase
             'OJS Core::cleanVar() trims user vars, so blank lines cannot position the body'
         );
     }
+
+    public function testTypographySettingsAreSavedAndClamped(): void
+    {
+        \PKP\form\Form::$mockUserVars = array_merge(\PKP\form\Form::$mockUserVars, array(
+            'layoutMode' => 'structured',
+            'nameFontSize' => '26',
+            'nameBold' => '1',
+            'journalFontSize' => '999',
+            'bodyFontSize' => 'abc',
+            'paragraphSpacing' => '-3',
+        ));
+
+        $form = $this->makeForm();
+        $form->readInputData();
+        $form->execute();
+
+        $this->assertSame('structured', $this->plugin->settings['layoutMode']);
+        $this->assertSame(26, $this->plugin->settings['nameFontSize']);
+        $this->assertSame(1, $this->plugin->settings['nameBold']);
+        $this->assertSame(72, $this->plugin->settings['journalFontSize']);
+        $this->assertSame(13, $this->plugin->settings['bodyFontSize'], 'Invalid input falls back to the default');
+        $this->assertSame(0, $this->plugin->settings['paragraphSpacing']);
+        // Unchecked bold boxes are absent from the POST and must save as off
+        $this->assertSame(0, $this->plugin->settings['titleBold']);
+        $this->assertSame(28, $this->plugin->settings['titleFontSize'], 'Missing sizes use the suggested default');
+    }
+
+    public function testUnknownLayoutModeSavesAsClassic(): void
+    {
+        \PKP\form\Form::$mockUserVars['layoutMode'] = '<script>';
+
+        $form = $this->makeForm();
+        $form->readInputData();
+        $form->execute();
+
+        $this->assertSame('classic', $this->plugin->settings['layoutMode']);
+    }
+
+    public function testTypographyDefaultsShownForFreshInstall(): void
+    {
+        $form = $this->makeForm();
+        $form->initData();
+
+        $this->assertSame('classic', $form->getData('layoutMode'));
+        $this->assertSame(28, $form->getData('titleFontSize'));
+        $this->assertSame(1, $form->getData('titleBold'));
+        $this->assertSame(25, $form->getData('nameFontSize'));
+        $this->assertSame(17, $form->getData('journalFontSize'));
+        $this->assertSame(13, $form->getData('bodyFontSize'));
+        $this->assertSame(10, $form->getData('detailFontSize'));
+    }
 }

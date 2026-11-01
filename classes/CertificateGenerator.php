@@ -615,6 +615,11 @@ class CertificateGenerator {
             ? 'dejavusans'
             : $configuredFont;
 
+        if ($this->getLayoutMode() === 'structured') {
+            $this->addStructuredContent($pdf, $headerText, $footerText, $variables);
+            return;
+        }
+
         // Get base font size from settings and calculate proportional sizes
         $baseFontSize = $this->getTemplateSetting('fontSize', 12);
         $headerSize = round($baseFontSize * 2.0);      // 2x base (default: 24)
@@ -669,6 +674,242 @@ class CertificateGenerator {
             $pdf->SetFont($this->effectiveFont, '', $codeSize);
             $pdf->Cell(0, 5, 'Certificate Code: ' . $code, 0, 1, 'C');
         }
+    }
+
+    /**
+     * Typography settings used by the structured layout, with their default value
+     * and allowed range. Sizes are points, spacing is millimetres, bold flags are 0/1.
+     * Shared by the settings form, the download/preview paths and the generator so
+     * every caller agrees on defaults and clamping.
+     * @return array name => [default, min, max]
+     */
+    public static function getTypographySettingDefinitions() {
+        return array(
+            'titleFontSize' => array(28, 6, 72),
+            'titleBold' => array(1, 0, 1),
+            'nameFontSize' => array(25, 6, 72),
+            'nameBold' => array(1, 0, 1),
+            'journalFontSize' => array(17, 6, 72),
+            'journalBold' => array(0, 0, 1),
+            'bodyFontSize' => array(13, 6, 72),
+            'bodyBold' => array(0, 0, 1),
+            'detailFontSize' => array(10, 6, 72),
+            'paragraphSpacing' => array(4, 0, 50),
+            'nameSpacing' => array(4, 0, 50),
+        );
+    }
+
+    /**
+     * Layout mode: 'classic' renders the body as one block (the behaviour of every
+     * release before 1.11, and still the default so existing certificates do not
+     * move); 'structured' styles the reviewer name, journal name and date lines
+     * independently.
+     * @return string
+     */
+    private function getLayoutMode() {
+        return $this->getTemplateSetting('layoutMode', 'classic') === 'structured' ? 'structured' : 'classic';
+    }
+
+    /**
+     * Read a typography setting, falling back to its default and clamping to range.
+     * @param string $key
+     * @return int
+     */
+    private function getTypographySetting($key) {
+        $definitions = self::getTypographySettingDefinitions();
+        list($default, $min, $max) = $definitions[$key];
+        $value = $this->getTemplateSetting($key, $default);
+        if ($value === null || $value === '' || !is_numeric($value)) {
+            $value = $default;
+        }
+        return max($min, min($max, (int) $value));
+    }
+
+    /**
+     * Classify one raw (unsubstituted) body template line for the structured layout.
+     *   name    — the line holds only reviewer-name placeholders
+     *   journal — the line holds only journal-name placeholders
+     *   detail  — the line mentions a date or the certificate code
+     *   body    — everything else (acknowledgement text)
+     * @param string $line
+     * @return string
+     */
+    public static function classifyBodyLine($line) {
+        $placeholder = function ($names) {
+            return '\{\{?\$(?:' . implode('|', $names) . ')\}\}?';
+        };
+        $nameVars = $placeholder(array('reviewerName', 'reviewerFirstName', 'reviewerLastName'));
+        $journalVars = $placeholder(array('journalName', 'journalAcronym'));
+        $detailVars = $placeholder(array('reviewDate', 'dateIssued', 'currentDate', 'certificateCode'));
+
+        $trimmed = trim($line);
+        if (preg_match('/' . $nameVars . '/', $trimmed) && trim(preg_replace('/' . $nameVars . '/', '', $trimmed), " \t,.") === '') {
+            return 'name';
+        }
+        if (preg_match('/' . $journalVars . '/', $trimmed) && trim(preg_replace('/' . $journalVars . '/', '', $trimmed), " \t,.()-") === '') {
+            return 'journal';
+        }
+        if (preg_match('/' . $detailVars . '/', $trimmed)) {
+            return 'detail';
+        }
+        return 'body';
+    }
+
+    /**
+     * Split the raw body template into styled blocks. Blank lines become paragraph
+     * gaps; consecutive lines stay together without an extra gap.
+     * @param string $template Raw template (placeholders not yet replaced)
+     * @param array $variables
+     * @return array of ['role' => string, 'text' => string, 'gapBefore' => bool]
+     */
+    private function buildStructuredBlocks($template, $variables) {
+        $blocks = array();
+        $pendingGap = false;
+        $lines = preg_split('/\r\n|\r|\n/', (string) $template);
+        foreach ($lines as $line) {
+            if (trim($line) === '') {
+                $pendingGap = !empty($blocks);
+                continue;
+            }
+            $text = trim($this->replaceVariables($line, $variables));
+            if ($text === '') {
+                // A placeholder that resolved to nothing must not leave a styled gap
+                continue;
+            }
+            $blocks[] = array(
+                'role' => self::classifyBodyLine($line),
+                'text' => $text,
+                'gapBefore' => $pendingGap,
+            );
+            $pendingGap = false;
+        }
+        return $blocks;
+    }
+
+    /**
+     * Font size that lets $text fit on one line of $width, shrinking down to
+     * $floor. Returns $floor when even that is too wide (the text then wraps).
+     * @return float
+     */
+    private function fitFontSize($pdf, $text, $style, $size, $floor, $width) {
+        $size = (float) $size;
+        $floor = min($size, (float) $floor);
+        while ($size > $floor) {
+            $pdf->SetFont($this->effectiveFont, $style, $size);
+            if ($pdf->GetStringWidth($text) <= $width) {
+                return $size;
+            }
+            $size = max($floor, $size - 0.5);
+        }
+        return $floor;
+    }
+
+    /**
+     * Lay out (or, with $draw false, only measure) the structured certificate.
+     * @return float Total height in mm
+     */
+    private function layoutStructured($pdf, $headerText, $blocks, $footerText, $code, $scale, $draw) {
+        $margins = $pdf->getMargins();
+        $width = $pdf->getPageWidth() - $margins['left'] - $margins['right'];
+        $x = $margins['left'];
+        $y = $margins['top'];
+        $startY = $y;
+
+        $styles = array(
+            'title' => array($this->getTypographySetting('titleFontSize'), $this->getTypographySetting('titleBold') ? 'B' : '', true),
+            'name' => array($this->getTypographySetting('nameFontSize'), $this->getTypographySetting('nameBold') ? 'B' : '', true),
+            'journal' => array($this->getTypographySetting('journalFontSize'), $this->getTypographySetting('journalBold') ? 'B' : '', true),
+            'body' => array($this->getTypographySetting('bodyFontSize'), $this->getTypographySetting('bodyBold') ? 'B' : '', false),
+            'detail' => array($this->getTypographySetting('detailFontSize'), '', false),
+            'footer' => array($this->getTypographySetting('detailFontSize'), 'I', false),
+            'code' => array($this->getTypographySetting('detailFontSize'), '', false),
+        );
+        $paragraphSpacing = $this->getTypographySetting('paragraphSpacing') * $scale;
+        $nameSpacing = $this->getTypographySetting('nameSpacing') * $scale;
+
+        $emit = function ($role, $text) use ($pdf, $styles, $scale, $width, $x, &$y, $draw) {
+            list($size, $style, $shrinkToFit) = $styles[$role];
+            $size = max(6, $size * $scale);
+            if ($shrinkToFit) {
+                // Long names and journal titles shrink to fit one line (down to 60%
+                // of their configured size) before they are allowed to wrap.
+                $size = $this->fitFontSize($pdf, $text, $style, $size, max(6, $size * 0.6), $width);
+            }
+            $pdf->SetFont($this->effectiveFont, $style, $size);
+            $height = $pdf->getStringHeight($width, $text);
+            if ($draw) {
+                $pdf->SetXY($x, $y);
+                $pdf->MultiCell($width, 0, $text, 0, 'C', false, 1);
+            }
+            $y += $height;
+        };
+
+        if ($headerText) {
+            $emit('title', $headerText);
+            $y += 10 * $scale;
+        }
+
+        $bodyTopOffset = (float) $this->getTemplateSetting('bodyTopOffset', 0);
+        if ($bodyTopOffset > 0) {
+            $y += $bodyTopOffset;
+        }
+
+        $previousRole = null;
+        foreach ($blocks as $block) {
+            if ($previousRole !== null) {
+                if ($block['gapBefore']) {
+                    $y += $paragraphSpacing;
+                }
+                if ($block['role'] === 'name' || $previousRole === 'name') {
+                    $y += $nameSpacing;
+                }
+            }
+            $emit($block['role'], $block['text']);
+            $previousRole = $block['role'];
+        }
+
+        // Footer and certificate code sit below the main content in the small style
+        if ($footerText) {
+            $y += $paragraphSpacing * 2;
+            $emit('footer', $footerText);
+        }
+        if ($code !== null) {
+            $y += $footerText ? $paragraphSpacing : $paragraphSpacing * 2;
+            $emit('code', 'Certificate Code: ' . $code);
+        }
+
+        return $y - $startY;
+    }
+
+    /**
+     * Structured layout: independent size/weight for title, reviewer name, journal
+     * name, body and detail lines, auto-shrinking the whole layout so it stays on
+     * one page.
+     */
+    private function addStructuredContent($pdf, $headerText, $footerText, $variables) {
+        $blocks = $this->buildStructuredBlocks(
+            $this->getTemplateSetting('bodyTemplate', $this->getDefaultBodyTemplate()),
+            $variables
+        );
+        $code = null;
+        if ($this->certificate || $this->previewMode) {
+            $code = $this->previewMode ? 'PREVIEW12345' : $this->certificate->getCertificateCode();
+        }
+
+        $margins = $pdf->getMargins();
+        // Auto page break is off, so TCPDF's bottom margin is 0; mirror the 15 mm
+        // side margins instead.
+        $available = $pdf->getPageHeight() - $margins['top'] - 15;
+        if ($this->getTemplateSetting('includeQRCode', false)) {
+            // Keep clear of the QR code band at the bottom of the page
+            $available -= 25;
+        }
+
+        $scale = 1.0;
+        while ($scale > 0.5 && $this->layoutStructured($pdf, $headerText, $blocks, $footerText, $code, $scale, false) > $available) {
+            $scale -= 0.05;
+        }
+        $this->layoutStructured($pdf, $headerText, $blocks, $footerText, $code, max(0.5, $scale), true);
     }
 
     /**

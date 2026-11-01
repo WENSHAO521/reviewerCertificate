@@ -5,6 +5,12 @@ All notable changes to the Reviewer Certificate Plugin will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- Optional **structured certificate layout** with independent typography controls. Journal managers can set size and bold for the certificate title, reviewer name, journal name and acknowledgement text, a size for the review date / footer / certificate code, and paragraph and name spacing. Body template lines are styled by role (a line holding only `{{$reviewerName}}` is the name line, and so on). Long names and journal titles shrink to fit, then wrap, and the layout scales down to stay on one page. The classic layout stays the default, so existing certificates render exactly as before; certificate codes and QR verification are unchanged. New settings strings have English fallbacks awaiting translation.
+
 ## [1.10.0] - 2026-09-12
 
 ### Fixed
