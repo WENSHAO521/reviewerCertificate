@@ -174,7 +174,11 @@ Each element also takes an optional colour (`#rrggbb`; empty uses the general te
 
 The certificate code and QR verification are unchanged.
 
-**Example: recognition-style certificate (A4 landscape).** Put your logo, journal cover, seal and a light band along the bottom in the background image, then use:
+#### Logo, Journal Cover and Seal
+
+Besides the full-page background image, you can upload a **logo**, a **journal cover** and a **seal** separately (PNG or JPEG, max 5 MB each), so changing the cover for a new issue does not mean redrawing the background. Each image keeps its proportions at the width you set (mm) and is drawn over the background in both layouts. Leave X and Y at -1 for automatic placement: logo top left, cover top right, seal bottom right — or just left of the QR code when the QR code is enabled. Use a PNG with a transparent background for a round seal. Each image has its own remove checkbox.
+
+**Example: recognition-style certificate (A4 landscape).** Upload your logo, journal cover and seal, put a light band along the bottom of the background image, then use:
 
 ```
 {{$journalName}}

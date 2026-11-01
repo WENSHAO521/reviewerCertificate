@@ -797,7 +797,10 @@ class CertificateHandler extends Handler {
             'minimumReviews',
             'pageOrientation',
             'bodyTopOffset',
-            'layoutMode'
+            'layoutMode',
+            'logoImage',
+            'coverImage',
+            'sealImage'
         );
         require_once dirname(__DIR__) . '/classes/CertificateGenerator.php';
         $settingNames = array_merge($settingNames, array_keys(

@@ -500,6 +500,9 @@ class CertificateGenerator {
         // Apply background image if set
         $this->applyBackground($pdf);
 
+        // Logo, journal cover and seal drawn over the background
+        $this->applyImageOverlays($pdf);
+
         // Apply template settings
         $this->applyTemplateSettings($pdf);
 
@@ -549,6 +552,74 @@ class CertificateGenerator {
             } catch (\Throwable $e) {
                 error_log("ReviewerCertificate: Error adding background image: " . $e->getMessage());
             }
+        }
+    }
+
+    /**
+     * Draw the optional logo, journal cover and seal images. Each keeps its aspect
+     * ratio at the configured width; positions are automatic unless set.
+     * @param $pdf TCPDF
+     */
+    private function applyImageOverlays($pdf) {
+        $pageWidth = $pdf->getPageWidth();
+        $pageHeight = $pdf->getPageHeight();
+        $edge = 14;
+        foreach (array('logo', 'cover', 'seal') as $name) {
+            $path = $this->getTemplateSetting($name . 'Image');
+            if (!$path) {
+                continue;
+            }
+            if (!self::isBackgroundPathAllowed($path)) {
+                error_log('ReviewerCertificate: ' . $name . ' image path outside allowed directory: ' . $path);
+                continue;
+            }
+            $realPath = realpath($path);
+            $size = @getimagesize($realPath);
+            if (!$size || $size[0] <= 0 || $size[1] <= 0) {
+                continue;
+            }
+            $width = min($this->getTypographySetting($name . 'Width'), $pageWidth - 2 * $edge);
+            $height = $width * $size[1] / $size[0];
+
+            $x = $this->getTypographySetting($name . 'X');
+            $y = $this->getTypographySetting($name . 'Y');
+            if ($x < 0 || $y < 0) {
+                list($autoX, $autoY) = $this->autoOverlayPosition($name, $width, $height, $pageWidth, $pageHeight, $edge);
+                $x = $x < 0 ? $autoX : $x;
+                $y = $y < 0 ? $autoY : $y;
+            }
+            // Never let an image slide off the page
+            $x = max(0, min($pageWidth - $width, $x));
+            $y = max(0, min($pageHeight - $height, $y));
+
+            try {
+                $pdf->Image(self::downscaleBackgroundIfNeeded($realPath), $x, $y, $width, $height,
+                    '', '', '', false, 300, '', false, false, 0);
+            } catch (\Throwable $e) {
+                error_log('ReviewerCertificate: Error adding ' . $name . ' image: ' . $e->getMessage());
+            }
+        }
+    }
+
+    /**
+     * Automatic overlay position: logo top left, cover top right, seal bottom
+     * right. With the QR code enabled the seal moves left of it so the two never
+     * overlap.
+     * @return array [x, y] in mm
+     */
+    private function autoOverlayPosition($name, $width, $height, $pageWidth, $pageHeight, $edge) {
+        switch ($name) {
+            case 'logo':
+                return array($edge, $edge);
+            case 'cover':
+                return array($pageWidth - $edge - $width, $edge);
+            default: // seal
+                if ($this->getTemplateSetting('includeQRCode', false)) {
+                    // QR code occupies the bottom-right 30 x 35 mm (see addQRCode)
+                    $qrLeft = $pageWidth - 30 - 10 - 10;
+                    return array($qrLeft - 12 - $width, $pageHeight - 20 - $height);
+                }
+                return array($pageWidth - $edge - $width, $pageHeight - $edge - $height);
         }
     }
 
@@ -701,6 +772,17 @@ class CertificateGenerator {
             'footerBold' => array(0, 0, 1),
             'footerBottomSpacing' => array(20, 5, 150),
             'sideMargin' => array(15, 10, 120),
+            // Logo / journal cover / seal overlays (mm). X and Y of -1 mean
+            // "automatic": logo top left, cover top right, seal bottom right.
+            'logoWidth' => array(46, 5, 200),
+            'logoX' => array(-1, -1, 297),
+            'logoY' => array(-1, -1, 297),
+            'coverWidth' => array(36, 5, 200),
+            'coverX' => array(-1, -1, 297),
+            'coverY' => array(-1, -1, 297),
+            'sealWidth' => array(36, 5, 200),
+            'sealX' => array(-1, -1, 297),
+            'sealY' => array(-1, -1, 297),
         );
     }
 

@@ -302,6 +302,36 @@ msgstr "Setări Certificate"
 msgid "plugins.generic.reviewerCertificate.settings.removeBackgroundImage"
 msgstr "Remove the background image"
 
+msgid "plugins.generic.reviewerCertificate.settings.logoImage"
+msgstr "Logo"
+
+msgid "plugins.generic.reviewerCertificate.settings.logoImageDescription"
+msgstr "Optional PNG or JPEG (max 5 MB), drawn over the background. A PNG with a transparent background works best. Width in mm keeps the image's proportions. Leave X and Y at -1 for the automatic position (top left)."
+
+msgid "plugins.generic.reviewerCertificate.settings.coverImage"
+msgstr "Journal Cover"
+
+msgid "plugins.generic.reviewerCertificate.settings.coverImageDescription"
+msgstr "Optional PNG or JPEG (max 5 MB), drawn over the background. Width in mm keeps the image's proportions. Leave X and Y at -1 for the automatic position (top right)."
+
+msgid "plugins.generic.reviewerCertificate.settings.sealImage"
+msgstr "Seal"
+
+msgid "plugins.generic.reviewerCertificate.settings.sealImageDescription"
+msgstr "Optional PNG or JPEG (max 5 MB), drawn over the background; use a PNG with a transparent background for a round seal. Width in mm keeps the image's proportions. Leave X and Y at -1 for the automatic position: bottom right, or just left of the QR code when the QR code is enabled."
+
+msgid "plugins.generic.reviewerCertificate.settings.removeImage"
+msgstr "Remove this image"
+
+msgid "plugins.generic.reviewerCertificate.settings.image.width"
+msgstr "Width (mm)"
+
+msgid "plugins.generic.reviewerCertificate.settings.image.x"
+msgstr "X from left (mm, -1 = auto)"
+
+msgid "plugins.generic.reviewerCertificate.settings.image.y"
+msgstr "Y from top (mm, -1 = auto)"
+
 msgid "plugins.generic.reviewerCertificate.settings.bodyTopOffset"
 msgstr "Body Top Spacing (mm)"
 

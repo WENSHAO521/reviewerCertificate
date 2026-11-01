@@ -323,4 +323,86 @@ class StructuredLayoutTest extends TestCase
         $next = $this->cell($cells, 'Awarded for 1 review');
         $this->assertLessThan($title[1] * 0.3528 * 1.25 * 1.5 + 12, $next[3] - $title[3]);
     }
+
+    // ------------------------------------------------- logo / cover / seal images
+
+    /**
+     * Run applyImageOverlays() against a recording TCPDF; returns name => [x, y, w, h].
+     */
+    private function overlays(array $settings, $orientation = 'L')
+    {
+        $dir = CertificateGenerator::getBackgroundUploadDir(1);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
+        foreach (array('logo' => array(400, 400), 'cover' => array(300, 400), 'seal' => array(200, 200)) as $name => $dims) {
+            $path = $dir . '/' . $name . '_test.png';
+            $image = imagecreatetruecolor($dims[0], $dims[1]);
+            imagepng($image, $path);
+            imagedestroy($image);
+            $this->overlayFiles[] = $path;
+            if (!array_key_exists($name . 'Image', $settings)) {
+                $settings[$name . 'Image'] = $path;
+            }
+        }
+        $generator = new CertificateGenerator();
+        $generator->setTemplateSettings($settings);
+        $pdf = new class($orientation, 'mm', 'A4', true, 'UTF-8', false) extends \TCPDF {
+            public $images = array();
+            public function Image($file, $x = null, $y = null, $w = 0, $h = 0, $type = '', $link = '', $align = '', $resize = false, $dpi = 300, $palign = '', $ismask = false, $imgmask = false, $border = 0, $fitbox = false, $hidden = false, $fitonpage = false, $alt = false, $altimgs = array()) {
+                $this->images[preg_replace('/_test\.png$/', '', basename($file))] = array($x, $y, $w, $h);
+            }
+        };
+        $pdf->AddPage();
+        $method = new \ReflectionMethod(CertificateGenerator::class, 'applyImageOverlays');
+        $method->setAccessible(true);
+        $method->invoke($generator, $pdf);
+        return array($pdf, $pdf->images);
+    }
+
+    /** @var array */
+    private $overlayFiles = array();
+
+    protected function tearDown(): void
+    {
+        foreach ($this->overlayFiles as $file) {
+            @unlink($file);
+        }
+        parent::tearDown();
+    }
+
+    public function testOverlaysUseAutomaticPositions(): void
+    {
+        list($pdf, $images) = $this->overlays(array());
+        $w = $pdf->getPageWidth();
+        $h = $pdf->getPageHeight();
+
+        $this->assertEqualsWithDelta(array(14, 14, 46, 46), $images['logo'], 0.01, 'Logo top left, square image keeps its ratio');
+        $this->assertEqualsWithDelta($w - 14 - 36, $images['cover'][0], 0.01, 'Cover top right');
+        $this->assertEqualsWithDelta(48.0, $images['cover'][3], 0.01, '300x400 cover at 36 mm wide is 48 mm tall');
+        $this->assertEqualsWithDelta(array($w - 14 - 36, $h - 14 - 36), array_slice($images['seal'], 0, 2), 0.01, 'Seal bottom right without QR');
+    }
+
+    public function testSealMovesLeftOfTheQrCode(): void
+    {
+        list($pdf, $images) = $this->overlays(array('includeQRCode' => true));
+        $qrLeft = $pdf->getPageWidth() - 30 - 10 - 10; // QR plus its label (see addQRCode)
+        $this->assertLessThan($qrLeft, $images['seal'][0] + $images['seal'][2], 'Seal must end before the QR code starts');
+    }
+
+    public function testOverlayManualPositionAndPortraitSafety(): void
+    {
+        list(, $images) = $this->overlays(array('sealX' => 100, 'sealY' => 150, 'sealWidth' => 40));
+        $this->assertEqualsWithDelta(array(100, 150, 40, 40), $images['seal'], 0.01);
+
+        // A landscape X on a portrait page is pulled back onto the page
+        list($pdf, $images) = $this->overlays(array('coverX' => 260), 'P');
+        $this->assertLessThanOrEqual($pdf->getPageWidth(), $images['cover'][0] + $images['cover'][2]);
+    }
+
+    public function testOverlayOutsideJournalFilesIsIgnored(): void
+    {
+        list(, $images) = $this->overlays(array('logoImage' => '/etc/passwd', 'coverImage' => '', 'sealImage' => ''));
+        $this->assertSame(array(), $images);
+    }
 }

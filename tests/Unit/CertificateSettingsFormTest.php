@@ -57,7 +57,7 @@ class CertificateSettingsFormTest extends TestCase
 
         $this->plugin = new FakeSettingsPlugin();
         \PKP\form\Form::$mockUserVars = array('bodyTemplate' => 'Body', 'minimumReviews' => '1');
-        unset($_FILES['backgroundImage']);
+        unset($_FILES['backgroundImage'], $_FILES['logoImage'], $_FILES['coverImage'], $_FILES['sealImage']);
 
         $this->uploadDir = sys_get_temp_dir() . '/rc-settings-form-test-' . getmypid();
         if (!is_dir($this->uploadDir)) {
@@ -68,7 +68,7 @@ class CertificateSettingsFormTest extends TestCase
     protected function tearDown(): void
     {
         \PKP\form\Form::$mockUserVars = array();
-        unset($_FILES['backgroundImage']);
+        unset($_FILES['backgroundImage'], $_FILES['logoImage'], $_FILES['coverImage'], $_FILES['sealImage']);
 
         foreach (glob($this->uploadDir . '/*') ?: array() as $file) {
             @unlink($file);
@@ -332,5 +332,48 @@ class CertificateSettingsFormTest extends TestCase
         $this->assertSame(17, $form->getData('journalFontSize'));
         $this->assertSame(13, $form->getData('bodyFontSize'));
         $this->assertSame(10, $form->getData('detailFontSize'));
+    }
+
+    // ------------------------------------------------- logo / cover / seal images
+
+    public function testOverlayImagesArePreservedAndCanBeRemovedIndependently(): void
+    {
+        $this->plugin->settings['logoImage'] = '/files/journals/1/reviewerCertificate/logo_1.png';
+        $this->plugin->settings['coverImage'] = '/files/journals/1/reviewerCertificate/cover_1.jpg';
+        $this->plugin->settings['sealImage'] = '/files/journals/1/reviewerCertificate/seal_1.png';
+        \PKP\form\Form::$mockUserVars['removeCoverImage'] = '1';
+
+        $form = $this->makeForm();
+        $form->readInputData();
+        $form->execute();
+
+        $this->assertSame('/files/journals/1/reviewerCertificate/logo_1.png', $this->plugin->settings['logoImage']);
+        $this->assertSame('', $this->plugin->settings['coverImage']);
+        $this->assertSame('/files/journals/1/reviewerCertificate/seal_1.png', $this->plugin->settings['sealImage']);
+    }
+
+    public function testFailedOverlayUploadRejectsTheSave(): void
+    {
+        $_FILES['sealImage'] = ['error' => UPLOAD_ERR_INI_SIZE, 'tmp_name' => '', 'size' => 0];
+        $form = $this->makeForm();
+        $form->readInputData();
+        $this->assertFalse($form->validate());
+        $this->assertSame([], $this->plugin->settings);
+    }
+
+    public function testOverlayPositionsDefaultToAutomaticAndAreClamped(): void
+    {
+        \PKP\form\Form::$mockUserVars['logoWidth'] = '500';
+        \PKP\form\Form::$mockUserVars['sealX'] = '200';
+        \PKP\form\Form::$mockUserVars['sealY'] = '';
+
+        $form = $this->makeForm();
+        $form->readInputData();
+        $form->execute();
+
+        $this->assertSame(200, $this->plugin->settings['logoWidth']);
+        $this->assertSame(-1, $this->plugin->settings['logoX'], 'Untouched positions stay automatic');
+        $this->assertSame(200, $this->plugin->settings['sealX']);
+        $this->assertSame(-1, $this->plugin->settings['sealY']);
     }
 }

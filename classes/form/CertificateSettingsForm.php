@@ -33,8 +33,21 @@ class CertificateSettingsForm extends Form {
     /** @var int */
     private $contextId;
     private $validated = false;
-    private $uploadExtension;
-    private $stagedImage;
+    /** @var array image field => validated upload extension */
+    private $uploadExtensions = array();
+    /** @var array image field => path staged by this save */
+    private $stagedImages = array();
+
+    /**
+     * Uploadable images: field => [remove-checkbox field, stored file prefix].
+     * The background covers the page; logo, cover and seal are drawn on top.
+     */
+    const IMAGE_FIELDS = array(
+        'backgroundImage' => array('removeBackgroundImage', 'background'),
+        'logoImage' => array('removeLogoImage', 'logo'),
+        'coverImage' => array('removeCoverImage', 'cover'),
+        'sealImage' => array('removeSealImage', 'seal'),
+    );
 
     /**
      * Constructor
@@ -91,7 +104,9 @@ class CertificateSettingsForm extends Form {
             $this->setData('bodyTopOffset', $this->plugin->getSetting($this->contextId, 'bodyTopOffset') ?? 0);
             $this->setData('includeQRCode', $this->plugin->getSetting($this->contextId, 'includeQRCode') ?? false);
             $this->setData('pageOrientation', $this->plugin->getSetting($this->contextId, 'pageOrientation') ?? 'P');
-            $this->setData('backgroundImage', $this->plugin->getSetting($this->contextId, 'backgroundImage') ?? '');
+            foreach (array_keys(self::IMAGE_FIELDS) as $field) {
+                $this->setData($field, $this->plugin->getSetting($this->contextId, $field) ?? '');
+            }
             $this->setData('layoutMode', $this->plugin->getSetting($this->contextId, 'layoutMode') === 'structured' ? 'structured' : 'classic');
             foreach (self::typographySettings() as $field => $definition) {
                 $this->setData($field, $this->plugin->getSetting($this->contextId, $field) ?? $definition[0]);
@@ -120,7 +135,9 @@ class CertificateSettingsForm extends Form {
             $this->setData('bodyTopOffset', 0);
             $this->setData('includeQRCode', false);
             $this->setData('pageOrientation', 'P');
-            $this->setData('backgroundImage', '');
+            foreach (array_keys(self::IMAGE_FIELDS) as $field) {
+                $this->setData($field, '');
+            }
             $this->setData('layoutMode', 'classic');
             foreach (self::typographySettings() as $field => $definition) {
                 $this->setData($field, $definition[0]);
@@ -150,6 +167,9 @@ class CertificateSettingsForm extends Form {
             'includeQRCode',
             'pageOrientation',
             'removeBackgroundImage',
+            'removeLogoImage',
+            'removeCoverImage',
+            'removeSealImage',
             'ackEmailSubject',
             'ackEmailBody'
         ), array_keys(self::typographySettings()), array_keys(self::structuredStringSettings())));
@@ -158,13 +178,12 @@ class CertificateSettingsForm extends Form {
         // every render. Unless the journal ticked "remove" — before Issue #73 this
         // restore was unconditional, so the setting could only ever be overwritten by
         // another upload and never cleared.
-        $existingBackgroundImage = $this->plugin->getSetting($this->contextId, 'backgroundImage');
-        $removeBackgroundImage = (bool) $this->getData('removeBackgroundImage');
-
-        $this->setData(
-            'backgroundImage',
-            ($existingBackgroundImage && !$removeBackgroundImage) ? $existingBackgroundImage : ''
-        );
+        // The same applies to the logo, cover and seal overlays.
+        foreach (self::IMAGE_FIELDS as $field => $definition) {
+            $existing = $this->plugin->getSetting($this->contextId, $field);
+            $remove = (bool) $this->getData($definition[0]);
+            $this->setData($field, ($existing && !$remove) ? $existing : '');
+        }
 
         $this->validated = false;
     }
@@ -173,8 +192,8 @@ class CertificateSettingsForm extends Form {
         $valid = parent::validate($callHooks);
         foreach (array_merge(['headerText', 'bodyTemplate', 'footerText', 'fontFamily', 'fontSize',
             'minimumReviews', 'bodyTopOffset', 'textColorR', 'textColorG', 'textColorB',
-            'includeQRCode', 'pageOrientation', 'removeBackgroundImage', 'ackEmailSubject', 'ackEmailBody',
-            'layoutMode'], array_keys(self::typographySettings()), array_keys(self::structuredStringSettings())) as $field) {
+            'includeQRCode', 'pageOrientation', 'removeBackgroundImage', 'removeLogoImage', 'removeCoverImage',
+            'removeSealImage', 'ackEmailSubject', 'ackEmailBody', 'layoutMode'], array_keys(self::typographySettings()), array_keys(self::structuredStringSettings())) as $field) {
             $value = $this->getData($field);
             if ($value !== null && !is_scalar($value)) {
                 $this->addError($field, __('plugins.generic.reviewerCertificate.settings.invalidValue'));
@@ -190,28 +209,44 @@ class CertificateSettingsForm extends Form {
             $this->addError('minimumReviews', __('plugins.generic.reviewerCertificate.settings.minimumReviewsInvalid'));
             $valid = false;
         }
-        $this->uploadExtension = null;
-        $file = $_FILES['backgroundImage'] ?? null;
-        if ($file !== null && (!is_array($file) || !isset($file['error']) || !is_int($file['error']))) {
-            $valid = false;
-            $this->addError('backgroundImage', __('plugins.generic.reviewerCertificate.settings.uploadFailed'));
-        } elseif ($file && $file['error'] !== UPLOAD_ERR_NO_FILE) {
-            $tmp = $file['tmp_name'] ?? null;
-            if ($file['error'] !== UPLOAD_ERR_OK || !is_string($tmp) || !is_uploaded_file($tmp) ||
-                    !is_file($tmp) || filesize($tmp) === false || filesize($tmp) > 5 * 1024 * 1024) {
+        $this->uploadExtensions = array();
+        foreach (array_keys(self::IMAGE_FIELDS) as $field) {
+            if (!$this->validateUpload($field)) {
                 $valid = false;
-                $this->addError('backgroundImage', __('plugins.generic.reviewerCertificate.settings.uploadFailed'));
-            } else {
-                $info = @getimagesize($tmp);
-                $extensions = ['image/png' => 'png', 'image/jpeg' => 'jpg'];
-                if (!$info || !isset($extensions[$info['mime']]) || $info[0] * $info[1] > 50000000) {
-                    $valid = false;
-                    $this->addError('backgroundImage', __('plugins.generic.reviewerCertificate.settings.invalidImageType'));
-                } else { $this->uploadExtension = $extensions[$info['mime']]; }
             }
         }
         $this->validated = (bool) $valid;
         return $this->validated;
+    }
+
+    /**
+     * Validate one optional image upload (PNG/JPEG, at most 5 MB and 50 MP).
+     * @param string $field
+     * @return bool false when an upload was attempted and rejected
+     */
+    private function validateUpload($field) {
+        $file = $_FILES[$field] ?? null;
+        if ($file !== null && (!is_array($file) || !isset($file['error']) || !is_int($file['error']))) {
+            $this->addError($field, __('plugins.generic.reviewerCertificate.settings.uploadFailed'));
+            return false;
+        }
+        if (!$file || $file['error'] === UPLOAD_ERR_NO_FILE) {
+            return true;
+        }
+        $tmp = $file['tmp_name'] ?? null;
+        if ($file['error'] !== UPLOAD_ERR_OK || !is_string($tmp) || !is_uploaded_file($tmp) ||
+                !is_file($tmp) || filesize($tmp) === false || filesize($tmp) > 5 * 1024 * 1024) {
+            $this->addError($field, __('plugins.generic.reviewerCertificate.settings.uploadFailed'));
+            return false;
+        }
+        $info = @getimagesize($tmp);
+        $extensions = ['image/png' => 'png', 'image/jpeg' => 'jpg'];
+        if (!$info || !isset($extensions[$info['mime']]) || $info[0] * $info[1] > 50000000) {
+            $this->addError($field, __('plugins.generic.reviewerCertificate.settings.invalidImageType'));
+            return false;
+        }
+        $this->uploadExtensions[$field] = $extensions[$info['mime']];
+        return true;
     }
 
     protected function getConnection() {
@@ -219,18 +254,20 @@ class CertificateSettingsForm extends Form {
         return \APP\plugins\generic\reviewerCertificate\classes\DatabaseConnection::get();
     }
 
-    private function stageUpload() {
-        if (!$this->uploadExtension) { return; }
+    private function stageUploads() {
+        if (!$this->uploadExtensions) { return; }
         require_once dirname(__DIR__) . '/CertificateGenerator.php';
         $directory = \APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::getBackgroundUploadDir($this->contextId);
-        $path = $directory . '/background_' . bin2hex(random_bytes(16)) . '.' . $this->uploadExtension;
-        // Core creates directories and applies [files].umask. Record the path
-        // before uploadFile: a permission failure may occur after the move.
-        $this->stagedImage = $path;
-        if (!(new FileManager())->uploadFile('backgroundImage', $path)) {
-            throw new \RuntimeException('Unable to store uploaded image');
+        foreach ($this->uploadExtensions as $field => $extension) {
+            $path = $directory . '/' . self::IMAGE_FIELDS[$field][1] . '_' . bin2hex(random_bytes(16)) . '.' . $extension;
+            // Core creates directories and applies [files].umask. Record the path
+            // before uploadFile: a permission failure may occur after the move.
+            $this->stagedImages[$field] = $path;
+            if (!(new FileManager())->uploadFile($field, $path)) {
+                throw new \RuntimeException('Unable to store uploaded image');
+            }
+            $this->setData($field, $path);
         }
-        $this->setData('backgroundImage', $path);
     }
 
     private function refreshSettingsCache() {
@@ -300,11 +337,18 @@ class CertificateSettingsForm extends Form {
         $templateMgr->assign('defaultBodyTemplate', $defaultBodyTemplate);
 
         // Assign background image filename separately to avoid Smarty modifier deprecation
-        $backgroundImage = $this->getData('backgroundImage');
-        if ($backgroundImage) {
-            $templateMgr->assign('backgroundImage', $backgroundImage);
-            $templateMgr->assign('backgroundImageName', basename($backgroundImage));
+        foreach (array_keys(self::IMAGE_FIELDS) as $field) {
+            $image = $this->getData($field);
+            if ($image) {
+                $templateMgr->assign($field, $image);
+                $templateMgr->assign($field . 'Name', basename($image));
+            }
         }
+        $templateMgr->assign('overlayImages', array(
+            'logoImage' => 'logo',
+            'coverImage' => 'cover',
+            'sealImage' => 'seal',
+        ));
 
         // Statistics
         $certificateDao = DAORegistry::getDAO('CertificateDAO');
@@ -400,12 +444,15 @@ class CertificateSettingsForm extends Form {
         if (!$this->validated && !$this->validate()) {
             throw new \RuntimeException('Settings validation failed');
         }
-        $previous = (string) $this->plugin->getSetting($this->contextId, 'backgroundImage');
+        $previousImages = array();
+        foreach (array_keys(self::IMAGE_FIELDS) as $field) {
+            $previousImages[$field] = (string) $this->plugin->getSetting($this->contextId, $field);
+        }
         $committed = false;
         try {
-            $this->stageUpload();
+            $this->stageUploads();
             $this->getConnection()->transaction(function () use ($functionArgs) {
-                foreach (['headerText', 'bodyTemplate', 'footerText', 'ackEmailSubject', 'ackEmailBody', 'backgroundImage'] as $field) {
+                foreach (['headerText', 'bodyTemplate', 'footerText', 'ackEmailSubject', 'ackEmailBody', 'backgroundImage', 'logoImage', 'coverImage', 'sealImage'] as $field) {
                     $this->plugin->updateSetting($this->contextId, $field, (string) $this->getData($field), 'string');
                 }
                 $font = $this->getData('fontFamily');
@@ -439,10 +486,14 @@ class CertificateSettingsForm extends Form {
             });
             $committed = true;
         } catch (\Throwable $e) {
-            if (!$committed && $this->stagedImage && is_file($this->stagedImage)) {
-                (new FileManager())->deleteByPath($this->stagedImage);
+            foreach ($this->stagedImages as $staged) {
+                if (!$committed && is_file($staged)) {
+                    (new FileManager())->deleteByPath($staged);
+                }
             }
-            $this->setData('backgroundImage', $previous);
+            foreach ($previousImages as $field => $previous) {
+                $this->setData($field, $previous);
+            }
             $this->addError('backgroundImage', __('plugins.generic.reviewerCertificate.settings.saveFailed'));
             throw $e;
         } finally {
@@ -450,12 +501,13 @@ class CertificateSettingsForm extends Form {
             try { $this->refreshSettingsCache(); }
             catch (\Throwable $e) { error_log('ReviewerCertificate: settings cache refresh failed'); }
         }
-        $background = (string) $this->getData('backgroundImage');
-        if ($previous !== '' && $previous !== $background) {
-            require_once dirname(__DIR__) . '/CertificateGenerator.php';
-            \APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::deleteBackgroundImage($previous, $this->contextId);
+        foreach ($previousImages as $field => $previous) {
+            if ($previous !== '' && $previous !== (string) $this->getData($field)) {
+                require_once dirname(__DIR__) . '/CertificateGenerator.php';
+                \APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::deleteBackgroundImage($previous, $this->contextId);
+            }
         }
-        $this->stagedImage = null;
+        $this->stagedImages = array();
         return true;
     }
 }

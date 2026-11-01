@@ -14,8 +14,8 @@
 		// Initially setup as AJAX form
 		$('#certificateSettingsForm').pkpHandler('$.pkp.controllers.form.AjaxFormHandler');
 
-		// Handle background image preview and file selection
-		$('#backgroundImage').on('change', function(e) {ldelim}
+		// Handle image file selection (background, logo, cover, seal)
+		$('#backgroundImage, #logoImage, #coverImage, #sealImage').on('change', function(e) {ldelim}
 			var file = e.target.files[0];
 			if (file) {ldelim}
 				// Validate file type
@@ -32,24 +32,29 @@
 				{rdelim}
 				// Show filename
 				var fileName = file.name;
-				if ($('#imagePreviewText').length === 0) {ldelim}
-					$(this).after('<p id="imagePreviewText" class="description" style="color: #28a745; margin-top: 5px;"></p>');
+				var previewId = this.id + 'PreviewText';
+				if ($('#' + previewId).length === 0) {ldelim}
+					$(this).after('<p id="' + previewId + '" class="description" style="color: #28a745; margin-top: 5px;"></p>');
 				{rdelim}
-				$('#imagePreviewText').text('Selected: ' + fileName);
+				$('#' + previewId).text('Selected: ' + fileName);
 
 				// Disable AJAX submission when file is selected
 				fileSelected = true;
 				console.log('ReviewerCertificate: File selected, will use regular form submission');
 			{rdelim} else {ldelim}
-				fileSelected = false;
-				if ($('#imagePreviewText').length) {ldelim}
-					$('#imagePreviewText').remove();
-				{rdelim}
+				$('#' + this.id + 'PreviewText').remove();
 			{rdelim}
+			// Use a regular POST while any image input holds a file
+			fileSelected = $('#backgroundImage, #logoImage, #coverImage, #sealImage').filter(function() {ldelim}
+				return this.files && this.files.length > 0;
+			{rdelim}).length > 0;
 		{rdelim});
 
 		// Intercept form submission BEFORE AjaxFormHandler
 		$('#certificateSettingsForm').on('submit.fileUpload', function(e) {ldelim}
+			fileSelected = $('#backgroundImage, #logoImage, #coverImage, #sealImage').filter(function() {ldelim}
+				return this.files && this.files.length > 0;
+			{rdelim}).length > 0;
 			if (fileSelected) {ldelim}
 				console.log('ReviewerCertificate: File selected - destroying AjaxFormHandler for regular submission');
 				// Stop event propagation to prevent AjaxFormHandler from handling it
@@ -143,6 +148,75 @@
 				{* Ticking this clears the setting without needing a replacement upload (Issue #73) *}
 				{fbvElement type="checkbox" id="removeBackgroundImage" value="1" label="plugins.generic.reviewerCertificate.settings.removeBackgroundImage"}
 			{/if}
+		{/fbvFormSection}
+
+		{* Logo image, drawn over the background *}
+		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.logoImage" description="plugins.generic.reviewerCertificate.settings.logoImageDescription"}
+			<input type="file" id="logoImage" name="logoImage" accept="image/png,image/jpeg" class="pkp_form_file" />
+			{if $logoImage}
+				<p class="description">{translate key="plugins.generic.reviewerCertificate.settings.currentImage"}: {$logoImageName|escape}</p>
+				{fbvElement type="checkbox" id="removeLogoImage" value="1" label="plugins.generic.reviewerCertificate.settings.removeImage"}
+			{/if}
+			<div class="pkp_helpers_clear" style="margin-top: 8px;">
+				<div style="float:left; margin-right: 15px;">
+					<label for="logoWidth">{translate key="plugins.generic.reviewerCertificate.settings.image.width"}</label>
+					{fbvElement type="text" id="logoWidth" value=$logoWidth size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; margin-right: 15px;">
+					<label for="logoX">{translate key="plugins.generic.reviewerCertificate.settings.image.x"}</label>
+					{fbvElement type="text" id="logoX" value=$logoX size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left;">
+					<label for="logoY">{translate key="plugins.generic.reviewerCertificate.settings.image.y"}</label>
+					{fbvElement type="text" id="logoY" value=$logoY size=$fbvStyles.size.SMALL inline=true}
+				</div>
+			</div>
+		{/fbvFormSection}
+
+		{* Cover image, drawn over the background *}
+		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.coverImage" description="plugins.generic.reviewerCertificate.settings.coverImageDescription"}
+			<input type="file" id="coverImage" name="coverImage" accept="image/png,image/jpeg" class="pkp_form_file" />
+			{if $coverImage}
+				<p class="description">{translate key="plugins.generic.reviewerCertificate.settings.currentImage"}: {$coverImageName|escape}</p>
+				{fbvElement type="checkbox" id="removeCoverImage" value="1" label="plugins.generic.reviewerCertificate.settings.removeImage"}
+			{/if}
+			<div class="pkp_helpers_clear" style="margin-top: 8px;">
+				<div style="float:left; margin-right: 15px;">
+					<label for="coverWidth">{translate key="plugins.generic.reviewerCertificate.settings.image.width"}</label>
+					{fbvElement type="text" id="coverWidth" value=$coverWidth size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; margin-right: 15px;">
+					<label for="coverX">{translate key="plugins.generic.reviewerCertificate.settings.image.x"}</label>
+					{fbvElement type="text" id="coverX" value=$coverX size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left;">
+					<label for="coverY">{translate key="plugins.generic.reviewerCertificate.settings.image.y"}</label>
+					{fbvElement type="text" id="coverY" value=$coverY size=$fbvStyles.size.SMALL inline=true}
+				</div>
+			</div>
+		{/fbvFormSection}
+
+		{* Seal image, drawn over the background *}
+		{fbvFormSection title="plugins.generic.reviewerCertificate.settings.sealImage" description="plugins.generic.reviewerCertificate.settings.sealImageDescription"}
+			<input type="file" id="sealImage" name="sealImage" accept="image/png,image/jpeg" class="pkp_form_file" />
+			{if $sealImage}
+				<p class="description">{translate key="plugins.generic.reviewerCertificate.settings.currentImage"}: {$sealImageName|escape}</p>
+				{fbvElement type="checkbox" id="removeSealImage" value="1" label="plugins.generic.reviewerCertificate.settings.removeImage"}
+			{/if}
+			<div class="pkp_helpers_clear" style="margin-top: 8px;">
+				<div style="float:left; margin-right: 15px;">
+					<label for="sealWidth">{translate key="plugins.generic.reviewerCertificate.settings.image.width"}</label>
+					{fbvElement type="text" id="sealWidth" value=$sealWidth size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left; margin-right: 15px;">
+					<label for="sealX">{translate key="plugins.generic.reviewerCertificate.settings.image.x"}</label>
+					{fbvElement type="text" id="sealX" value=$sealX size=$fbvStyles.size.SMALL inline=true}
+				</div>
+				<div style="float:left;">
+					<label for="sealY">{translate key="plugins.generic.reviewerCertificate.settings.image.y"}</label>
+					{fbvElement type="text" id="sealY" value=$sealY size=$fbvStyles.size.SMALL inline=true}
+				</div>
+			</div>
 		{/fbvFormSection}
 
 		{* Header Text *}
