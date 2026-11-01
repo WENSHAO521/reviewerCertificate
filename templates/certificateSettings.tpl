@@ -39,8 +39,8 @@
 .rc-textarea { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .85rem; line-height: 1.55; min-height: 190px; resize: vertical; }
 .rc-input--num { width: 84px; }
 .rc-inline .rc-input--num { width: 100%; }
-.rc-link { background: none; border: 0; padding: 0; color: var(--rc-accent); font-size: .8125rem; cursor: pointer; text-decoration: underline; }
-.rc-actions { display: inline-flex; gap: 14px; }
+.rc-link { background: none; border: 0; padding: 0; color: var(--rc-accent); font-size: .8125rem; cursor: pointer; text-decoration: underline; white-space: nowrap; }
+.rc-actions { display: inline-flex; flex-wrap: wrap; gap: 6px 14px; }
 
 /* Layout chooser */
 .rc-layout-choice { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
@@ -109,6 +109,10 @@
 /* Statistics and batch tools below the form */
 .rc-panel { background: #fff; border: 1px solid var(--rc-line); border-radius: var(--rc-radius); padding: 20px 24px; margin-top: 20px; max-width: 1100px; box-sizing: border-box; }
 .rc-panel h2 { margin-top: 0; font-size: 1.05rem; }
+.rc-panel > p { color: var(--rc-muted); font-size: .875rem; line-height: 1.5; }
+.rc-panel .rc-input[multiple] { padding: 6px; }
+.rc-panel .rc-toggle { margin: 10px 0 0; }
+.rc-panel__actions { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
 .rc-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 14px 0 0; }
 .rc-stat { background: var(--rc-soft, #f5f7fa); border-radius: 8px; padding: 16px; }
 .rc-stat strong { display: block; font-size: 1.75rem; line-height: 1.1; color: #006798; }
@@ -119,12 +123,13 @@
 }
 @media (max-width: 640px) {
 	.rc-card { padding: 16px 14px 4px; }
+	.rc-layout-option__body { grid-template-columns: 80px 1fr; column-gap: 10px; }
+	.rc-layout-option__body svg { width: 80px; height: 56px; }
 	.rc-type-table thead { display: none; }
 	.rc-type-table tr { display: grid; grid-template-columns: 1fr 1fr; border-bottom: 1px solid var(--rc-line); }
 	.rc-type-table tbody th { grid-column: 1 / -1; width: auto; border: 0; }
 	.rc-type-table td { border: 0; min-width: 0; }
 	.rc-type-table .rc-style-cell { grid-column: 1 / -1; padding-top: 0; }
-	.rc-color__hex { width: 76px; }
 }
 {/literal}
 </style>
@@ -165,10 +170,26 @@ $(function() {
 		}
 		$footer.val('');
 	}
-	function applyLayout() {
+	// Back to classic: the classic layout has its own header and footer fields
+	function unfoldBody() {
+		var text = $body.val();
+		var parts = text.split(/^[ \t]*-{3,}[ \t]*$/m);
+		if (parts.length > 1) {
+			if (!$.trim($footer.val())) { $footer.val($.trim(parts.slice(1).join('---'))); }
+			text = parts[0];
+		}
+		var title = text.match(/^[ \t]*#[ \t]*(\S.*)$/m);
+		if (title) {
+			if (!$.trim($header.val())) { $header.val($.trim(title[1])); }
+			text = text.replace(title[0], '');
+		}
+		$body.val($.trim(text));
+	}
+	function applyLayout(event) {
 		var mode = $form.find('input[name="layoutMode"]:checked').val() || 'classic';
 		$form.attr('data-layout', mode);
 		if (mode === 'structured') { foldHeaderIntoBody(); foldFooterIntoBody(); }
+		else if (event) { unfoldBody(); }
 	}
 	$form.on('change', 'input[name="layoutMode"]', applyLayout);
 	applyLayout();
@@ -182,7 +203,16 @@ $(function() {
 		el.selectionStart = el.selectionEnd = start + token.length;
 	});
 	$('#rcUseDefaultBody').on('click', function() {
-		$body.val($('#defaultBodyTemplate').val());
+		var text = $('#defaultBodyTemplate').val();
+		if ($form.attr('data-layout') === 'structured') {
+			// Keep the title line and the footer the user already wrote
+			var current = $body.val();
+			var title = current.match(/^[ \t]*#[ \t]*\S.*$/m);
+			var footer = current.split(/^[ \t]*-{3,}[ \t]*$/m)[1];
+			text = $.trim(title ? title[0] : '# Certificate of Recognition') + '\n\n' + text;
+			if (footer && $.trim(footer)) { text += '\n\n---\n' + $.trim(footer); }
+		}
+		$body.val(text);
 	});
 	var recognitionPreset = {
 		titleFontSize: 46, titleBold: false, titleColor: '#1b6f8a',
@@ -531,7 +561,7 @@ The Editors of {{$journalName}}{/literal}{/capture}
 			<span class="rc-step">5</span>
 			<div>
 				<h3>{translate key="`$rcKey`eligibility"}</h3>
-				<p>{translate key="`$rcKey`minimumReviewsDescription"}</p>
+				<p>{translate key="`$rcKey`section.eligibilityDescription"}</p>
 			</div>
 		</header>
 		<div class="rc-grid">
@@ -551,7 +581,7 @@ The Editors of {{$journalName}}{/literal}{/capture}
 		<header class="rc-card__head">
 			<span class="rc-step">6</span>
 			<div>
-				<h3>{translate key="`$rcKey`ackEmailBody"}</h3>
+				<h3>{translate key="`$rcKey`section.email"}</h3>
 				<p>{translate key="`$rcKey`ackEmailDescription"}</p>
 			</div>
 		</header>
@@ -589,47 +619,53 @@ The Editors of {{$journalName}}{/literal}{/capture}
 <!-- Batch Certificate Generation -->
 <div class="rc-panel">
 	<h2>{translate key="plugins.generic.reviewerCertificate.batch.title"}</h2>
-	<p class="description">{translate key="plugins.generic.reviewerCertificate.batch.description"}</p>
+	<p>{translate key="plugins.generic.reviewerCertificate.batch.description"}</p>
 
-	<form id="batchGenerateForm" style="margin-top: 20px;">
-		<div style="margin-bottom: 15px;">
-			<label>{translate key="plugins.generic.reviewerCertificate.batch.selectReviewers"}</label>
-			<select id="batchReviewers" name="reviewerIds[]" multiple size="10" style="width: 100%; padding: 10px;">
-				{if $eligibleReviewers}
+	{if $eligibleReviewers}
+		<form id="batchGenerateForm">
+			<div class="rc-field">
+				<label class="rc-label" for="batchReviewers">{translate key="plugins.generic.reviewerCertificate.batch.selectReviewers"}</label>
+				<select id="batchReviewers" class="rc-input" name="reviewerIds[]" multiple size="8">
 					{foreach from=$eligibleReviewers item=reviewer}
 						<option value="{$reviewer.id|escape}">{$reviewer.name|escape} ({$reviewer.completedReviews|escape} {translate key="plugins.generic.reviewerCertificate.batch.completedReviews"})</option>
 					{/foreach}
-				{else}
-					<option disabled>{translate key="plugins.generic.reviewerCertificate.batch.noEligibleReviewers"}</option>
-				{/if}
-			</select>
-			<p class="description" style="margin-top: 5px;">{translate key="plugins.generic.reviewerCertificate.batch.selectMultipleHint"}</p>
-		</div>
+				</select>
+				<p class="rc-hint">{translate key="plugins.generic.reviewerCertificate.batch.selectMultipleHint"}</p>
+			</div>
+			<div class="rc-panel__actions">
+				<button type="button" id="generateBatchBtn" class="pkp_button pkp_button_primary">
+					{translate key="plugins.generic.reviewerCertificate.batch.generate"}
+				</button>
+				<span id="batchProgress" style="display: none;">
+					<span class="pkp_spinner"></span> {translate key="plugins.generic.reviewerCertificate.batch.generating"}
+				</span>
+			</div>
+		</form>
+	{else}
+		<p class="rc-notice">{translate key="plugins.generic.reviewerCertificate.batch.noEligibleReviewers"}</p>
+	{/if}
 
-		<button type="button" id="generateBatchBtn" class="pkp_button" style="background: #28a745; color: white;">
-			{translate key="plugins.generic.reviewerCertificate.batch.generate"}
-		</button>
-		<span id="batchProgress" style="margin-left: 15px; display: none;">
-			<span class="pkp_spinner"></span> {translate key="plugins.generic.reviewerCertificate.batch.generating"}
-		</span>
-	</form>
-
-	<div id="batchResult" style="margin-top: 20px; display: none;"></div>
+	<div id="batchResult" style="margin-top: 16px; display: none;"></div>
 </div>
 
 <div class="rc-panel">
-    <h2>{translate key="plugins.generic.reviewerCertificate.notifications.title"}</h2>
-    <p>{translate key="plugins.generic.reviewerCertificate.notifications.description"}</p>
-    <label for="notificationReviewers">{translate key="plugins.generic.reviewerCertificate.batch.selectReviewers"}</label>
-    <select id="notificationReviewers" multiple size="8" style="width:100%">
-        {foreach from=$notificationReviewers item=reviewer}
-            <option value="{$reviewer.id|escape}">{$reviewer.name|escape}</option>
-        {/foreach}
-    </select>
-    <label><input type="checkbox" id="retryNotifications" /> {translate key="plugins.generic.reviewerCertificate.notifications.retry"}</label>
-    <p>{translate key="plugins.generic.reviewerCertificate.notifications.retryWarning"}</p>
-    <button type="button" id="notifyBatchBtn" class="pkp_button">{translate key="plugins.generic.reviewerCertificate.notifications.send"}</button>
-    <div id="notificationResult" role="status"></div>
+	<h2>{translate key="plugins.generic.reviewerCertificate.notifications.title"}</h2>
+	<p>{translate key="plugins.generic.reviewerCertificate.notifications.description"}</p>
+	<div class="rc-field">
+		<label class="rc-label" for="notificationReviewers">{translate key="plugins.generic.reviewerCertificate.batch.selectReviewers"}</label>
+		<select id="notificationReviewers" class="rc-input" multiple size="6">
+			{foreach from=$notificationReviewers item=reviewer}
+				<option value="{$reviewer.id|escape}">{$reviewer.name|escape}</option>
+			{/foreach}
+		</select>
+		<p class="rc-hint">{translate key="plugins.generic.reviewerCertificate.batch.selectMultipleHint"}</p>
+		<label class="rc-toggle"><input type="checkbox" id="retryNotifications" /> {translate key="plugins.generic.reviewerCertificate.notifications.retry"}</label>
+		<p class="rc-hint">{translate key="plugins.generic.reviewerCertificate.notifications.retryWarning"}</p>
+	</div>
+	<div class="rc-panel__actions">
+		<button type="button" id="notifyBatchBtn" class="pkp_button">{translate key="plugins.generic.reviewerCertificate.notifications.send"}</button>
+	</div>
+	<div id="notificationResult" role="status"></div>
 </div>
 <script>
 $(function() {ldelim}

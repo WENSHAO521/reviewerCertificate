@@ -66,10 +66,10 @@
 	<message key="plugins.generic.reviewerCertificate.settings.typography">Typography (Structured Layout)</message>
 	<message key="plugins.generic.reviewerCertificate.settings.layoutMode">Certificate Layout</message>
 	<message key="plugins.generic.reviewerCertificate.settings.layoutModeDescription">Classic renders the body template as one block of text, as in earlier versions. Structured gives each line its own style: a line holding only {{$reviewerName}} (or first/last name) uses the reviewer name style, a line holding only {{$journalName}} uses the journal name style, lines with a date or {{$certificateCode}} use the detail style, and all other lines use the body text style. Blank lines in the template add paragraph spacing. Long names and titles shrink to fit one line, then wrap, and the whole layout scales down if needed to stay on one page.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.classic">Classic (single text block)</message>
-	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.structured">Structured (separate title, name, journal and detail styles)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.classic">Classic</message>
+	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.structured">Structured</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.title">Certificate Title</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.titleDescription">The line starting with # (or the header text). Suggested 28–46 pt.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.titleDescription">The line starting with #. Suggested 28–46 pt.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.name">Reviewer Name</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.nameDescription">A line holding only {{$reviewerName}}. Suggested 24–26 pt, bold.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.journal">Journal Name</message>
@@ -82,8 +82,8 @@
 	<message key="plugins.generic.reviewerCertificate.settings.typography.bold">Bold</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.spacing">Spacing (mm)</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.spacingDescription">Paragraph spacing is added for each blank line between body lines. Name spacing is extra space above and below the reviewer name. Side margin narrows the text area so text stays clear of logos in the background image.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.paragraphSpacing">Paragraph spacing</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.nameSpacing">Name spacing</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.paragraphSpacing">Paragraph spacing (mm)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.nameSpacing">Name spacing (mm)</message>
 	<message key="plugins.generic.reviewerCertificate.settings.section.layout">Layout and text</message>
 	<message key="plugins.generic.reviewerCertificate.settings.section.layoutDescription">Choose how the certificate is laid out and write what it says.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.classicHint">One block of text, as in earlier versions. Existing certificates keep this look.</message>
@@ -108,10 +108,10 @@
 	<message key="plugins.generic.reviewerCertificate.settings.typography.color">Colour (#rrggbb)</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.uppercase">Uppercase</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.footer">Footer</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.footerDescription">The footer text; set its position below.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.footerDescription">Lines below the --- line. Position and distance are set below.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.footerPosition">Position</message>
 	<message key="plugins.generic.reviewerCertificate.settings.typography.footerBottomSpacing">Distance from bottom (mm)</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.sideMargin">Side margin</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.sideMargin">Side margin (mm)</message>
 	<message key="plugins.generic.reviewerCertificate.settings.footerPosition.flow">Below the content</message>
 	<message key="plugins.generic.reviewerCertificate.settings.footerPosition.bottomLeft">Bottom left</message>
 	<message key="plugins.generic.reviewerCertificate.settings.footerPosition.bottomCenter">Bottom centre</message>
@@ -254,4 +254,6 @@ Tanúsítvány Letöltése: {{$certificateUrl}}
 
 {{$journalName}}
 {{$journalUrl}}</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.email">Acknowledgement email</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.eligibilityDescription">Who can receive a certificate, and how it is verified.</message>
 </locale>

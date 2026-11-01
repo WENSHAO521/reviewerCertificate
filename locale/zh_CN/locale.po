@@ -348,16 +348,16 @@ msgid "plugins.generic.reviewerCertificate.settings.layoutModeDescription"
 msgstr "Classic renders the body template as one block of text, as in earlier versions. Structured gives each line its own style: a line holding only {{$reviewerName}} (or first/last name) uses the reviewer name style, a line holding only {{$journalName}} uses the journal name style, lines with a date or {{$certificateCode}} use the detail style, and all other lines use the body text style. Blank lines in the template add paragraph spacing. Long names and titles shrink to fit one line, then wrap, and the whole layout scales down if needed to stay on one page."
 
 msgid "plugins.generic.reviewerCertificate.settings.layoutMode.classic"
-msgstr "Classic (single text block)"
+msgstr "Classic"
 
 msgid "plugins.generic.reviewerCertificate.settings.layoutMode.structured"
-msgstr "Structured (separate title, name, journal and detail styles)"
+msgstr "Structured"
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.title"
 msgstr "Certificate Title"
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.titleDescription"
-msgstr "The line starting with # (or the header text). Suggested 28–46 pt."
+msgstr "The line starting with #. Suggested 28–46 pt."
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.name"
 msgstr "Reviewer Name"
@@ -396,10 +396,10 @@ msgid "plugins.generic.reviewerCertificate.settings.typography.spacingDescriptio
 msgstr "Paragraph spacing is added for each blank line between body lines. Name spacing is extra space above and below the reviewer name. Side margin narrows the text area so text stays clear of logos in the background image."
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.paragraphSpacing"
-msgstr "Paragraph spacing"
+msgstr "Paragraph spacing (mm)"
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.nameSpacing"
-msgstr "Name spacing"
+msgstr "Name spacing (mm)"
 
 msgid "plugins.generic.reviewerCertificate.settings.section.layout"
 msgstr "Layout and text"
@@ -474,7 +474,7 @@ msgid "plugins.generic.reviewerCertificate.settings.typography.footer"
 msgstr "Footer"
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.footerDescription"
-msgstr "The footer text; set its position below."
+msgstr "Lines below the --- line. Position and distance are set below."
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.footerPosition"
 msgstr "Position"
@@ -483,7 +483,7 @@ msgid "plugins.generic.reviewerCertificate.settings.typography.footerBottomSpaci
 msgstr "Distance from bottom (mm)"
 
 msgid "plugins.generic.reviewerCertificate.settings.typography.sideMargin"
-msgstr "Side margin"
+msgstr "Side margin (mm)"
 
 msgid "plugins.generic.reviewerCertificate.settings.footerPosition.flow"
 msgstr "Below the content"
@@ -566,3 +566,8 @@ msgstr "Sent"
 msgid "plugins.generic.reviewerCertificate.settings.saveFailed"
 msgstr "Certificate settings could not be saved. Check the fields and image (JPEG or PNG, up to 5 MB), then try again."
 
+msgid "plugins.generic.reviewerCertificate.settings.section.email"
+msgstr "Acknowledgement email"
+
+msgid "plugins.generic.reviewerCertificate.settings.section.eligibilityDescription"
+msgstr "Who can receive a certificate, and how it is verified."
