@@ -1,10 +1,15 @@
 # Reviewer Certificate Plugin for OJS
 
-**Version 1.13.0** | [Changelog](CHANGELOG.md) | OJS 3.3 / 3.4 / 3.5
+**Version 1.14.0** | [Changelog](CHANGELOG.md) | OJS 3.3 / 3.4 / 3.5
 
 ## Overview
 
 The Reviewer Certificate Plugin enables reviewers to generate and download personalized PDF certificates of recognition after completing peer reviews. This plugin helps journals acknowledge and incentivize quality peer review work.
+
+**Changes in v1.14.0**:
+
+- "My Certificates" entry in the OJS backend side menu, right below Statistics, for reviewers who have completed a review.
+- The Download and Email buttons on the My Certificates page are aligned and keep their colours under any theme.
 
 **Changes in v1.13.0**:
 
