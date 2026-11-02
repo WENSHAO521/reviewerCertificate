@@ -1,6 +1,6 @@
 <?php
 /** Run after release.sh; assert the shipped runtime, not source directory shape. */
-$version = $argv[1] ?? '1.13.0';
+$version = $argv[1] ?? '1.14.0';
 foreach (['3_3' => '7.3.0', '3_4' => '8.0.2', '3_5' => '8.2.0'] as $target => $php) {
     $archive = new PharData(__DIR__ . '/../reviewerCertificate-' . $version . '-' . $target . '.tar.gz');
     $root = 'reviewerCertificate/';
