@@ -32,7 +32,7 @@
 						<th>{translate key="plugins.generic.reviewerCertificate.myCertificates.dateIssued"}</th>
 						<th>{translate key="plugins.generic.reviewerCertificate.myCertificates.submissionTitle"}</th>
 						<th>{translate key="plugins.generic.reviewerCertificate.myCertificates.certificateCode"}</th>
-						<th>{translate key="plugins.generic.reviewerCertificate.myCertificates.actions"}</th>
+						<th class="certificate-actions-cell">{translate key="plugins.generic.reviewerCertificate.myCertificates.actions"}</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -41,16 +41,18 @@
 							<td>{$cert.dateIssued|escape}</td>
 							<td>{$cert.submissionTitle|escape}</td>
 							<td><code>{$cert.certificateCode|escape}</code></td>
-							<td>
-								<a href="{$cert.downloadUrl}" class="certificate-download-btn" target="_blank">
-									{translate key="plugins.generic.reviewerCertificate.downloadCertificate"}
-								</a>
-								<form class="certificate-email-form" method="post" action="{$cert.emailUrl}">
-									{csrf}
-									<button type="submit" class="certificate-email-btn">
-										{translate key="plugins.generic.reviewerCertificate.myCertificates.emailAction"}
-									</button>
-								</form>
+							<td class="certificate-actions-cell">
+								<div class="certificate-actions">
+									<a href="{$cert.downloadUrl}" class="certificate-action certificate-download-btn" target="_blank" rel="noopener">
+										{translate key="plugins.generic.reviewerCertificate.downloadCertificate"}
+									</a>
+									<form class="certificate-email-form" method="post" action="{$cert.emailUrl}">
+										{csrf}
+										<button type="submit" class="certificate-action certificate-email-btn">
+											{translate key="plugins.generic.reviewerCertificate.myCertificates.emailAction"}
+										</button>
+									</form>
+								</div>
 							</td>
 						</tr>
 					{/foreach}

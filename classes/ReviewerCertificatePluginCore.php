@@ -28,6 +28,9 @@ use Throwable;
 
 class ReviewerCertificatePlugin extends GenericPlugin {
 
+    /** @var bool Set when the backend side menu got a "My Certificates" entry for this request. */
+    private $myCertificatesMenuAdded = false;
+
     /**
      * @copydoc Plugin::register()
      */
@@ -43,6 +46,7 @@ class ReviewerCertificatePlugin extends GenericPlugin {
 
                 // The compatibility loader aliases HookRegistry on OJS 3.3.
                 Hook::register('LoadHandler', array($this, 'setupHandler'));
+                Hook::register('TemplateManager::setupBackendPage', array($this, 'addMyCertificatesMenuItem'));
                 Hook::register('TemplateManager::display', array($this, 'addCertificateButton'));
                 Hook::register('reviewerreviewstep3form::execute', array($this, 'handleReviewComplete'));
                 if (class_exists('PKP\mail\Mailable')) {
@@ -333,6 +337,76 @@ class ReviewerCertificatePlugin extends GenericPlugin {
     }
 
     /**
+     * Add a "My Certificates" entry to the backend side menu (below Statistics)
+     * for users who have completed at least one review in this journal.
+     */
+    public function addMyCertificatesMenuItem($hookName, $params = array()) {
+        try {
+            $request = Application::get()->getRequest();
+            $context = $request->getContext();
+            $user = $request->getUser();
+            if (!$context || !$user) {
+                return false;
+            }
+
+            $templateMgr = TemplateManager::getManager($request);
+            $menu = $templateMgr->getState('menu');
+            if (!is_array($menu) || empty($menu)) {
+                return false;
+            }
+
+            if (!$this->userHasCompletedReview((int) $user->getId(), (int) $context->getId())) {
+                return false;
+            }
+
+            $this->ensurePluginLocaleLoaded();
+            $router = $request->getRouter();
+            $item = array(
+                'name' => __('plugins.generic.reviewerCertificate.myCertificates.title'),
+                'url' => $request->url(null, 'certificate', 'myCertificates'),
+                'isCurrent' => $router && method_exists($router, 'getRequestedPage')
+                    && $router->getRequestedPage($request) === 'certificate',
+                // OJS 3.5 side menu icon (ignored by 3.3/3.4)
+                'icon' => 'Download',
+            );
+            // Place it right after Statistics when that entry exists, else at the end.
+            $position = array_search('statistics', array_keys($menu), true);
+            $position = $position === false ? count($menu) : $position + 1;
+            $menu = array_slice($menu, 0, $position, true)
+                + array('reviewerCertificates' => $item)
+                + array_slice($menu, $position, null, true);
+            $templateMgr->setState(array('menu' => $menu));
+            $this->myCertificatesMenuAdded = true;
+        } catch (\Throwable $e) {
+            error_log('ReviewerCertificate: could not add menu item: ' . $e->getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * Whether the user has a certificate or a completed review in this context.
+     */
+    private function userHasCompletedReview($userId, $contextId) {
+        $certificateDao = DAORegistry::getDAO('CertificateDAO');
+        if (!$certificateDao) {
+            return false;
+        }
+        $queries = array(
+            'SELECT 1 FROM reviewer_certificates WHERE reviewer_id = ? AND context_id = ? LIMIT 1',
+            'SELECT 1 FROM review_assignments ra
+             INNER JOIN submissions s ON ra.submission_id = s.submission_id
+             WHERE ra.reviewer_id = ? AND s.context_id = ? AND ra.date_completed IS NOT NULL LIMIT 1',
+        );
+        foreach ($queries as $sql) {
+            $result = $certificateDao->retrieve($sql, array($userId, $contextId));
+            if ($result && $result->current()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Add certificate download button to reviewer dashboard
      */
     public function addCertificateButton($hookName, $params) {
@@ -433,6 +507,12 @@ class ReviewerCertificatePlugin extends GenericPlugin {
         // Only show button if certificate exists or reviewer is eligible
         $isEligible = $this->isEligibleForCertificate($reviewAssignment);
 
+
+        // The backend side menu already links to My Certificates. Echoing the
+        // box here would print it above the page header, outside the layout.
+        if ($this->myCertificatesMenuAdded) {
+            return false;
+        }
 
         if ($certificate || $isEligible) {
             // Load CSS and JS assets
