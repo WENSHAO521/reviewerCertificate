@@ -134,4 +134,13 @@ class CertificateFeaturesTest extends TestCase
         $this->assertSame('Recognized Reviewer', CertificateGenerator::sanitizeStructuredStringSetting('recognizedLabel', null));
         $this->assertStringStartsWith('{{$reviewerStatus}}', CertificateGenerator::getDefaultCumulativeBodyTemplate());
     }
+
+    public function testTemplatesNeverPassCountToTranslate(): void
+    {
+        // OJS 3.4+ treats a 'count' parameter as a plural lookup and prints
+        // ##key## for a plain .po message. Use another parameter name.
+        foreach (glob(BASE_SYS_DIR . '/templates/*.tpl') as $template) {
+            $this->assertDoesNotMatchRegularExpression('/\{translate [^}]*\bcount=/', file_get_contents($template), basename($template));
+        }
+    }
 }

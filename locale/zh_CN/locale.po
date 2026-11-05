@@ -609,7 +609,7 @@ msgid "plugins.generic.reviewerCertificate.manage.open"
 msgstr "查看与管理已颁发的证书"
 
 msgid "plugins.generic.reviewerCertificate.manage.description"
-msgstr "本期刊已颁发 {$count} 张证书。被撤销的证书会保留记录，并在验证页显示为已撤销。"
+msgstr "本期刊已颁发 {$total} 张证书。被撤销的证书会保留记录，并在验证页显示为已撤销。"
 
 msgid "plugins.generic.reviewerCertificate.manage.search"
 msgstr "搜索"
@@ -669,7 +669,7 @@ msgid "plugins.generic.reviewerCertificate.annual.description"
 msgstr "一张证书涵盖您为本期刊完成的审稿，可选择全部累计或单一年度。"
 
 msgid "plugins.generic.reviewerCertificate.annual.download"
-msgstr "{$year} 年（{$count} 次审稿）"
+msgstr "{$year} 年（{$total} 次审稿）"
 
 msgid "plugins.generic.reviewerCertificate.settings.verifyNameDisplay"
 msgstr "验证页上的审稿人姓名"
@@ -699,7 +699,7 @@ msgid "plugins.generic.reviewerCertificate.settings.cumulativeBodyTemplateDescri
 msgstr "一张证书列出审稿人为本期刊完成的审稿总次数，类似 Elsevier 的“Recognized Reviewer”证书。{{$reviewPeriod}} 是年份区间，例如 2021–2026。"
 
 msgid "plugins.generic.reviewerCertificate.annual.cumulative"
-msgstr "全部年份（共 {$count} 次审稿）"
+msgstr "全部年份（共 {$total} 次审稿）"
 
 msgid "plugins.generic.reviewerCertificate.settings.outstandingMinReviews"
 msgstr "杰出审稿人门槛：近两年审稿次数（0 = 不启用）"

@@ -268,7 +268,7 @@ Pobierz Certyfikat: {{$certificateUrl}}
 	<message key="plugins.generic.reviewerCertificate.myCertificates.emailThrottled">This certificate was emailed to you less than a minute ago. Please check your inbox before sending it again.</message>
 	<message key="plugins.generic.reviewerCertificate.manage.title">Issued Certificates</message>
 	<message key="plugins.generic.reviewerCertificate.manage.open">View and manage issued certificates</message>
-	<message key="plugins.generic.reviewerCertificate.manage.description">{$count} certificates issued by this journal. Revoked certificates stay on record and show as revoked on the verification page.</message>
+	<message key="plugins.generic.reviewerCertificate.manage.description">{$total} certificates issued by this journal. Revoked certificates stay on record and show as revoked on the verification page.</message>
 	<message key="plugins.generic.reviewerCertificate.manage.search">Search</message>
 	<message key="plugins.generic.reviewerCertificate.manage.searchPlaceholder">Name, email, username or certificate code</message>
 	<message key="plugins.generic.reviewerCertificate.manage.exportCsv">Export CSV</message>
@@ -288,7 +288,7 @@ Pobierz Certyfikat: {{$certificateUrl}}
 	<message key="plugins.generic.reviewerCertificate.manage.pageOf">Page {$page} of {$pageCount}</message>
 	<message key="plugins.generic.reviewerCertificate.annual.title">Annual and cumulative certificates</message>
 	<message key="plugins.generic.reviewerCertificate.annual.description">One certificate covering all your reviews for this journal, either in total or for one year.</message>
-	<message key="plugins.generic.reviewerCertificate.annual.download">{$year} ({$count} reviews)</message>
+	<message key="plugins.generic.reviewerCertificate.annual.download">{$year} ({$total} reviews)</message>
 	<message key="plugins.generic.reviewerCertificate.verify.revoked">Certificate Revoked</message>
 	<message key="plugins.generic.reviewerCertificate.verify.revokedDescription">This certificate was issued by the journal but revoked on {$date}. It is no longer valid.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.verifyNameDisplay">Reviewer name on the verification page</message>
@@ -300,7 +300,7 @@ Pobierz Certyfikat: {{$certificateUrl}}
 	<message key="plugins.generic.reviewerCertificate.settings.annualBodyTemplateLabel">Annual certificate text</message>
 	<message key="plugins.generic.reviewerCertificate.settings.cumulativeBodyTemplate">Cumulative certificate text</message>
 	<message key="plugins.generic.reviewerCertificate.settings.cumulativeBodyTemplateDescription">One certificate with the total number of reviews the reviewer has completed for this journal, like Elsevier's "Recognized Reviewer" certificate. {{$reviewPeriod}} is the span of years, e.g. 2021–2026.</message>
-	<message key="plugins.generic.reviewerCertificate.annual.cumulative">All years ({$count} reviews)</message>
+	<message key="plugins.generic.reviewerCertificate.annual.cumulative">All years ({$total} reviews)</message>
 	<message key="plugins.generic.reviewerCertificate.settings.outstandingMinReviews">Outstanding Reviewer: reviews in the last two years (0 = off)</message>
 	<message key="plugins.generic.reviewerCertificate.settings.outstandingLabel">Title for outstanding reviewers</message>
 	<message key="plugins.generic.reviewerCertificate.settings.recognizedLabel">Title for other reviewers</message>

@@ -609,7 +609,7 @@ msgid "plugins.generic.reviewerCertificate.manage.open"
 msgstr "View and manage issued certificates"
 
 msgid "plugins.generic.reviewerCertificate.manage.description"
-msgstr "{$count} certificates issued by this journal. Revoked certificates stay on record and show as revoked on the verification page."
+msgstr "{$total} certificates issued by this journal. Revoked certificates stay on record and show as revoked on the verification page."
 
 msgid "plugins.generic.reviewerCertificate.manage.search"
 msgstr "Search"
@@ -669,7 +669,7 @@ msgid "plugins.generic.reviewerCertificate.annual.description"
 msgstr "One certificate covering all your reviews for this journal, either in total or for one year."
 
 msgid "plugins.generic.reviewerCertificate.annual.download"
-msgstr "{$year} ({$count} reviews)"
+msgstr "{$year} ({$total} reviews)"
 
 msgid "plugins.generic.reviewerCertificate.settings.verifyNameDisplay"
 msgstr "Reviewer name on the verification page"
@@ -699,7 +699,7 @@ msgid "plugins.generic.reviewerCertificate.settings.cumulativeBodyTemplateDescri
 msgstr "One certificate with the total number of reviews the reviewer has completed for this journal, like Elsevier's \"Recognized Reviewer\" certificate. {{$reviewPeriod}} is the span of years, e.g. 2021–2026."
 
 msgid "plugins.generic.reviewerCertificate.annual.cumulative"
-msgstr "All years ({$count} reviews)"
+msgstr "All years ({$total} reviews)"
 
 msgid "plugins.generic.reviewerCertificate.settings.outstandingMinReviews"
 msgstr "Outstanding Reviewer: reviews in the last two years (0 = off)"

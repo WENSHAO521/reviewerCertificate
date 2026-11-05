@@ -99,7 +99,7 @@
 			{if $cumulativeCertificate}
 				<li>
 					<a href="{$cumulativeCertificate.url|escape}" class="pkp_button pkp_button_primary certificate-cumulative-btn">
-						{translate key="plugins.generic.reviewerCertificate.annual.cumulative" count=$cumulativeCertificate.count}
+						{translate key="plugins.generic.reviewerCertificate.annual.cumulative" total=$cumulativeCertificate.count}
 					</a>
 					<strong class="certificate-reviewer-status{if $cumulativeCertificate.status.outstanding} certificate-reviewer-outstanding{/if}">{$cumulativeCertificate.status.label|escape}</strong>
 				</li>
@@ -107,7 +107,7 @@
 			{foreach from=$annualCertificates item=annual}
 				<li>
 					<a href="{$annual.url|escape}" class="pkp_button certificate-annual-btn">
-						{translate key="plugins.generic.reviewerCertificate.annual.download" year=$annual.year count=$annual.count}
+						{translate key="plugins.generic.reviewerCertificate.annual.download" year=$annual.year total=$annual.count}
 					</a>
 				</li>
 			{/foreach}

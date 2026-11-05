@@ -609,7 +609,7 @@ msgid "plugins.generic.reviewerCertificate.manage.open"
 msgstr "檢視與管理已頒發的證書"
 
 msgid "plugins.generic.reviewerCertificate.manage.description"
-msgstr "本期刊已頒發 {$count} 張證書。被撤銷的證書會保留紀錄，並在驗證頁顯示為已撤銷。"
+msgstr "本期刊已頒發 {$total} 張證書。被撤銷的證書會保留紀錄，並在驗證頁顯示為已撤銷。"
 
 msgid "plugins.generic.reviewerCertificate.manage.search"
 msgstr "搜尋"
@@ -669,7 +669,7 @@ msgid "plugins.generic.reviewerCertificate.annual.description"
 msgstr "一張證書涵蓋您為本期刊完成的審稿，可選擇全部累計或單一年度。"
 
 msgid "plugins.generic.reviewerCertificate.annual.download"
-msgstr "{$year} 年（{$count} 次審稿）"
+msgstr "{$year} 年（{$total} 次審稿）"
 
 msgid "plugins.generic.reviewerCertificate.settings.verifyNameDisplay"
 msgstr "驗證頁上的審稿人姓名"
@@ -699,7 +699,7 @@ msgid "plugins.generic.reviewerCertificate.settings.cumulativeBodyTemplateDescri
 msgstr "一張證書列出審稿人為本期刊完成的審稿總次數，類似 Elsevier 的「Recognized Reviewer」證書。{{$reviewPeriod}} 是年份區間，例如 2021–2026。"
 
 msgid "plugins.generic.reviewerCertificate.annual.cumulative"
-msgstr "全部年份（共 {$count} 次審稿）"
+msgstr "全部年份（共 {$total} 次審稿）"
 
 msgid "plugins.generic.reviewerCertificate.settings.outstandingMinReviews"
 msgstr "傑出審稿人門檻：近兩年審稿次數（0 = 不啟用）"

@@ -26,7 +26,7 @@
 		</div>
 	{/if}
 
-	<p>{translate key="plugins.generic.reviewerCertificate.manage.description" count=$totalCertificates}</p>
+	<p>{translate key="plugins.generic.reviewerCertificate.manage.description" total=$totalCertificates}</p>
 
 	<form method="get" action="{$manageUrl|escape}" class="certificate-manage-search" style="margin: 1em 0;">
 		<label for="certificateSearch" class="pkp_screen_reader">{translate key="plugins.generic.reviewerCertificate.manage.search"}</label>
