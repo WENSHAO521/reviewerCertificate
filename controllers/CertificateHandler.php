@@ -562,6 +562,20 @@ class CertificateHandler extends Handler {
         // links here, so the page uses OJS's default styles and colours rather
         // than the journal's frontend theme. setupBackendPage() loads the
         // backend assets and side menu on OJS 3.3, 3.4 and 3.5.
+        //
+        // setupBackendPage() reads the 'userRoles' template variable
+        // (in_array(ROLE_ID_SITE_ADMIN, $userRoles)), which only
+        // PKPHandler::setupTemplate() assigns. Without it the value is null
+        // and PHP 8 throws a TypeError, so the page returned HTTP 500 in
+        // v1.15.0. Call setupTemplate() first, as OJS's own backend
+        // handlers do, and make sure the variable is an array regardless.
+        $this->setupTemplate($request);
+        if (!is_array($templateMgr->getTemplateVars('userRoles'))) {
+            $userRolesAssoc = defined('ASSOC_TYPE_USER_ROLES')
+                ? ASSOC_TYPE_USER_ROLES
+                : \APP\core\Application::ASSOC_TYPE_USER_ROLES;
+            $templateMgr->assign('userRoles', (array) $this->getAuthorizedContextObject($userRolesAssoc));
+        }
         $templateMgr->assign('pageTitle', __('plugins.generic.reviewerCertificate.myCertificates.title'));
         $templateMgr->setupBackendPage();
 

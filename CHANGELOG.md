@@ -5,6 +5,12 @@ All notable changes to the Reviewer Certificate Plugin will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.1] - 2026-11-05
+
+### Fixed
+
+- The My Certificates page failed to open in v1.15.0 (HTTP 500). The handler set up the OJS backend layout without first calling `setupTemplate()`, so the `userRoles` template variable was missing and OJS's `setupBackendPage()` threw a `TypeError` on PHP 8. The handler now calls `setupTemplate()` first, as OJS's own backend pages do.
+
 ## [1.15.0] - 2026-11-05
 
 ### Changed
