@@ -1,6 +1,6 @@
 # Reviewer Certificate Plugin for OJS
 
-**Version 1.17.0** | [Changelog](CHANGELOG.md) | OJS 3.3 / 3.4 / 3.5
+**Version 1.18.0** | [Changelog](CHANGELOG.md) | OJS 3.3 / 3.4 / 3.5
 
 ## Overview
 
@@ -9,6 +9,10 @@ The Reviewer Certificate Plugin enables reviewers to generate and download perso
 **Changes in v1.15.1**:
 
 - Fixes the My Certificates page failing to open (HTTP 500) in v1.15.0.
+
+**Changes in v1.18.0**:
+
+- Certificate Management page redesigned: aligned issued-certificates table that no longer overflows (compact Download / Revoke buttons, cards on narrow screens), a statistics strip, matching batch tool cards, and aligned fields in the certificate settings form.
 
 **Changes in v1.17.0**:
 

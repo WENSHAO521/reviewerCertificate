@@ -5,6 +5,14 @@ All notable changes to the Reviewer Certificate Plugin will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.18.0] - 2026-11-05
+
+### Changed
+
+- **Certificate Management page redesigned** with its own look, sharing its colours and spacing with the certificate settings form. Statistics show as one strip of equal cells. The issued certificates table has a fixed layout (reviewer, submission title clamped to two lines with the certificate code below, review completed, downloads, status, and compact Download / Revoke buttons), so nothing overflows on the right; on narrow screens each row becomes a card. The search toolbar, pager and both batch tools use matching cards.
+- Certificate settings form: inputs in the same row stay aligned when a label wraps, the QR code option has its own row, and template variables named in help texts (such as `{{$reviewerStatus}}`) show as code chips.
+- New interface string `manage.download` in every locale.
+
 ## [1.17.0] - 2026-11-05
 
 ### Changed
