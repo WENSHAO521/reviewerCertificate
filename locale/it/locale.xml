@@ -311,4 +311,5 @@ Scarica Certificato: {{$certificateUrl}}
 	<message key="plugins.generic.reviewerCertificate.manage.tabOverview">Overview</message>
 	<message key="plugins.generic.reviewerCertificate.manage.tabTools">Batch issuing &amp; notifications</message>
 	<message key="plugins.generic.reviewerCertificate.manage.tabSettings">Certificate settings</message>
+	<message key="plugins.generic.reviewerCertificate.manage.download">Download</message>
 </locale>

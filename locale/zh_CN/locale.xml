@@ -310,4 +310,5 @@
 	<message key="plugins.generic.reviewerCertificate.manage.tabOverview">总览</message>
 	<message key="plugins.generic.reviewerCertificate.manage.tabTools">批量颁发与通知</message>
 	<message key="plugins.generic.reviewerCertificate.manage.tabSettings">证书设置</message>
+	<message key="plugins.generic.reviewerCertificate.manage.download">下载</message>
 </locale>

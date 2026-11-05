@@ -98,7 +98,18 @@
 .rc-toggle, .pkp_form.rc-settings .rc-toggle { display: inline-flex; align-items: center; gap: 6px; margin-right: 12px; font-size: .8125rem; cursor: pointer; }
 .rc-toggle--block, .pkp_form.rc-settings .rc-toggle--block { display: flex; margin-top: 8px; }
 
-.rc-grid, .pkp_form.rc-settings .rc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 0 16px; }
+.rc-grid, .pkp_form.rc-settings .rc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0 16px; align-items: stretch; }
+/* Labels that wrap to two lines must not push their input out of line:
+   each field is a column and its control sits at the bottom of the row. */
+.rc-grid > .rc-field, .pkp_form.rc-settings .rc-grid > .rc-field { display: flex; flex-direction: column; }
+.rc-grid > .rc-field > .rc-input, .pkp_form.rc-settings .rc-grid > .rc-field > .rc-input,
+.rc-grid > .rc-field > .rc-color, .pkp_form.rc-settings .rc-grid > .rc-field > .rc-color { margin-top: auto; }
+.rc-grid > .rc-field > select.rc-input, .pkp_form.rc-settings .rc-grid > .rc-field > select.rc-input { height: 38px; }
+.rc-grid > .rc-field > input.rc-input, .pkp_form.rc-settings .rc-grid > .rc-field > input.rc-input { height: 38px; }
+.rc-switch, .pkp_form.rc-settings .rc-switch { display: flex; align-items: center; gap: 10px; min-height: 38px; padding: 8px 12px; border: 1px solid var(--rc-line); border-radius: 6px; background: var(--rc-soft); font-size: .875rem; cursor: pointer; }
+.rc-switch input, .pkp_form.rc-settings .rc-switch input { flex: none; width: 16px; height: 16px; margin: 0; accent-color: var(--rc-accent); }
+/* Template variables named in help texts */
+.rc-var, .pkp_form.rc-settings .rc-var { display: inline-block; padding: 0 6px; border-radius: 4px; background: var(--rc-soft); border: 1px solid var(--rc-line); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .75rem; line-height: 1.35rem; color: var(--rc-ink); white-space: nowrap; }
 .rc-notice, .pkp_form.rc-settings .rc-notice { background: var(--rc-soft); border: 1px dashed var(--rc-line); border-radius: var(--rc-radius); padding: 12px 14px; color: var(--rc-muted); font-size: .875rem; margin: 0 0 16px; }
 
 /* Show only what applies to the chosen layout */
@@ -196,6 +207,21 @@ $(function() {
 	}
 	$form.on('change', 'input[name="layoutMode"]', applyLayout);
 	applyLayout();
+
+	// ---- Show template variables named in help texts as code chips
+	$form.find('.rc-hint, .rc-card__head p, .rc-type-table small, .rc-notice').each(function() {
+		var walker = document.createTreeWalker(this, NodeFilter.SHOW_TEXT), nodes = [], node;
+		while ((node = walker.nextNode())) { if (/\{\{\$\w+\}\}/.test(node.nodeValue)) { nodes.push(node); } }
+		$.each(nodes, function(i, text) {
+			var frag = document.createDocumentFragment();
+			$.each(text.nodeValue.split(/(\{\{\$\w+\}\})/), function(j, part) {
+				if (!part) { return; }
+				if (j % 2) { var code = document.createElement('code'); code.className = 'rc-var'; code.textContent = part; frag.appendChild(code); }
+				else { frag.appendChild(document.createTextNode(part)); }
+			});
+			text.parentNode.replaceChild(frag, text);
+		});
+	});
 
 	// ---- Template helpers
 	$form.on('click', '.rc-chip', function() {
@@ -625,10 +651,6 @@ The Editors of {{$journalName}}{/literal}{/capture}
 				<span class="rc-label">{translate key="`$rcKey`minimumReviews"} <span class="rc-required">*</span></span>
 				<input type="number" class="rc-input" name="minimumReviews" value="{$minimumReviews|default:1|escape}" min="1" required />
 			</label>
-			<div class="rc-field">
-				<span class="rc-label">{translate key="`$rcKey`verification"}</span>
-				<label class="rc-toggle rc-toggle--block"><input type="checkbox" name="includeQRCode" value="1" {if $includeQRCode}checked{/if} /><span>{translate key="`$rcKey`includeQRCode"}</span></label>
-			</div>
 			<label class="rc-field">
 				<span class="rc-label">{translate key="`$rcKey`verifyNameDisplay"}</span>
 				<select class="rc-input" name="verifyNameDisplay">
@@ -641,6 +663,10 @@ The Editors of {{$journalName}}{/literal}{/capture}
 				<span class="rc-label">{translate key="`$rcKey`certificateCodeLabel"}</span>
 				<input type="text" class="rc-input" name="certificateCodeLabel" value="{$certificateCodeLabel|escape}" maxlength="60" />
 			</label>
+		</div>
+		<div class="rc-field">
+			<span class="rc-label">{translate key="`$rcKey`verification"}</span>
+			<label class="rc-switch"><input type="checkbox" name="includeQRCode" value="1" {if $includeQRCode}checked{/if} /><span>{translate key="`$rcKey`includeQRCode"}</span></label>
 		</div>
 	</section>
 

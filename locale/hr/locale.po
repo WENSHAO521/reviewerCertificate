@@ -734,3 +734,6 @@ msgstr "Batch issuing & notifications"
 msgid "plugins.generic.reviewerCertificate.manage.tabSettings"
 msgstr "Certificate settings"
 
+msgid "plugins.generic.reviewerCertificate.manage.download"
+msgstr "Download"
+
