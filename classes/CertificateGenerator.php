@@ -380,6 +380,18 @@ class CertificateGenerator {
     }
 
     /**
+     * Default body of the cumulative certificate (all reviews for the journal).
+     * @return string
+     */
+    public static function getDefaultCumulativeBodyTemplate() {
+        return 'This certificate is awarded to' . "\n\n" .
+               '{{$reviewerName}}' . "\n\n" .
+               'In recognition of {{$reviewCount}} peer reviews contributed to' . "\n\n" .
+               '{{$journalName}}' . "\n\n" .
+               '{{$reviewPeriod}}';
+    }
+
+    /**
      * Default body of the annual summary certificate.
      * @return string
      */

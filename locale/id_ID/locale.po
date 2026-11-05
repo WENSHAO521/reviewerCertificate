@@ -663,10 +663,10 @@ msgid "plugins.generic.reviewerCertificate.manage.pageOf"
 msgstr "Page {$page} of {$pageCount}"
 
 msgid "plugins.generic.reviewerCertificate.annual.title"
-msgstr "Annual certificates"
+msgstr "Annual and cumulative certificates"
 
 msgid "plugins.generic.reviewerCertificate.annual.description"
-msgstr "One certificate covering all the reviews you completed for this journal in a year."
+msgstr "One certificate covering all your reviews for this journal, either in total or for one year."
 
 msgid "plugins.generic.reviewerCertificate.annual.download"
 msgstr "{$year} ({$count} reviews)"
@@ -684,8 +684,20 @@ msgid "plugins.generic.reviewerCertificate.settings.verifyNameDisplay.hidden"
 msgstr "Do not show"
 
 msgid "plugins.generic.reviewerCertificate.settings.annualBodyTemplate"
-msgstr "Annual certificate"
+msgstr "Annual and cumulative certificates"
 
 msgid "plugins.generic.reviewerCertificate.settings.annualBodyTemplateDescription"
-msgstr "Reviewers can download one certificate per year from My Certificates. It uses the same layout, images and styles as the single certificate, with this text as the body. Extra variables: {{$reviewCount}} (number of reviews) and {{$reviewYear}}. It has no certificate code or QR code."
+msgstr "Reviewers can download these from My Certificates. They use the same layout, images and styles as the single certificate, with the text below as the body, and have no certificate code or QR code. Extra variables: {{$reviewCount}} (number of reviews) and {{$reviewYear}}."
+
+msgid "plugins.generic.reviewerCertificate.settings.annualBodyTemplateLabel"
+msgstr "Annual certificate text"
+
+msgid "plugins.generic.reviewerCertificate.settings.cumulativeBodyTemplate"
+msgstr "Cumulative certificate text"
+
+msgid "plugins.generic.reviewerCertificate.settings.cumulativeBodyTemplateDescription"
+msgstr "One certificate with the total number of reviews the reviewer has completed for this journal, like Elsevier's \"Recognized Reviewer\" certificate. {{$reviewPeriod}} is the span of years, e.g. 2021–2026."
+
+msgid "plugins.generic.reviewerCertificate.annual.cumulative"
+msgstr "All years ({$count} reviews)"
 

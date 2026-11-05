@@ -663,10 +663,10 @@ msgid "plugins.generic.reviewerCertificate.manage.pageOf"
 msgstr "第 {$page} 頁，共 {$pageCount} 頁"
 
 msgid "plugins.generic.reviewerCertificate.annual.title"
-msgstr "年度證書"
+msgstr "年度與累計證書"
 
 msgid "plugins.generic.reviewerCertificate.annual.description"
-msgstr "一張證書涵蓋您在一年內為本期刊完成的所有審稿。"
+msgstr "一張證書涵蓋您為本期刊完成的審稿，可選擇全部累計或單一年度。"
 
 msgid "plugins.generic.reviewerCertificate.annual.download"
 msgstr "{$year} 年（{$count} 次審稿）"
@@ -684,8 +684,20 @@ msgid "plugins.generic.reviewerCertificate.settings.verifyNameDisplay.hidden"
 msgstr "不顯示"
 
 msgid "plugins.generic.reviewerCertificate.settings.annualBodyTemplate"
-msgstr "年度證書"
+msgstr "年度與累計證書"
 
 msgid "plugins.generic.reviewerCertificate.settings.annualBodyTemplateDescription"
-msgstr "審稿人可以在「我的證書」頁面下載每年一張的年度證書。它使用與單張證書相同的版面、圖片和樣式，正文改用這裡的文字。額外變數：{{$reviewCount}}（審稿次數）和 {{$reviewYear}}。年度證書沒有證書編號和 QR 碼。"
+msgstr "審稿人可以在「我的證書」頁面下載。它們使用與單張證書相同的版面、圖片和樣式，正文改用下方文字，沒有證書編號和 QR 碼。額外變數：{{$reviewCount}}（審稿次數）和 {{$reviewYear}}。"
+
+msgid "plugins.generic.reviewerCertificate.settings.annualBodyTemplateLabel"
+msgstr "年度證書正文"
+
+msgid "plugins.generic.reviewerCertificate.settings.cumulativeBodyTemplate"
+msgstr "累計證書正文"
+
+msgid "plugins.generic.reviewerCertificate.settings.cumulativeBodyTemplateDescription"
+msgstr "一張證書列出審稿人為本期刊完成的審稿總次數，類似 Elsevier 的「Recognized Reviewer」證書。{{$reviewPeriod}} 是年份區間，例如 2021–2026。"
+
+msgid "plugins.generic.reviewerCertificate.annual.cumulative"
+msgstr "全部年份（共 {$count} 次審稿）"
 

@@ -622,6 +622,10 @@ class CertificateHandler extends Handler {
                 'url' => $request->url(null, 'certificate', 'annualCertificate', array($year)));
         }
         $templateMgr->assign('annualCertificates', $annual);
+        $templateMgr->assign('cumulativeCertificate', $annualYears ? array(
+            'count' => array_sum($annualYears),
+            'url' => $request->url(null, 'certificate', 'annualCertificate', array('all')),
+        ) : null);
         // Explain an empty list when the journal requires more reviews
         $templateMgr->assign('certificatesPending', !$certificates && $completedReviews > 0 && $completedReviews < $minimumReviews);
         $templateMgr->assign('completedReviews', $completedReviews);
@@ -921,8 +925,11 @@ class CertificateHandler extends Handler {
         $this->ensurePluginLocaleLoaded();
         $user = $request->getUser();
         $context = $request->getContext();
-        $year = isset($args[0]) ? (int) $args[0] : 0;
-        if (!$user || !$context || $year < 1900 || $year > 9999) {
+        // 'all' = cumulative certificate over every year (like Elsevier's
+        // "Recognized Reviewer" certificate with the total review count).
+        $cumulative = isset($args[0]) && $args[0] === 'all';
+        $year = $cumulative ? 0 : (isset($args[0]) ? (int) $args[0] : 0);
+        if (!$user || !$context || (!$cumulative && ($year < 1900 || $year > 9999))) {
             http_response_code(400);
             throw new Exception('Invalid year', 400);
         }
@@ -937,10 +944,12 @@ class CertificateHandler extends Handler {
              AND ra.date_completed >= ? AND ra.date_completed < ?
              ORDER BY ra.date_completed DESC',
             array((int) $user->getId(), (int) $context->getId(), (int) $context->getId(),
-                sprintf('%04d-01-01 00:00:00', $year), sprintf('%04d-01-01 00:00:00', $year + 1))
+                $cumulative ? '1900-01-01 00:00:00' : sprintf('%04d-01-01 00:00:00', $year),
+                $cumulative ? '10000-01-01 00:00:00' : sprintf('%04d-01-01 00:00:00', $year + 1))
         );
         $revoked = $plugin->getRevokedCertificates($context->getId());
         $count = 0;
+        $years = array();
         $latestReviewId = null;
         foreach ($result as $row) {
             $row = (array) $row;
@@ -948,6 +957,7 @@ class CertificateHandler extends Handler {
                 continue;
             }
             $count++;
+            $years[] = (int) date('Y', strtotime($row['date_completed']));
             if ($latestReviewId === null) {
                 $latestReviewId = (int) $row['review_id'];
             }
@@ -964,14 +974,20 @@ class CertificateHandler extends Handler {
         $generator->setContext($context);
         $generator->setLocale($this->getCurrentLocale());
         $settings = $this->getTemplateSettings($context);
-        $settings['bodyTemplate'] = $plugin->getSetting($context->getId(), 'annualBodyTemplate')
-            ?: \APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::getDefaultAnnualBodyTemplate();
+        $generatorClass = \APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::class;
+        $settings['bodyTemplate'] = $cumulative
+            ? ($plugin->getSetting($context->getId(), 'cumulativeBodyTemplate') ?: $generatorClass::getDefaultCumulativeBodyTemplate())
+            : ($plugin->getSetting($context->getId(), 'annualBodyTemplate') ?: $generatorClass::getDefaultAnnualBodyTemplate());
         $generator->setTemplateSettings($settings);
+        $period = $cumulative
+            ? (min($years) === max($years) ? (string) min($years) : min($years) . '–' . max($years))
+            : (string) $year;
         $generator->setExtraVariables(array(
             'reviewCount' => $count,
-            'reviewYear' => $year,
-            'reviewDate' => $year,
-            'reviewMonthYear' => $year,
+            'reviewYear' => $period,
+            'reviewPeriod' => $period,
+            'reviewDate' => $period,
+            'reviewMonthYear' => $period,
             'submissionTitle' => '',
             'certificateCode' => '',
         ));
@@ -983,7 +999,7 @@ class CertificateHandler extends Handler {
             echo 'An error occurred generating the certificate. Please try again later.';
             exit;
         }
-        $this->sendPdf($pdfContent, 'reviewer_certificate_' . $year . '.pdf');
+        $this->sendPdf($pdfContent, 'reviewer_certificate_' . ($cumulative ? 'all' : $year) . '.pdf');
     }
 
     /**

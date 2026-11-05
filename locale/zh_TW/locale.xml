@@ -284,8 +284,8 @@
 	<message key="plugins.generic.reviewerCertificate.manage.restoredNotice">證書已恢復。</message>
 	<message key="plugins.generic.reviewerCertificate.manage.empty">沒有找到證書。</message>
 	<message key="plugins.generic.reviewerCertificate.manage.pageOf">第 {$page} 頁，共 {$pageCount} 頁</message>
-	<message key="plugins.generic.reviewerCertificate.annual.title">年度證書</message>
-	<message key="plugins.generic.reviewerCertificate.annual.description">一張證書涵蓋您在一年內為本期刊完成的所有審稿。</message>
+	<message key="plugins.generic.reviewerCertificate.annual.title">年度與累計證書</message>
+	<message key="plugins.generic.reviewerCertificate.annual.description">一張證書涵蓋您為本期刊完成的審稿，可選擇全部累計或單一年度。</message>
 	<message key="plugins.generic.reviewerCertificate.annual.download">{$year} 年（{$count} 次審稿）</message>
 	<message key="plugins.generic.reviewerCertificate.verify.revoked">證書已撤銷</message>
 	<message key="plugins.generic.reviewerCertificate.verify.revokedDescription">這張證書由本期刊頒發，但已於 {$date} 撤銷，不再有效。</message>
@@ -293,6 +293,10 @@
 	<message key="plugins.generic.reviewerCertificate.settings.verifyNameDisplay.full">顯示全名</message>
 	<message key="plugins.generic.reviewerCertificate.settings.verifyNameDisplay.initials">只顯示縮寫（J. S. / 王**）</message>
 	<message key="plugins.generic.reviewerCertificate.settings.verifyNameDisplay.hidden">不顯示</message>
-	<message key="plugins.generic.reviewerCertificate.settings.annualBodyTemplate">年度證書</message>
-	<message key="plugins.generic.reviewerCertificate.settings.annualBodyTemplateDescription">審稿人可以在「我的證書」頁面下載每年一張的年度證書。它使用與單張證書相同的版面、圖片和樣式，正文改用這裡的文字。額外變數：{{$reviewCount}}（審稿次數）和 {{$reviewYear}}。年度證書沒有證書編號和 QR 碼。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.annualBodyTemplate">年度與累計證書</message>
+	<message key="plugins.generic.reviewerCertificate.settings.annualBodyTemplateDescription">審稿人可以在「我的證書」頁面下載。它們使用與單張證書相同的版面、圖片和樣式，正文改用下方文字，沒有證書編號和 QR 碼。額外變數：{{$reviewCount}}（審稿次數）和 {{$reviewYear}}。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.annualBodyTemplateLabel">年度證書正文</message>
+	<message key="plugins.generic.reviewerCertificate.settings.cumulativeBodyTemplate">累計證書正文</message>
+	<message key="plugins.generic.reviewerCertificate.settings.cumulativeBodyTemplateDescription">一張證書列出審稿人為本期刊完成的審稿總次數，類似 Elsevier 的「Recognized Reviewer」證書。{{$reviewPeriod}} 是年份區間，例如 2021–2026。</message>
+	<message key="plugins.generic.reviewerCertificate.annual.cumulative">全部年份（共 {$count} 次審稿）</message>
 </locale>

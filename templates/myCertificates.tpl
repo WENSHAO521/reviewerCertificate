@@ -96,6 +96,13 @@
 		<h2>{translate key="plugins.generic.reviewerCertificate.annual.title"}</h2>
 		<p>{translate key="plugins.generic.reviewerCertificate.annual.description"}</p>
 		<ul class="certificate-annual-list">
+			{if $cumulativeCertificate}
+				<li>
+					<a href="{$cumulativeCertificate.url|escape}" class="pkp_button pkp_button_primary certificate-cumulative-btn">
+						{translate key="plugins.generic.reviewerCertificate.annual.cumulative" count=$cumulativeCertificate.count}
+					</a>
+				</li>
+			{/if}
 			{foreach from=$annualCertificates item=annual}
 				<li>
 					<a href="{$annual.url|escape}" class="pkp_button certificate-annual-btn">

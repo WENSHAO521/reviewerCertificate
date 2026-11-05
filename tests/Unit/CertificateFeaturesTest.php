@@ -113,4 +113,14 @@ class CertificateFeaturesTest extends TestCase
         $this->assertStringContainsString('in 2026', $text);
         $this->assertStringStartsWith('%PDF-', $generator->generatePDF());
     }
+
+    public function testCumulativeCertificateShowsTotalAndPeriod(): void
+    {
+        $generator = new CertificateGenerator();
+        $generator->setPreviewMode(true);
+        $generator->setExtraVariables(['reviewCount' => 6, 'reviewPeriod' => '2021–2026']);
+        $text = $generator->renderText(CertificateGenerator::getDefaultCumulativeBodyTemplate());
+        $this->assertStringContainsString('In recognition of 6 peer reviews contributed to', $text);
+        $this->assertStringContainsString('2021–2026', $text);
+    }
 }

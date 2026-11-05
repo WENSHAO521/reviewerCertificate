@@ -649,7 +649,13 @@ The Editors of {{$journalName}}{/literal}{/capture}
 			</div>
 		</header>
 		<div class="rc-field">
+			<label class="rc-label" for="annualBodyTemplate">{translate key="`$rcKey`annualBodyTemplateLabel"}</label>
 			<textarea class="rc-input rc-textarea" id="annualBodyTemplate" name="annualBodyTemplate" rows="7">{$annualBodyTemplate|escape}</textarea>
+		</div>
+		<div class="rc-field">
+			<label class="rc-label" for="cumulativeBodyTemplate">{translate key="`$rcKey`cumulativeBodyTemplate"}</label>
+			<p class="rc-hint">{translate key="`$rcKey`cumulativeBodyTemplateDescription"}</p>
+			<textarea class="rc-input rc-textarea" id="cumulativeBodyTemplate" name="cumulativeBodyTemplate" rows="7">{$cumulativeBodyTemplate|escape}</textarea>
 		</div>
 	</section>
 

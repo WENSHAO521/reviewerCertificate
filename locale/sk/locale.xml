@@ -284,8 +284,8 @@ Stiahnuť Certifikát: {{$certificateUrl}}
 	<message key="plugins.generic.reviewerCertificate.manage.restoredNotice">The certificate was restored.</message>
 	<message key="plugins.generic.reviewerCertificate.manage.empty">No certificates found.</message>
 	<message key="plugins.generic.reviewerCertificate.manage.pageOf">Page {$page} of {$pageCount}</message>
-	<message key="plugins.generic.reviewerCertificate.annual.title">Annual certificates</message>
-	<message key="plugins.generic.reviewerCertificate.annual.description">One certificate covering all the reviews you completed for this journal in a year.</message>
+	<message key="plugins.generic.reviewerCertificate.annual.title">Annual and cumulative certificates</message>
+	<message key="plugins.generic.reviewerCertificate.annual.description">One certificate covering all your reviews for this journal, either in total or for one year.</message>
 	<message key="plugins.generic.reviewerCertificate.annual.download">{$year} ({$count} reviews)</message>
 	<message key="plugins.generic.reviewerCertificate.verify.revoked">Certificate Revoked</message>
 	<message key="plugins.generic.reviewerCertificate.verify.revokedDescription">This certificate was issued by the journal but revoked on {$date}. It is no longer valid.</message>
@@ -293,6 +293,10 @@ Stiahnuť Certifikát: {{$certificateUrl}}
 	<message key="plugins.generic.reviewerCertificate.settings.verifyNameDisplay.full">Full name</message>
 	<message key="plugins.generic.reviewerCertificate.settings.verifyNameDisplay.initials">Initials only (J. S.)</message>
 	<message key="plugins.generic.reviewerCertificate.settings.verifyNameDisplay.hidden">Do not show</message>
-	<message key="plugins.generic.reviewerCertificate.settings.annualBodyTemplate">Annual certificate</message>
-	<message key="plugins.generic.reviewerCertificate.settings.annualBodyTemplateDescription">Reviewers can download one certificate per year from My Certificates. It uses the same layout, images and styles as the single certificate, with this text as the body. Extra variables: {{$reviewCount}} (number of reviews) and {{$reviewYear}}. It has no certificate code or QR code.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.annualBodyTemplate">Annual and cumulative certificates</message>
+	<message key="plugins.generic.reviewerCertificate.settings.annualBodyTemplateDescription">Reviewers can download these from My Certificates. They use the same layout, images and styles as the single certificate, with the text below as the body, and have no certificate code or QR code. Extra variables: {{$reviewCount}} (number of reviews) and {{$reviewYear}}.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.annualBodyTemplateLabel">Annual certificate text</message>
+	<message key="plugins.generic.reviewerCertificate.settings.cumulativeBodyTemplate">Cumulative certificate text</message>
+	<message key="plugins.generic.reviewerCertificate.settings.cumulativeBodyTemplateDescription">One certificate with the total number of reviews the reviewer has completed for this journal, like Elsevier's "Recognized Reviewer" certificate. {{$reviewPeriod}} is the span of years, e.g. 2021–2026.</message>
+	<message key="plugins.generic.reviewerCertificate.annual.cumulative">All years ({$count} reviews)</message>
 </locale>
