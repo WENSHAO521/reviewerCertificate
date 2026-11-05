@@ -303,4 +303,11 @@
 	<message key="plugins.generic.reviewerCertificate.settings.outstandingLabel">杰出审稿人的称号</message>
 	<message key="plugins.generic.reviewerCertificate.settings.recognizedLabel">其他审稿人的称号</message>
 	<message key="plugins.generic.reviewerCertificate.settings.outstandingDescription">类似 Elsevier 的 Recognized / Outstanding Reviewer。累计证书上的 {{$reviewerStatus}} 在审稿人近两年为本期刊完成的审稿次数达到门槛时显示杰出称号，否则显示另一个称号。“我的证书”页面也会显示同样的称号。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.menu">证书管理</message>
+	<message key="plugins.generic.reviewerCertificate.manage.pageDescription">本期刊审稿证书的统计、已颁发证书、批量颁发、邮件通知与证书设置，都在这里管理。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.settingsNotice">统计、已颁发证书、批量颁发、邮件通知与证书设置，现在都集中在“证书管理”页，可从左侧菜单“统计”下方进入。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.clearSearch">清除</message>
+	<message key="plugins.generic.reviewerCertificate.manage.tabOverview">总览</message>
+	<message key="plugins.generic.reviewerCertificate.manage.tabTools">批量颁发与通知</message>
+	<message key="plugins.generic.reviewerCertificate.manage.tabSettings">证书设置</message>
 </locale>

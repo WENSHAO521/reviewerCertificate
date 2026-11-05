@@ -303,4 +303,11 @@
 	<message key="plugins.generic.reviewerCertificate.settings.outstandingLabel">傑出審稿人的稱號</message>
 	<message key="plugins.generic.reviewerCertificate.settings.recognizedLabel">其他審稿人的稱號</message>
 	<message key="plugins.generic.reviewerCertificate.settings.outstandingDescription">類似 Elsevier 的 Recognized / Outstanding Reviewer。累計證書上的 {{$reviewerStatus}} 在審稿人近兩年為本期刊完成的審稿次數達到門檻時顯示傑出稱號，否則顯示另一個稱號。「我的證書」頁面也會顯示同樣的稱號。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.menu">證書管理</message>
+	<message key="plugins.generic.reviewerCertificate.manage.pageDescription">本期刊審稿證書的統計、已頒發證書、批次頒發、郵件通知與證書設定，都在這裡管理。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.settingsNotice">統計、已頒發證書、批次頒發、郵件通知與證書設定，現在都集中在「證書管理」頁，可從左側選單「統計」下方進入。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.clearSearch">清除</message>
+	<message key="plugins.generic.reviewerCertificate.manage.tabOverview">總覽</message>
+	<message key="plugins.generic.reviewerCertificate.manage.tabTools">批次頒發與通知</message>
+	<message key="plugins.generic.reviewerCertificate.manage.tabSettings">證書設定</message>
 </locale>

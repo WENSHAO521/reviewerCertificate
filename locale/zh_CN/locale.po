@@ -713,7 +713,6 @@ msgstr "其他审稿人的称号"
 msgid "plugins.generic.reviewerCertificate.settings.outstandingDescription"
 msgstr "类似 Elsevier 的 Recognized / Outstanding Reviewer。累计证书上的 {{$reviewerStatus}} 在审稿人近两年为本期刊完成的审稿次数达到门槛时显示杰出称号，否则显示另一个称号。“我的证书”页面也会显示同样的称号。"
 
-
 msgid "plugins.generic.reviewerCertificate.manage.menu"
 msgstr "证书管理"
 
@@ -734,3 +733,4 @@ msgstr "批量颁发与通知"
 
 msgid "plugins.generic.reviewerCertificate.manage.tabSettings"
 msgstr "证书设置"
+

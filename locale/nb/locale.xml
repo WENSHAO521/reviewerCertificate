@@ -305,4 +305,11 @@ Last ned Sertifikat: {{$certificateUrl}}
 	<message key="plugins.generic.reviewerCertificate.settings.outstandingLabel">Title for outstanding reviewers</message>
 	<message key="plugins.generic.reviewerCertificate.settings.recognizedLabel">Title for other reviewers</message>
 	<message key="plugins.generic.reviewerCertificate.settings.outstandingDescription">Like Elsevier's Recognized and Outstanding Reviewer status. {{$reviewerStatus}} on the cumulative certificate shows the outstanding title when the reviewer completed at least this many reviews for the journal in the last two years, and the other title otherwise. My Certificates shows the same title.</message>
+	<message key="plugins.generic.reviewerCertificate.manage.menu">Certificate Management</message>
+	<message key="plugins.generic.reviewerCertificate.manage.pageDescription">Statistics, issued certificates, batch issuing, email notifications and settings for this journal's reviewer certificates, all in one place.</message>
+	<message key="plugins.generic.reviewerCertificate.manage.settingsNotice">Statistics, issued certificates, batch issuing, email notifications and these certificate settings are all on the Certificate Management page, listed below Statistics in the side menu.</message>
+	<message key="plugins.generic.reviewerCertificate.manage.clearSearch">Clear</message>
+	<message key="plugins.generic.reviewerCertificate.manage.tabOverview">Overview</message>
+	<message key="plugins.generic.reviewerCertificate.manage.tabTools">Batch issuing &amp; notifications</message>
+	<message key="plugins.generic.reviewerCertificate.manage.tabSettings">Certificate settings</message>
 </locale>
