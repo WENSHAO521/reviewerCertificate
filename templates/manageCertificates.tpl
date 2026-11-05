@@ -8,9 +8,9 @@
  * Statistics: statistics, the issued certificates (search, CSV export,
  * download, revoke and restore), batch issuing and email notifications.
  *
- * Built from OJS classes present in 3.3–3.5 (grid panels, .pkp_button,
- * .pkp_notification) plus a few layout rules scoped to .rc-manage that only
- * use OJS's default palette, so it looks like the rest of the backend.
+ * Own design (css/manageCertificates.css, all rules scoped to .rc-manage)
+ * in OJS's backend palette, the same look as the certificate settings form
+ * shown in the third tab. Works inside the OJS 3.3, 3.4 and 3.5 backend.
  *}
 {extends file="layouts/backend.tpl"}
 
@@ -36,20 +36,16 @@
 		data-text-skipped="{$rcTextSkipped|escape}"
 		data-text-failed="{$rcTextFailed|escape}"
 		data-text-sent="{$rcTextSent|escape}">
-		<h1 class="app__pageHeading">
-			{translate key="plugins.generic.reviewerCertificate.manage.menu"}
-		</h1>
-		<p class="rc-manage__intro">{translate key="plugins.generic.reviewerCertificate.manage.pageDescription"}</p>
+		<header class="rc-manage__header">
+			<h1 class="app__pageHeading">{translate key="plugins.generic.reviewerCertificate.manage.menu"}</h1>
+			<p class="rc-manage__intro">{translate key="plugins.generic.reviewerCertificate.manage.pageDescription"}</p>
+		</header>
 
 		{if $certificateRevoked}
-			<div class="pkp_notification">
-				<div class="notifySuccess" role="status">{translate key="plugins.generic.reviewerCertificate.manage.revokedNotice"}</div>
-			</div>
+			<div class="rc-alert rc-alert--ok" role="status">{translate key="plugins.generic.reviewerCertificate.manage.revokedNotice"}</div>
 		{/if}
 		{if $certificateRestored}
-			<div class="pkp_notification">
-				<div class="notifySuccess" role="status">{translate key="plugins.generic.reviewerCertificate.manage.restoredNotice"}</div>
-			</div>
+			<div class="rc-alert rc-alert--ok" role="status">{translate key="plugins.generic.reviewerCertificate.manage.restoredNotice"}</div>
 		{/if}
 
 		<div class="rc-manage__tabs" role="tablist">
@@ -59,162 +55,167 @@
 		</div>
 
 		<div class="rc-manage__panel" role="tabpanel" id="rc-panel-overview" aria-labelledby="rc-tab-overview">
-		{* Statistics *}
-		<section class="rc-manage__section" aria-labelledby="rcStatsHeading">
-			<h2 id="rcStatsHeading">{translate key="plugins.generic.reviewerCertificate.statistics.title"}</h2>
-			<ul class="rc-manage__stats certificate-statistics">
-				<li class="rc-manage__stat"><strong>{$statistics.total|escape}</strong><span>{translate key="plugins.generic.reviewerCertificate.statistics.totalCertificates"}</span></li>
-				<li class="rc-manage__stat"><strong>{$statistics.valid|escape}</strong><span>{translate key="plugins.generic.reviewerCertificate.manage.valid"}</span></li>
-				<li class="rc-manage__stat {if $statistics.revoked}rc-manage__stat--revoked{else}rc-manage__stat--zero{/if}"><strong>{$statistics.revoked|escape}</strong><span>{translate key="plugins.generic.reviewerCertificate.manage.revoked"}</span></li>
-				<li class="rc-manage__stat"><strong>{$statistics.downloads|escape}</strong><span>{translate key="plugins.generic.reviewerCertificate.statistics.totalDownloads"}</span></li>
-				<li class="rc-manage__stat"><strong>{$statistics.reviewers|escape}</strong><span>{translate key="plugins.generic.reviewerCertificate.statistics.uniqueReviewers"}</span></li>
-			</ul>
-		</section>
+			{* Statistics: one strip of equal cells *}
+			<section class="rc-box rc-stats certificate-statistics" aria-label="{translate key="plugins.generic.reviewerCertificate.statistics.title"}">
+				<div class="rc-stat"><span class="rc-stat__label">{translate key="plugins.generic.reviewerCertificate.statistics.totalCertificates"}</span><strong class="rc-stat__value">{$statistics.total|escape}</strong></div>
+				<div class="rc-stat"><span class="rc-stat__label">{translate key="plugins.generic.reviewerCertificate.manage.valid"}</span><strong class="rc-stat__value rc-stat__value--ok">{$statistics.valid|escape}</strong></div>
+				<div class="rc-stat"><span class="rc-stat__label">{translate key="plugins.generic.reviewerCertificate.manage.revoked"}</span><strong class="rc-stat__value{if $statistics.revoked} rc-stat__value--bad{else} rc-stat__value--muted{/if}">{$statistics.revoked|escape}</strong></div>
+				<div class="rc-stat"><span class="rc-stat__label">{translate key="plugins.generic.reviewerCertificate.statistics.totalDownloads"}</span><strong class="rc-stat__value">{$statistics.downloads|escape}</strong></div>
+				<div class="rc-stat"><span class="rc-stat__label">{translate key="plugins.generic.reviewerCertificate.statistics.uniqueReviewers"}</span><strong class="rc-stat__value">{$statistics.reviewers|escape}</strong></div>
+			</section>
 
-		{* Issued certificates *}
-		<section class="rc-manage__section">
-			<div class="pkp_controllers_grid">
-				<div class="header">
-					<h4>{translate key="plugins.generic.reviewerCertificate.manage.title"}<span class="rc-manage__count">{$totalCertificates|escape}</span></h4>
-					<ul class="actions">
-						<li><a href="{$exportUrl|escape}" class="certificate-export-btn">{translate key="plugins.generic.reviewerCertificate.manage.exportCsv"}</a></li>
-					</ul>
+			{* Issued certificates *}
+			<section class="rc-box rc-certs">
+				<div class="rc-box__head">
+					<h2 class="rc-box__title">{translate key="plugins.generic.reviewerCertificate.manage.title"} <span class="rc-count">{$totalCertificates|escape}</span></h2>
+					<a href="{$exportUrl|escape}" class="rc-btn certificate-export-btn">{translate key="plugins.generic.reviewerCertificate.manage.exportCsv"}</a>
 				</div>
 
-				<form method="get" action="{$manageUrl|escape}" class="rc-manage__filter certificate-manage-search" role="search">
+				<form method="get" action="{$manageUrl|escape}" class="rc-toolbar certificate-manage-search" role="search">
 					<label for="certificateSearch" class="pkp_screen_reader">{translate key="plugins.generic.reviewerCertificate.manage.search"}</label>
-					<input type="search" id="certificateSearch" name="search" value="{$search|escape}" placeholder="{translate key="plugins.generic.reviewerCertificate.manage.searchPlaceholder"}" />
-					<button type="submit" class="pkp_button">{translate key="plugins.generic.reviewerCertificate.manage.search"}</button>
-					{if $isFiltered}<a href="{$manageUrl|escape}" class="rc-manage__clear">{translate key="plugins.generic.reviewerCertificate.manage.clearSearch"}</a>{/if}
+					<input type="search" id="certificateSearch" class="rc-search" name="search" value="{$search|escape}" placeholder="{translate key="plugins.generic.reviewerCertificate.manage.searchPlaceholder"}" />
+					<button type="submit" class="rc-btn">{translate key="plugins.generic.reviewerCertificate.manage.search"}</button>
+					{if $isFiltered}<a href="{$manageUrl|escape}" class="rc-link">{translate key="plugins.generic.reviewerCertificate.manage.clearSearch"}</a>{/if}
 				</form>
 
-				<div class="rc-manage__scroll">
-				<table class="certificate-manage-table">
+				<div class="rc-table-wrap">
+				<table class="rc-table certificate-manage-table">
+					<colgroup>
+						<col class="rc-col-reviewer" /><col /><col class="rc-col-date" /><col class="rc-col-num" /><col class="rc-col-status" /><col class="rc-col-actions" />
+					</colgroup>
 					<thead>
 						<tr>
-							<th scope="col">{translate key="plugins.generic.reviewerCertificate.myCertificates.certificateCode"}</th>
 							<th scope="col">{translate key="plugins.generic.reviewerCertificate.manage.reviewer"}</th>
 							<th scope="col">{translate key="plugins.generic.reviewerCertificate.myCertificates.submissionTitle"}</th>
 							<th scope="col">{translate key="plugins.generic.reviewerCertificate.manage.reviewCompleted"}</th>
 							<th scope="col" class="rc-num">{translate key="plugins.generic.reviewerCertificate.manage.downloads"}</th>
-							<th scope="col" class="rc-manage__status">{translate key="plugins.generic.reviewerCertificate.manage.status"}</th>
-							<th scope="col" class="rc-manage__actions"><span class="pkp_screen_reader">{translate key="plugins.generic.reviewerCertificate.myCertificates.actions"}</span></th>
+							<th scope="col">{translate key="plugins.generic.reviewerCertificate.manage.status"}</th>
+							<th scope="col" class="rc-actions-col"><span class="pkp_screen_reader">{translate key="plugins.generic.reviewerCertificate.myCertificates.actions"}</span></th>
 						</tr>
 					</thead>
 					<tbody>
 						{foreach from=$certificates item=cert}
-							<tr class="gridRow{if $cert.revoked} certificate-revoked{/if}">
-								<td>
-									<span class="rc-manage__code">{$cert.certificateCode|escape}</span>
-									<span class="rc-manage__sub">{$cert.dateIssued|escape}</span>
+							<tr class="{if $cert.revoked}is-revoked certificate-revoked{/if}">
+								<td class="rc-cell-reviewer">
+									<span class="rc-name" title="{$cert.reviewerName|escape}">{$cert.reviewerName|escape}</span>
+									<span class="rc-sub rc-ellipsis" title="{$cert.reviewerEmail|escape}">{$cert.reviewerEmail|escape}</span>
 								</td>
-								<td>
-									{$cert.reviewerName|escape}
-									<span class="rc-manage__sub">{$cert.reviewerEmail|escape}</span>
+								<td class="rc-cell-title">
+									<span class="rc-title" title="{$cert.submissionTitle|escape}">{$cert.submissionTitle|escape}</span>
+									<span class="rc-sub"><code class="rc-code">{$cert.certificateCode|escape}</code></span>
 								</td>
-								<td class="rc-manage__title">{$cert.submissionTitle|escape}</td>
-								<td style="white-space: nowrap;">{$cert.reviewCompleted|escape}</td>
-								<td class="rc-num">{$cert.downloads|escape}</td>
-								<td>
+								<td class="rc-cell-date" data-label="{translate key="plugins.generic.reviewerCertificate.manage.reviewCompleted"}">{$cert.reviewCompleted|escape}</td>
+								<td class="rc-num" data-label="{translate key="plugins.generic.reviewerCertificate.manage.downloads"}">{$cert.downloads|escape}</td>
+								<td class="rc-cell-status">
 									{if $cert.revoked}
-										<span class="rc-manage__badge rc-manage__badge--revoked">{translate key="plugins.generic.reviewerCertificate.manage.revoked"}</span>
-										<span class="rc-manage__sub">{$cert.dateRevoked|escape}{if $cert.revokeReason} · {$cert.revokeReason|escape}{/if}</span>
+										<span class="rc-badge rc-badge--bad">{translate key="plugins.generic.reviewerCertificate.manage.revoked"}</span>
+										<span class="rc-sub" title="{$cert.revokeReason|escape}">{$cert.dateRevoked|escape}{if $cert.revokeReason} · {$cert.revokeReason|escape}{/if}</span>
 									{else}
-										<span class="rc-manage__badge rc-manage__badge--valid">{translate key="plugins.generic.reviewerCertificate.manage.valid"}</span>
-										{if $cert.notification == 'sent'}<span class="rc-manage__sub">{translate key="plugins.generic.reviewerCertificate.manage.notified"}</span>{/if}
+										<span class="rc-badge rc-badge--ok">{translate key="plugins.generic.reviewerCertificate.manage.valid"}</span>
+										{if $cert.notification == 'sent'}<span class="rc-sub">{translate key="plugins.generic.reviewerCertificate.manage.notified"}</span>{/if}
 									{/if}
 								</td>
-								<td class="rc-manage__actions">
-									<a href="{$cert.downloadUrl|escape}" class="pkp_button">{translate key="plugins.generic.reviewerCertificate.downloadCertificate"}</a>
+								<td class="rc-cell-actions">
+									<a href="{$cert.downloadUrl|escape}" class="rc-btn rc-btn--sm" title="{translate key="plugins.generic.reviewerCertificate.downloadCertificate"}">{translate key="plugins.generic.reviewerCertificate.manage.download"}</a>
 									<form method="post" action="{$cert.revokeUrl|escape}" class="certificate-revoke-form">
 										{csrf}
 										<input type="hidden" name="search" value="{$search|escape}" />
 										<input type="hidden" name="page" value="{$page|escape}" />
 										{if $cert.revoked}
 											<input type="hidden" name="restore" value="1" />
-											<button type="submit" class="pkp_button">{translate key="plugins.generic.reviewerCertificate.manage.restore"}</button>
+											<button type="submit" class="rc-btn rc-btn--sm rc-btn--quiet">{translate key="plugins.generic.reviewerCertificate.manage.restore"}</button>
 										{else}
 											<input type="hidden" name="reason" value="" />
-											<button type="submit" class="pkp_button pkp_button_offset certificate-revoke-btn" data-prompt="{$rcRevokePrompt|escape}">{translate key="plugins.generic.reviewerCertificate.manage.revoke"}</button>
+											<button type="submit" class="rc-btn rc-btn--sm rc-btn--danger certificate-revoke-btn" data-prompt="{$rcRevokePrompt|escape}">{translate key="plugins.generic.reviewerCertificate.manage.revoke"}</button>
 										{/if}
 									</form>
 								</td>
 							</tr>
 						{foreachelse}
-							<tr class="empty"><td colspan="7">{translate key="plugins.generic.reviewerCertificate.manage.empty"}</td></tr>
+							<tr class="rc-empty-row"><td colspan="6"><p class="rc-empty">{translate key="plugins.generic.reviewerCertificate.manage.empty"}</p></td></tr>
 						{/foreach}
 					</tbody>
 				</table>
 				</div>
 
 				{if $pageCount > 1}
-					<div class="rc-manage__pages certificate-manage-pages">
-						{if $prevUrl}<a href="{$prevUrl|escape}" class="pkp_button" aria-label="&larr;">&larr;</a>{/if}
+					<div class="rc-pager certificate-manage-pages">
 						<span>{translate key="plugins.generic.reviewerCertificate.manage.pageOf" page=$page pageCount=$pageCount}</span>
-						{if $nextUrl}<a href="{$nextUrl|escape}" class="pkp_button" aria-label="&rarr;">&rarr;</a>{/if}
+						{if $prevUrl}<a href="{$prevUrl|escape}" class="rc-btn rc-btn--sm" aria-label="&larr;">&larr;</a>{else}<span class="rc-btn rc-btn--sm is-disabled" aria-hidden="true">&larr;</span>{/if}
+						{if $nextUrl}<a href="{$nextUrl|escape}" class="rc-btn rc-btn--sm" aria-label="&rarr;">&rarr;</a>{else}<span class="rc-btn rc-btn--sm is-disabled" aria-hidden="true">&rarr;</span>{/if}
 					</div>
 				{/if}
-			</div>
-		</section>
-
+			</section>
 		</div>
 
 		<div class="rc-manage__panel" role="tabpanel" id="rc-panel-tools" aria-labelledby="rc-tab-tools">
-		{* Batch issuing and notifications *}
-		<section class="rc-manage__section rc-manage__tools">
-			<div class="pkp_controllers_grid rc-manage__tool" data-rc-batch="{$generateBatchUrl|escape}">
-				<div class="header"><h4>{translate key="plugins.generic.reviewerCertificate.batch.title"}</h4></div>
-				<div class="rc-manage__body">
-					<p>{translate key="plugins.generic.reviewerCertificate.batch.description"}</p>
+			<div class="rc-tools">
+				{* Batch issuing *}
+				<section class="rc-box rc-manage__tool" data-rc-batch="{$generateBatchUrl|escape}">
+					<div class="rc-box__head rc-box__head--stack">
+						<h2 class="rc-box__title">{translate key="plugins.generic.reviewerCertificate.batch.title"}</h2>
+						<p class="rc-box__desc">{translate key="plugins.generic.reviewerCertificate.batch.description"}</p>
+					</div>
+					<div class="rc-box__body">
+						{if $eligibleReviewers}
+							<div class="rc-picker">
+								<label class="rc-picker__all"><input type="checkbox" class="rc-manage__all" /> <span>{translate key="common.selectAll"}</span></label>
+								<ul class="rc-manage__picker" id="batchReviewers">
+									{foreach from=$eligibleReviewers item=reviewer}
+										<li><label>
+											<input type="checkbox" name="reviewerIds[]" value="{$reviewer.id|escape}" />
+											<span class="rc-picker__name">{$reviewer.name|escape}</span>
+											<span class="rc-picker__meta">{$reviewer.completedReviews|escape} {translate key="plugins.generic.reviewerCertificate.batch.completedReviews"}</span>
+										</label></li>
+									{/foreach}
+								</ul>
+							</div>
+						{else}
+							<p class="rc-empty rc-manage__empty">{translate key="plugins.generic.reviewerCertificate.batch.noEligibleReviewers"}</p>
+						{/if}
+					</div>
 					{if $eligibleReviewers}
-						<label class="rc-manage__selectall"><input type="checkbox" class="rc-manage__all" /> {translate key="common.selectAll"}</label>
-						<ul class="rc-manage__picker" id="batchReviewers">
-							{foreach from=$eligibleReviewers item=reviewer}
-								<li><label>
-									<input type="checkbox" name="reviewerIds[]" value="{$reviewer.id|escape}" />
-									<span>{$reviewer.name|escape}</span>
-									<span class="rc-manage__sub">{$reviewer.completedReviews|escape} {translate key="plugins.generic.reviewerCertificate.batch.completedReviews"}</span>
-								</label></li>
-							{/foreach}
-						</ul>
-						<div class="rc-manage__run">
-							<button type="button" id="generateBatchBtn" class="pkp_button pkp_button_primary rc-manage__go">{translate key="plugins.generic.reviewerCertificate.batch.generate"}</button>
+						<div class="rc-box__foot rc-manage__run">
+							<button type="button" id="generateBatchBtn" class="rc-btn rc-btn--primary rc-manage__go">{translate key="plugins.generic.reviewerCertificate.batch.generate"}</button>
 							<span class="rc-manage__progress" hidden><span class="pkp_spinner"></span> {translate key="plugins.generic.reviewerCertificate.batch.generating"}</span>
 							<span class="rc-manage__result" id="batchResult" role="status"></span>
 						</div>
-					{else}
-						<p class="rc-manage__empty">{translate key="plugins.generic.reviewerCertificate.batch.noEligibleReviewers"}</p>
 					{/if}
-				</div>
-			</div>
+				</section>
 
-			<div class="pkp_controllers_grid rc-manage__tool" data-rc-batch="{$notifyBatchUrl|escape}" data-rc-notify="1">
-				<div class="header"><h4>{translate key="plugins.generic.reviewerCertificate.notifications.title"}</h4></div>
-				<div class="rc-manage__body">
-					<p>{translate key="plugins.generic.reviewerCertificate.notifications.description"}</p>
+				{* Notifications *}
+				<section class="rc-box rc-manage__tool" data-rc-batch="{$notifyBatchUrl|escape}" data-rc-notify="1">
+					<div class="rc-box__head rc-box__head--stack">
+						<h2 class="rc-box__title">{translate key="plugins.generic.reviewerCertificate.notifications.title"}</h2>
+						<p class="rc-box__desc">{translate key="plugins.generic.reviewerCertificate.notifications.description"}</p>
+					</div>
+					<div class="rc-box__body">
+						{if $notificationReviewers}
+							<div class="rc-picker">
+								<label class="rc-picker__all"><input type="checkbox" class="rc-manage__all" /> <span>{translate key="common.selectAll"}</span></label>
+								<ul class="rc-manage__picker" id="notificationReviewers">
+									{foreach from=$notificationReviewers item=reviewer}
+										<li><label>
+											<input type="checkbox" name="reviewerIds[]" value="{$reviewer.id|escape}" />
+											<span class="rc-picker__name">{$reviewer.name|escape}</span>
+										</label></li>
+									{/foreach}
+								</ul>
+							</div>
+							<label class="rc-option"><input type="checkbox" class="rc-manage__retry" id="retryNotifications" /> <span><span class="rc-option__label">{translate key="plugins.generic.reviewerCertificate.notifications.retry"}</span><span class="rc-sub">{translate key="plugins.generic.reviewerCertificate.notifications.retryWarning"}</span></span></label>
+						{else}
+							<p class="rc-empty rc-manage__empty">{translate key="plugins.generic.reviewerCertificate.batch.noEligibleReviewers"}</p>
+						{/if}
+					</div>
 					{if $notificationReviewers}
-						<label class="rc-manage__selectall"><input type="checkbox" class="rc-manage__all" /> {translate key="common.selectAll"}</label>
-						<ul class="rc-manage__picker" id="notificationReviewers">
-							{foreach from=$notificationReviewers item=reviewer}
-								<li><label>
-									<input type="checkbox" name="reviewerIds[]" value="{$reviewer.id|escape}" />
-									<span>{$reviewer.name|escape}</span>
-								</label></li>
-							{/foreach}
-						</ul>
-						<label class="rc-manage__option"><input type="checkbox" class="rc-manage__retry" id="retryNotifications" /> <span>{translate key="plugins.generic.reviewerCertificate.notifications.retry"}</span></label>
-						<p class="rc-manage__hint">{translate key="plugins.generic.reviewerCertificate.notifications.retryWarning"}</p>
-						<div class="rc-manage__run">
-							<button type="button" id="notifyBatchBtn" class="pkp_button rc-manage__go">{translate key="plugins.generic.reviewerCertificate.notifications.send"}</button>
+						<div class="rc-box__foot rc-manage__run">
+							<button type="button" id="notifyBatchBtn" class="rc-btn rc-btn--primary rc-manage__go">{translate key="plugins.generic.reviewerCertificate.notifications.send"}</button>
 							<span class="rc-manage__progress" hidden><span class="pkp_spinner"></span></span>
 							<span class="rc-manage__result" id="notificationResult" role="status"></span>
 						</div>
-					{else}
-						<p class="rc-manage__empty">{translate key="plugins.generic.reviewerCertificate.batch.noEligibleReviewers"}</p>
 					{/if}
-				</div>
+				</section>
 			</div>
-		</section>
 		</div>
 
 		{if $settingsUrl}

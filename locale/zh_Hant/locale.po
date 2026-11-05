@@ -734,3 +734,6 @@ msgstr "批次頒發與通知"
 msgid "plugins.generic.reviewerCertificate.manage.tabSettings"
 msgstr "證書設定"
 
+msgid "plugins.generic.reviewerCertificate.manage.download"
+msgstr "下載"
+
