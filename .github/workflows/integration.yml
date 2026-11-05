@@ -52,6 +52,7 @@ jobs:
           tests/e2e/my-certificates.spec.ts
           tests/e2e/certificate-download.spec.ts
           tests/e2e/certificate-verify.spec.ts
+          tests/e2e/manage-certificates.spec.ts
           --retries=1
       - name: JavaScript regression
         run: node tests/javascript/certificate.test.cjs

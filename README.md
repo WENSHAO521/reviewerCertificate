@@ -12,6 +12,9 @@ The Reviewer Certificate Plugin enables reviewers to generate and download perso
 
 **Changes in v1.16.0**:
 
+- Issued certificates overview for managers with search, CSV export and certificate revocation.
+- Annual certificates covering all of a reviewer's reviews in a year.
+- Verification page can show the reviewer's initials only, or no name.
 - Traditional Chinese interface, and certificate dates in English, Chinese, numeric or the reader's language.
 - My Certificates issues missing certificates for eligible completed reviews and explains when more reviews are needed.
 

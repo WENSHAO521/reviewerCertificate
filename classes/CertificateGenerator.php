@@ -368,6 +368,29 @@ class CertificateGenerator {
     /** @var string|null Effective font for current PDF generation (may auto-switch to dejavusans for non-Latin text) */
     private $effectiveFont = null;
 
+    /** @var array Extra template variables that override the computed ones */
+    private $extraVariables = array();
+
+    /**
+     * Add or override template variables (used by the annual summary certificate).
+     * @param array $variables name => value
+     */
+    public function setExtraVariables(array $variables) {
+        $this->extraVariables = $variables;
+    }
+
+    /**
+     * Default body of the annual summary certificate.
+     * @return string
+     */
+    public static function getDefaultAnnualBodyTemplate() {
+        return 'This certificate is awarded to' . "\n\n" .
+               '{{$reviewerName}}' . "\n\n" .
+               'In recognition of {{$reviewCount}} peer reviews completed for' . "\n\n" .
+               '{{$journalName}}' . "\n\n" .
+               'in {{$reviewYear}}';
+    }
+
     /** @var string|null Current locale for localized data retrieval */
     private $locale = null;
 
@@ -832,6 +855,8 @@ class CertificateGenerator {
             // iso (2026-11-05) or locale (the reader's interface language).
             'dateFormat' => 'en',
             'certificateCodeLabel' => 'Certificate Code:',
+            // Reviewer name on the public verify page: full, initials or hidden
+            'verifyNameDisplay' => 'full',
         );
     }
 
@@ -850,6 +875,9 @@ class CertificateGenerator {
         if ($key === 'dateFormat') {
             require_once __DIR__ . '/CertificateDateFormatter.php';
             return in_array($value, CertificateDateFormatter::FORMATS, true) ? $value : 'en';
+        }
+        if ($key === 'verifyNameDisplay') {
+            return in_array($value, array('full', 'initials', 'hidden'), true) ? $value : 'full';
         }
         if ($key === 'certificateCodeLabel') {
             if ($value === '') {
@@ -1395,6 +1423,11 @@ class CertificateGenerator {
         // Current date (always set)
         $variables['currentDate'] = $this->formatDate(null, 'long');
         $variables['currentYear'] = date('Y');
+
+        // Caller-supplied values (annual summary: reviewCount, reviewYear)
+        foreach ($this->extraVariables as $name => $value) {
+            $variables[$name] = (string) $value;
+        }
 
         return $variables;
     }

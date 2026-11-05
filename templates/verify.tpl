@@ -16,12 +16,20 @@
 		<div class="certificate-verify-content">
 			{if $certificateCode}
 				{* Verification result for certificate accessed via QR code *}
-				{if $isValid}
+				{if $isValid && $isRevoked}
+					<div class="certificate-verify-result error certificate-verify-revoked">
+						<h2>{translate key="plugins.generic.reviewerCertificate.verify.revoked"}</h2>
+						<p>{translate key="plugins.generic.reviewerCertificate.verify.revokedDescription" date=$dateRevoked}</p>
+						<p><strong>{translate key="plugins.generic.reviewerCertificate.verify.certificateCode"}:</strong> {$certificateCode|escape}</p>
+					</div>
+				{elseif $isValid}
 					<div class="certificate-verify-result success">
 						<h2>{translate key="plugins.generic.reviewerCertificate.verify.valid"}</h2>
 						<div class="certificate-details">
 							<p><strong>{translate key="plugins.generic.reviewerCertificate.verify.certificateCode"}:</strong> {$certificateCode|escape}</p>
+							{if $showReviewerName}
 							<p><strong>{translate key="plugins.generic.reviewerCertificate.verify.reviewerName"}:</strong> {$reviewerName|escape}</p>
+							{/if}
 							<p><strong>{translate key="plugins.generic.reviewerCertificate.verify.journalName"}:</strong> {$journalName|escape}</p>
 							<p><strong>{translate key="plugins.generic.reviewerCertificate.verify.dateIssued"}:</strong> {$dateIssued|escape}</p>
 						</div>

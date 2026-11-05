@@ -228,6 +228,12 @@ msgstr "期刊名稱"
 msgid "plugins.generic.reviewerCertificate.verify.dateIssued"
 msgstr "頒發日期"
 
+msgid "plugins.generic.reviewerCertificate.verify.revoked"
+msgstr "證書已撤銷"
+
+msgid "plugins.generic.reviewerCertificate.verify.revokedDescription"
+msgstr "這張證書由本期刊頒發，但已於 {$date} 撤銷，不再有效。"
+
 # Batch generation
 msgid "plugins.generic.reviewerCertificate.batch.title"
 msgstr "批次產生證書"
@@ -595,4 +601,91 @@ msgstr "本期刊在您完成 {$minimum} 次審稿後頒發證書。您目前已
 
 msgid "plugins.generic.reviewerCertificate.myCertificates.emailThrottled"
 msgstr "這張證書在一分鐘內已寄出過。請先檢查您的收件匣，再重新寄送。"
+
+msgid "plugins.generic.reviewerCertificate.manage.title"
+msgstr "已頒發的證書"
+
+msgid "plugins.generic.reviewerCertificate.manage.open"
+msgstr "檢視與管理已頒發的證書"
+
+msgid "plugins.generic.reviewerCertificate.manage.description"
+msgstr "本期刊已頒發 {$count} 張證書。被撤銷的證書會保留紀錄，並在驗證頁顯示為已撤銷。"
+
+msgid "plugins.generic.reviewerCertificate.manage.search"
+msgstr "搜尋"
+
+msgid "plugins.generic.reviewerCertificate.manage.searchPlaceholder"
+msgstr "姓名、電子郵件、帳號或證書編號"
+
+msgid "plugins.generic.reviewerCertificate.manage.exportCsv"
+msgstr "匯出 CSV"
+
+msgid "plugins.generic.reviewerCertificate.manage.reviewer"
+msgstr "審稿人"
+
+msgid "plugins.generic.reviewerCertificate.manage.reviewCompleted"
+msgstr "審稿完成日期"
+
+msgid "plugins.generic.reviewerCertificate.manage.downloads"
+msgstr "下載次數"
+
+msgid "plugins.generic.reviewerCertificate.manage.status"
+msgstr "狀態"
+
+msgid "plugins.generic.reviewerCertificate.manage.valid"
+msgstr "有效"
+
+msgid "plugins.generic.reviewerCertificate.manage.revoked"
+msgstr "已撤銷"
+
+msgid "plugins.generic.reviewerCertificate.manage.notified"
+msgstr "已以電子郵件通知審稿人"
+
+msgid "plugins.generic.reviewerCertificate.manage.revoke"
+msgstr "撤銷"
+
+msgid "plugins.generic.reviewerCertificate.manage.restore"
+msgstr "恢復"
+
+msgid "plugins.generic.reviewerCertificate.manage.revokePrompt"
+msgstr "確定撤銷這張證書？審稿人將無法再下載，驗證頁會顯示為已撤銷。可選填撤銷原因（只有管理者看得到）："
+
+msgid "plugins.generic.reviewerCertificate.manage.revokedNotice"
+msgstr "證書已撤銷。"
+
+msgid "plugins.generic.reviewerCertificate.manage.restoredNotice"
+msgstr "證書已恢復。"
+
+msgid "plugins.generic.reviewerCertificate.manage.empty"
+msgstr "沒有找到證書。"
+
+msgid "plugins.generic.reviewerCertificate.manage.pageOf"
+msgstr "第 {$page} 頁，共 {$pageCount} 頁"
+
+msgid "plugins.generic.reviewerCertificate.annual.title"
+msgstr "年度證書"
+
+msgid "plugins.generic.reviewerCertificate.annual.description"
+msgstr "一張證書涵蓋您在一年內為本期刊完成的所有審稿。"
+
+msgid "plugins.generic.reviewerCertificate.annual.download"
+msgstr "{$year} 年（{$count} 次審稿）"
+
+msgid "plugins.generic.reviewerCertificate.settings.verifyNameDisplay"
+msgstr "驗證頁上的審稿人姓名"
+
+msgid "plugins.generic.reviewerCertificate.settings.verifyNameDisplay.full"
+msgstr "顯示全名"
+
+msgid "plugins.generic.reviewerCertificate.settings.verifyNameDisplay.initials"
+msgstr "只顯示縮寫（J. S. / 王**）"
+
+msgid "plugins.generic.reviewerCertificate.settings.verifyNameDisplay.hidden"
+msgstr "不顯示"
+
+msgid "plugins.generic.reviewerCertificate.settings.annualBodyTemplate"
+msgstr "年度證書"
+
+msgid "plugins.generic.reviewerCertificate.settings.annualBodyTemplateDescription"
+msgstr "審稿人可以在「我的證書」頁面下載每年一張的年度證書。它使用與單張證書相同的版面、圖片和樣式，正文改用這裡的文字。額外變數：{{$reviewCount}}（審稿次數）和 {{$reviewYear}}。年度證書沒有證書編號和 QR 碼。"
 

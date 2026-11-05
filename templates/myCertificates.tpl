@@ -63,6 +63,9 @@
 						<td>{$cert.submissionTitle|escape}</td>
 						<td style="white-space: nowrap;">{$cert.certificateCode|escape}</td>
 						<td style="white-space: nowrap;">
+							{if $cert.revoked}
+								<span class="certificate-revoked">{translate key="plugins.generic.reviewerCertificate.manage.revoked"}</span>
+							{else}
 							<a href="{$cert.downloadUrl|escape}" class="pkp_button pkp_button_primary certificate-download-btn">
 								{translate key="plugins.generic.reviewerCertificate.downloadCertificate"}
 							</a>
@@ -72,6 +75,7 @@
 									{translate key="plugins.generic.reviewerCertificate.myCertificates.emailAction"}
 								</button>
 							</form>
+							{/if}
 						</td>
 					</tr>
 				{foreachelse}
@@ -88,4 +92,17 @@
 			</tbody>
 		</table>
 	</div>
+	{if $annualCertificates}
+		<h2>{translate key="plugins.generic.reviewerCertificate.annual.title"}</h2>
+		<p>{translate key="plugins.generic.reviewerCertificate.annual.description"}</p>
+		<ul class="certificate-annual-list">
+			{foreach from=$annualCertificates item=annual}
+				<li>
+					<a href="{$annual.url|escape}" class="pkp_button certificate-annual-btn">
+						{translate key="plugins.generic.reviewerCertificate.annual.download" year=$annual.year count=$annual.count}
+					</a>
+				</li>
+			{/foreach}
+		</ul>
+	{/if}
 {/block}

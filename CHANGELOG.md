@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **Issued certificates overview for journal managers** (`certificate/manage`, linked from the plugin settings): every certificate of the journal with reviewer, manuscript, review date, downloads and email status; search by name, email, username or code; 50 per page; CSV export (UTF-8 with BOM so Excel shows Chinese names, formula cells neutralised); download any certificate.
+- **Revoking certificates**: managers can revoke a certificate (with an optional private reason) and restore it later. A revoked certificate cannot be downloaded or emailed, shows as revoked on My Certificates, is not re-issued, and the verification page says it was revoked and when. Revocations are stored in a plugin setting, so no database change is needed.
+- **Annual certificates**: My Certificates offers one certificate per year covering every review the reviewer completed for the journal that year. It uses the normal layout, images and styles with its own body text (new settings field, variables `{{$reviewCount}}` and `{{$reviewYear}}`), and has no certificate code or QR code.
+- **Reviewer name on the verification page**: new setting to show the full name, initials only (J. S. / 王**), or no name.
+- Certificates are kept when OJS merges two user accounts. Before, deleting the merged account cascaded through the foreign key and removed its certificates.
 - Traditional Chinese interface (`zh_TW` for OJS 3.3, `zh_Hant` for OJS 3.4/3.5). The Simplified Chinese strings that were still in English are translated too.
 - Setting for the date format printed on certificates: English (November 5, 2026, the default and the earlier behaviour), Chinese (2026年11月5日), numeric (2026-11-05), or the reader's interface language.
 - Setting for the label printed before the certificate code (default "Certificate Code:"), so it can match the certificate's language. Chinese text in the label selects a CJK font automatically.
@@ -28,7 +33,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Internal
 
-- CI now runs the My Certificates, download, verify and page smoke browser tests, which would have caught the v1.15.0 HTTP 500.
+- CI now runs the My Certificates, download, verify and page smoke browser tests, which would have caught the v1.15.0 HTTP 500, plus a new test for the issued certificates overview.
 
 ## [1.15.1] - 2026-11-05
 

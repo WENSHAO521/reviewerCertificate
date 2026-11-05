@@ -228,6 +228,12 @@ msgstr "Folyóirat Neve"
 msgid "plugins.generic.reviewerCertificate.verify.dateIssued"
 msgstr "Kiállítás Dátuma"
 
+msgid "plugins.generic.reviewerCertificate.verify.revoked"
+msgstr "Certificate Revoked"
+
+msgid "plugins.generic.reviewerCertificate.verify.revokedDescription"
+msgstr "This certificate was issued by the journal but revoked on {$date}. It is no longer valid."
+
 # Batch generation
 msgid "plugins.generic.reviewerCertificate.batch.title"
 msgstr "Tömeges Tanúsítvány Generálás"
@@ -595,4 +601,91 @@ msgstr "This journal issues certificates once you have completed {$minimum} revi
 
 msgid "plugins.generic.reviewerCertificate.myCertificates.emailThrottled"
 msgstr "This certificate was emailed to you less than a minute ago. Please check your inbox before sending it again."
+
+msgid "plugins.generic.reviewerCertificate.manage.title"
+msgstr "Issued Certificates"
+
+msgid "plugins.generic.reviewerCertificate.manage.open"
+msgstr "View and manage issued certificates"
+
+msgid "plugins.generic.reviewerCertificate.manage.description"
+msgstr "{$count} certificates issued by this journal. Revoked certificates stay on record and show as revoked on the verification page."
+
+msgid "plugins.generic.reviewerCertificate.manage.search"
+msgstr "Search"
+
+msgid "plugins.generic.reviewerCertificate.manage.searchPlaceholder"
+msgstr "Name, email, username or certificate code"
+
+msgid "plugins.generic.reviewerCertificate.manage.exportCsv"
+msgstr "Export CSV"
+
+msgid "plugins.generic.reviewerCertificate.manage.reviewer"
+msgstr "Reviewer"
+
+msgid "plugins.generic.reviewerCertificate.manage.reviewCompleted"
+msgstr "Review completed"
+
+msgid "plugins.generic.reviewerCertificate.manage.downloads"
+msgstr "Downloads"
+
+msgid "plugins.generic.reviewerCertificate.manage.status"
+msgstr "Status"
+
+msgid "plugins.generic.reviewerCertificate.manage.valid"
+msgstr "Valid"
+
+msgid "plugins.generic.reviewerCertificate.manage.revoked"
+msgstr "Revoked"
+
+msgid "plugins.generic.reviewerCertificate.manage.notified"
+msgstr "Reviewer notified by email"
+
+msgid "plugins.generic.reviewerCertificate.manage.revoke"
+msgstr "Revoke"
+
+msgid "plugins.generic.reviewerCertificate.manage.restore"
+msgstr "Restore"
+
+msgid "plugins.generic.reviewerCertificate.manage.revokePrompt"
+msgstr "Revoke this certificate? The reviewer can no longer download it and the verification page will show it as revoked. Optionally enter a reason (only managers see it):"
+
+msgid "plugins.generic.reviewerCertificate.manage.revokedNotice"
+msgstr "The certificate was revoked."
+
+msgid "plugins.generic.reviewerCertificate.manage.restoredNotice"
+msgstr "The certificate was restored."
+
+msgid "plugins.generic.reviewerCertificate.manage.empty"
+msgstr "No certificates found."
+
+msgid "plugins.generic.reviewerCertificate.manage.pageOf"
+msgstr "Page {$page} of {$pageCount}"
+
+msgid "plugins.generic.reviewerCertificate.annual.title"
+msgstr "Annual certificates"
+
+msgid "plugins.generic.reviewerCertificate.annual.description"
+msgstr "One certificate covering all the reviews you completed for this journal in a year."
+
+msgid "plugins.generic.reviewerCertificate.annual.download"
+msgstr "{$year} ({$count} reviews)"
+
+msgid "plugins.generic.reviewerCertificate.settings.verifyNameDisplay"
+msgstr "Reviewer name on the verification page"
+
+msgid "plugins.generic.reviewerCertificate.settings.verifyNameDisplay.full"
+msgstr "Full name"
+
+msgid "plugins.generic.reviewerCertificate.settings.verifyNameDisplay.initials"
+msgstr "Initials only (J. S.)"
+
+msgid "plugins.generic.reviewerCertificate.settings.verifyNameDisplay.hidden"
+msgstr "Do not show"
+
+msgid "plugins.generic.reviewerCertificate.settings.annualBodyTemplate"
+msgstr "Annual certificate"
+
+msgid "plugins.generic.reviewerCertificate.settings.annualBodyTemplateDescription"
+msgstr "Reviewers can download one certificate per year from My Certificates. It uses the same layout, images and styles as the single certificate, with this text as the body. Extra variables: {{$reviewCount}} (number of reviews) and {{$reviewYear}}. It has no certificate code or QR code."
 

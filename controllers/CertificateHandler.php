@@ -41,20 +41,20 @@ class CertificateHandler extends Handler {
         if (defined('ROLE_ID_REVIEWER')) {
             $this->addRoleAssignment(
                 array(ROLE_ID_REVIEWER),
-                array('download', 'myCertificates', 'emailCertificate')
+                array('download', 'myCertificates', 'emailCertificate', 'annualCertificate')
             );
             $this->addRoleAssignment(
                 array(ROLE_ID_MANAGER, ROLE_ID_SITE_ADMIN),
-                array('manage', 'generateBatch')
+                array('manage', 'generateBatch', 'exportCertificates', 'revokeCertificate', 'managerDownload')
             );
         } else {
             $this->addRoleAssignment(
                 array(Role::ROLE_ID_REVIEWER),
-                array('download', 'myCertificates', 'emailCertificate')
+                array('download', 'myCertificates', 'emailCertificate', 'annualCertificate')
             );
             $this->addRoleAssignment(
                 array(Role::ROLE_ID_MANAGER, Role::ROLE_ID_SITE_ADMIN),
-                array('manage', 'generateBatch')
+                array('manage', 'generateBatch', 'exportCertificates', 'revokeCertificate', 'managerDownload')
             );
         }
         // Make verify publicly accessible (no role restriction)
@@ -207,6 +207,9 @@ class CertificateHandler extends Handler {
         try {
             $result = $this->getPlugin()->getCertificateService($context->getId())->issue(
                 $reviewId, $reviewAssignment->getReviewerId());
+            if ($this->getPlugin()->isCertificateRevoked($context->getId(), $result['certificate']->getCertificateId())) {
+                throw new \DomainException('Certificate revoked', 403);
+            }
             return $result['certificate'];
         } catch (\DomainException $e) {
             http_response_code($e->getCode());
@@ -460,7 +463,13 @@ class CertificateHandler extends Handler {
                     if ($reviewer && $certContext) {
                         // Assign valid certificate data to template
                         $templateMgr->assign('isValid', true);
-                        $templateMgr->assign('reviewerName', $reviewer->getFullName());
+                        $plugin = $this->getPlugin();
+                        $nameDisplay = $plugin ? $plugin->getSetting($certContext->getId(), 'verifyNameDisplay') : null;
+                        $templateMgr->assign('reviewerName', self::displayName($reviewer->getFullName(), $nameDisplay));
+                        $templateMgr->assign('showReviewerName', $nameDisplay !== 'hidden');
+                        $revocation = $plugin ? ($plugin->getRevokedCertificates($certContext->getId())[(int) $certificate->getCertificateId()] ?? null) : null;
+                        $templateMgr->assign('isRevoked', $revocation !== null);
+                        $templateMgr->assign('dateRevoked', $revocation && !empty($revocation['date']) ? $this->formatUiDate($revocation['date']) : '');
                         // Use review completion date (matches PDF content), fall back to certificate issuance date.
                         // date_issued is the DB row creation time which may be identical for batch-generated certs.
                         $displayDate = $certificate->getDateIssued();
@@ -576,6 +585,8 @@ class CertificateHandler extends Handler {
         );
 
         $certificates = array();
+        $annualYears = array();
+        $revoked = $this->getPlugin()->getRevokedCertificates($context->getId());
         if ($result) {
             foreach ($result as $row) {
                 $row = (array) $row;
@@ -592,12 +603,25 @@ class CertificateHandler extends Handler {
                     'downloadUrl' => $request->url(null, 'certificate', 'download', array($row['review_id'])),
                     'emailUrl' => $request->url(null, 'certificate', 'emailCertificate', array($row['review_id'])),
                     'certificateCode' => $row['certificate_code'],
+                    'revoked' => isset($revoked[(int) $row['certificate_id']]),
                 );
+                if (!isset($revoked[(int) $row['certificate_id']]) && !empty($row['review_date_completed'])) {
+                    $year = (int) date('Y', strtotime($row['review_date_completed']));
+                    $annualYears[$year] = ($annualYears[$year] ?? 0) + 1;
+                }
             }
         }
 
         $templateMgr = TemplateManager::getManager($request);
         $templateMgr->assign('certificates', $certificates);
+        // Annual summary certificates: one per year with at least one certificate
+        krsort($annualYears);
+        $annual = array();
+        foreach ($annualYears as $year => $count) {
+            $annual[] = array('year' => $year, 'count' => $count,
+                'url' => $request->url(null, 'certificate', 'annualCertificate', array($year)));
+        }
+        $templateMgr->assign('annualCertificates', $annual);
         // Explain an empty list when the journal requires more reviews
         $templateMgr->assign('certificatesPending', !$certificates && $completedReviews > 0 && $completedReviews < $minimumReviews);
         $templateMgr->assign('completedReviews', $completedReviews);
@@ -858,6 +882,361 @@ class CertificateHandler extends Handler {
     public function generateBatch($args, $request) {
         require_once dirname(__DIR__) . '/classes/BatchAction.php';
         return \APP\plugins\generic\reviewerCertificate\classes\BatchAction::run($this->getPlugin(), $request);
+    }
+
+
+    /**
+     * Reviewer name as shown on the public verify page.
+     * @param string $name Full name
+     * @param string|null $mode full (default), initials or hidden
+     * @return string
+     */
+    public static function displayName($name, $mode) {
+        $name = trim((string) $name);
+        if ($mode === 'hidden') {
+            return '';
+        }
+        if ($mode !== 'initials' || $name === '') {
+            return $name;
+        }
+        $initials = array();
+        foreach (preg_split('/[\s\-]+/u', $name, -1, PREG_SPLIT_NO_EMPTY) as $part) {
+            $first = function_exists('mb_substr') ? mb_substr($part, 0, 1, 'UTF-8') : substr($part, 0, 1);
+            $initials[] = function_exists('mb_strtoupper') ? mb_strtoupper($first, 'UTF-8') . '.' : strtoupper($first) . '.';
+        }
+        // A name written without spaces (e.g. Chinese) keeps its first character only
+        if (count($initials) === 1 && (function_exists('mb_strlen') ? mb_strlen($name, 'UTF-8') : strlen($name)) > 1) {
+            return (function_exists('mb_substr') ? mb_substr($name, 0, 1, 'UTF-8') : substr($name, 0, 1)) . '**';
+        }
+        return implode(' ', $initials);
+    }
+
+    /**
+     * Annual summary certificate: one PDF covering every certified review the
+     * reviewer completed for this journal in a year.
+     * @param $args array [0] => year
+     * @param $request Request
+     */
+    public function annualCertificate($args, $request) {
+        $this->ensurePluginLocaleLoaded();
+        $user = $request->getUser();
+        $context = $request->getContext();
+        $year = isset($args[0]) ? (int) $args[0] : 0;
+        if (!$user || !$context || $year < 1900 || $year > 9999) {
+            http_response_code(400);
+            throw new Exception('Invalid year', 400);
+        }
+        $plugin = $this->getPlugin();
+        $dao = DAORegistry::getDAO('CertificateDAO');
+        $result = $dao->retrieve(
+            'SELECT rc.certificate_id, rc.review_id, ra.date_completed
+             FROM reviewer_certificates rc
+             INNER JOIN submissions s ON rc.submission_id = s.submission_id
+             INNER JOIN review_assignments ra ON rc.review_id = ra.review_id
+             WHERE rc.reviewer_id = ? AND rc.context_id = ? AND s.context_id = ?
+             AND ra.date_completed >= ? AND ra.date_completed < ?
+             ORDER BY ra.date_completed DESC',
+            array((int) $user->getId(), (int) $context->getId(), (int) $context->getId(),
+                sprintf('%04d-01-01 00:00:00', $year), sprintf('%04d-01-01 00:00:00', $year + 1))
+        );
+        $revoked = $plugin->getRevokedCertificates($context->getId());
+        $count = 0;
+        $latestReviewId = null;
+        foreach ($result as $row) {
+            $row = (array) $row;
+            if (isset($revoked[(int) $row['certificate_id']])) {
+                continue;
+            }
+            $count++;
+            if ($latestReviewId === null) {
+                $latestReviewId = (int) $row['review_id'];
+            }
+        }
+        if (!$count) {
+            http_response_code(404);
+            throw new Exception('No certificates in this year', 404);
+        }
+
+        $reviewAssignment = $this->loadAuthorizedReviewAssignment($latestReviewId, $request, 'annual');
+        require_once dirname(__DIR__) . '/classes/CertificateGenerator.php';
+        $generator = new \APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator();
+        $generator->setReviewAssignment($reviewAssignment);
+        $generator->setContext($context);
+        $generator->setLocale($this->getCurrentLocale());
+        $settings = $this->getTemplateSettings($context);
+        $settings['bodyTemplate'] = $plugin->getSetting($context->getId(), 'annualBodyTemplate')
+            ?: \APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::getDefaultAnnualBodyTemplate();
+        $generator->setTemplateSettings($settings);
+        $generator->setExtraVariables(array(
+            'reviewCount' => $count,
+            'reviewYear' => $year,
+            'reviewDate' => $year,
+            'reviewMonthYear' => $year,
+            'submissionTitle' => '',
+            'certificateCode' => '',
+        ));
+        try {
+            $pdfContent = $generator->generatePDF();
+        } catch (\Throwable $e) {
+            error_log('ReviewerCertificate: annual PDF generation failed: ' . $e->getMessage());
+            http_response_code(500);
+            echo 'An error occurred generating the certificate. Please try again later.';
+            exit;
+        }
+        $this->sendPdf($pdfContent, 'reviewer_certificate_' . $year . '.pdf');
+    }
+
+    /**
+     * Output a PDF download and end the request.
+     */
+    private function sendPdf($pdfContent, $fileName) {
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: attachment; filename="' . $fileName . '"');
+        header('Content-Length: ' . strlen($pdfContent));
+        header('Cache-Control: private, max-age=0, must-revalidate');
+        header('Pragma: public');
+        echo $pdfContent;
+        exit;
+    }
+
+    /** Certificates per page on the manager overview. */
+    const MANAGE_PAGE_SIZE = 50;
+
+    /**
+     * Manager overview of every certificate issued by this journal.
+     * @param $args array
+     * @param $request Request
+     */
+    public function manage($args, $request) {
+        $this->ensurePluginLocaleLoaded();
+        $context = $request->getContext();
+        $search = trim((string) $request->getUserVar('search'));
+        $page = max(1, (int) $request->getUserVar('page'));
+        $total = $this->countContextCertificates($context, $search);
+        $rows = $this->listContextCertificates($context, $search, ($page - 1) * self::MANAGE_PAGE_SIZE, self::MANAGE_PAGE_SIZE);
+
+        $templateMgr = TemplateManager::getManager($request);
+        $templateMgr->assign('certificates', $rows);
+        $templateMgr->assign('search', $search);
+        $templateMgr->assign('page', $page);
+        $templateMgr->assign('pageCount', max(1, (int) ceil($total / self::MANAGE_PAGE_SIZE)));
+        $templateMgr->assign('totalCertificates', $total);
+        $templateMgr->assign('exportUrl', $request->url(null, 'certificate', 'exportCertificates', null, $search !== '' ? array('search' => $search) : array()));
+        $templateMgr->assign('manageUrl', $request->url(null, 'certificate', 'manage'));
+        $templateMgr->assign('prevUrl', $page > 1 ? $request->url(null, 'certificate', 'manage', null, array('search' => $search, 'page' => $page - 1)) : null);
+        $templateMgr->assign('nextUrl', $page * self::MANAGE_PAGE_SIZE < $total ? $request->url(null, 'certificate', 'manage', null, array('search' => $search, 'page' => $page + 1)) : null);
+        $templateMgr->assign('certificateRevoked', (bool) $request->getUserVar('revoked'));
+        $templateMgr->assign('certificateRestored', (bool) $request->getUserVar('restored'));
+
+        $this->setupTemplate($request);
+        if (!is_array($templateMgr->getTemplateVars('userRoles'))) {
+            $userRolesAssoc = defined('ASSOC_TYPE_USER_ROLES')
+                ? ASSOC_TYPE_USER_ROLES
+                : \APP\core\Application::ASSOC_TYPE_USER_ROLES;
+            $templateMgr->assign('userRoles', (array) $this->getAuthorizedContextObject($userRolesAssoc));
+        }
+        $templateMgr->assign('pageTitle', __('plugins.generic.reviewerCertificate.manage.title'));
+        $templateMgr->setupBackendPage();
+        return $templateMgr->display($this->getPlugin()->getTemplateResource('manageCertificates.tpl'));
+    }
+
+    /**
+     * CSV export of the manager overview (respects the search filter).
+     */
+    public function exportCertificates($args, $request) {
+        $this->ensurePluginLocaleLoaded();
+        $context = $request->getContext();
+        $search = trim((string) $request->getUserVar('search'));
+        $rows = $this->listContextCertificates($context, $search, 0, 10000);
+        header('Content-Type: text/csv; charset=UTF-8');
+        header('Content-Disposition: attachment; filename="reviewer_certificates_' . date('Ymd') . '.csv"');
+        header('Cache-Control: private, max-age=0, must-revalidate');
+        $out = fopen('php://output', 'w');
+        fwrite($out, "\xEF\xBB\xBF"); // UTF-8 BOM so Excel reads CJK names correctly
+        fputcsv($out, array('certificate_code', 'reviewer_name', 'reviewer_email', 'submission_id', 'submission_title',
+            'review_completed', 'date_issued', 'downloads', 'notification', 'revoked', 'date_revoked', 'revoke_reason'));
+        foreach ($rows as $row) {
+            fputcsv($out, array_map(array(self::class, 'csvSafe'), array($row['certificateCode'], $row['reviewerName'], $row['reviewerEmail'],
+                $row['submissionId'], $row['submissionTitle'], $row['reviewCompleted'], $row['dateIssued'],
+                $row['downloads'], $row['notification'], $row['revoked'] ? 'yes' : 'no', $row['dateRevoked'], $row['revokeReason'])));
+        }
+        fclose($out);
+        exit;
+    }
+
+    /** Neutralise spreadsheet formulas in exported cells (CSV injection). */
+    public static function csvSafe($value) {
+        $value = (string) $value;
+        return ($value !== '' && strpos('=+-@' . "\t\r", $value[0]) !== false) ? "'" . $value : $value;
+    }
+
+    /**
+     * Revoke or restore a certificate. POST + CSRF; managers only.
+     */
+    public function revokeCertificate($args, $request) {
+        if (strtoupper($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST'
+                || !method_exists($request, 'checkCSRF') || !$request->checkCSRF()) {
+            http_response_code(403);
+            throw new Exception('Forbidden', 403);
+        }
+        $context = $request->getContext();
+        $certificate = $this->loadContextCertificate(isset($args[0]) ? $args[0] : null, $context);
+        $restore = (bool) $request->getUserVar('restore');
+        $this->getPlugin()->setCertificateRevoked($context->getId(), $certificate->getCertificateId(),
+            !$restore, (string) $request->getUserVar('reason'));
+        $request->redirect(null, 'certificate', 'manage', null, array(
+            $restore ? 'restored' : 'revoked' => 1,
+            'search' => (string) $request->getUserVar('search'),
+            'page' => max(1, (int) $request->getUserVar('page')),
+        ));
+    }
+
+    /**
+     * Managers download any certificate of their journal (also revoked ones,
+     * for their records). Does not count as a reviewer download.
+     */
+    public function managerDownload($args, $request) {
+        $context = $request->getContext();
+        $certificate = $this->loadContextCertificate(isset($args[0]) ? $args[0] : null, $context);
+        $row = $this->getPlugin()->getCertificateService($context->getId())->loadReview($certificate->getReviewId());
+        $reviewAssignment = DAORegistry::getDAO('CertificateDAO')->reviewAssignmentFromRow($row);
+        $generator = $this->createConfiguredGenerator($reviewAssignment, $certificate, $context);
+        try {
+            $pdfContent = $generator->generatePDF();
+        } catch (\Throwable $e) {
+            error_log('ReviewerCertificate: manager PDF generation failed: ' . $e->getMessage());
+            http_response_code(500);
+            echo 'An error occurred generating the certificate. Please try again later.';
+            exit;
+        }
+        $this->sendPdf($pdfContent, 'reviewer_certificate_' . $certificate->getCertificateId() . '.pdf');
+    }
+
+    /**
+     * Load a certificate by ID and make sure it belongs to this journal.
+     */
+    private function loadContextCertificate($certificateId, $context) {
+        $id = (is_string($certificateId) || is_int($certificateId)) && preg_match('/^[1-9][0-9]*$/D', (string) $certificateId)
+            ? (int) $certificateId : 0;
+        $certificate = $id && $context ? DAORegistry::getDAO('CertificateDAO')->getById($id) : null;
+        if (!$certificate || (int) $certificate->getContextId() !== (int) $context->getId()) {
+            http_response_code(404);
+            throw new Exception('Certificate not found', 404);
+        }
+        return $certificate;
+    }
+
+    /**
+     * WHERE clause and parameters for the manager list and its search box
+     * (certificate code, reviewer email, username, given or family name).
+     */
+    private function contextCertificateFilter($context, $search) {
+        $where = 'rc.context_id = ?';
+        $params = array((int) $context->getId());
+        if ($search !== '') {
+            $lower = function_exists('mb_strtolower') ? mb_strtolower($search, 'UTF-8') : strtolower($search);
+            $like = '%' . str_replace(array('\\', '%', '_'), array('\\\\', '\\%', '\\_'), $lower) . '%';
+            $where .= ' AND (LOWER(rc.certificate_code) LIKE ? OR LOWER(u.email) LIKE ? OR LOWER(u.username) LIKE ?
+                OR EXISTS (SELECT 1 FROM user_settings us WHERE us.user_id = u.user_id
+                    AND us.setting_name IN (?, ?) AND LOWER(us.setting_value) LIKE ?))';
+            array_push($params, $like, $like, $like, 'givenName', 'familyName', $like);
+        }
+        return array($where, $params);
+    }
+
+    private function countContextCertificates($context, $search) {
+        list($where, $params) = $this->contextCertificateFilter($context, $search);
+        $result = DAORegistry::getDAO('CertificateDAO')->retrieve(
+            'SELECT COUNT(*) AS cnt FROM reviewer_certificates rc
+             INNER JOIN users u ON u.user_id = rc.reviewer_id
+             WHERE ' . $where, $params);
+        $row = $result ? $result->current() : null;
+        return $row ? (int) ((array) $row)['cnt'] : 0;
+    }
+
+    /**
+     * One page of the journal's certificates with reviewer, title, delivery
+     * and revocation details.
+     * @return array
+     */
+    private function listContextCertificates($context, $search, $offset, $limit) {
+        $dao = DAORegistry::getDAO('CertificateDAO');
+        list($where, $params) = $this->contextCertificateFilter($context, $search);
+        $result = $dao->retrieve(
+            'SELECT rc.certificate_id, rc.reviewer_id, rc.submission_id, rc.date_issued, rc.certificate_code,
+                    rc.download_count, u.email, ra.date_completed, n.status AS notification_status
+             FROM reviewer_certificates rc
+             INNER JOIN users u ON u.user_id = rc.reviewer_id
+             LEFT JOIN review_assignments ra ON ra.review_id = rc.review_id
+             LEFT JOIN reviewer_certificate_notifications n ON n.certificate_id = rc.certificate_id
+             WHERE ' . $where . '
+             ORDER BY rc.certificate_id DESC
+             LIMIT ' . max(1, (int) $limit) . ' OFFSET ' . max(0, (int) $offset),
+            $params);
+        $rows = array();
+        foreach ($result ?: array() as $row) {
+            $rows[] = (array) $row;
+        }
+        $names = $this->loadUserNames(array_unique(array_map(function ($row) { return (int) $row['reviewer_id']; }, $rows)));
+        $revoked = $this->getPlugin()->getRevokedCertificates($context->getId());
+        $locale = $this->getCurrentLocale();
+        $request = Application::get()->getRequest();
+        $list = array();
+        foreach ($rows as $row) {
+            $id = (int) $row['certificate_id'];
+            $revocation = $revoked[$id] ?? null;
+            $list[] = array(
+                'certificateId' => $id,
+                'certificateCode' => $row['certificate_code'],
+                'reviewerName' => $names[(int) $row['reviewer_id']] ?? '',
+                'reviewerEmail' => $row['email'],
+                'submissionId' => (int) $row['submission_id'],
+                'submissionTitle' => $this->getSubmissionTitleForListing($dao, (int) $row['submission_id'], $locale),
+                'reviewCompleted' => $row['date_completed'] ? date('Y-m-d', strtotime($row['date_completed'])) : '',
+                'dateIssued' => date('Y-m-d', strtotime($row['date_issued'])),
+                'downloads' => (int) $row['download_count'],
+                'notification' => (string) $row['notification_status'],
+                'revoked' => $revocation !== null,
+                'dateRevoked' => $revocation && !empty($revocation['date']) ? date('Y-m-d', strtotime($revocation['date'])) : '',
+                'revokeReason' => $revocation['reason'] ?? '',
+                'downloadUrl' => $request->url(null, 'certificate', 'managerDownload', array($id)),
+                'revokeUrl' => $request->url(null, 'certificate', 'revokeCertificate', array($id)),
+            );
+        }
+        return $list;
+    }
+
+    /**
+     * Full names for a set of users from user_settings, preferring the
+     * current locale. One query regardless of the number of users.
+     * @param int[] $userIds
+     * @return array user ID => full name
+     */
+    private function loadUserNames(array $userIds) {
+        $userIds = array_values(array_filter(array_map('intval', $userIds)));
+        if (!$userIds) {
+            return array();
+        }
+        $locale = $this->getCurrentLocale();
+        $result = DAORegistry::getDAO('CertificateDAO')->retrieve(
+            'SELECT user_id, setting_name, locale, setting_value FROM user_settings
+             WHERE setting_name IN (?, ?) AND setting_value IS NOT NULL AND setting_value <> ?
+             AND user_id IN (' . implode(',', array_fill(0, count($userIds), '?')) . ')',
+            array_merge(array('givenName', 'familyName', ''), $userIds));
+        $parts = array();
+        foreach ($result ?: array() as $row) {
+            $row = (array) $row;
+            $uid = (int) $row['user_id'];
+            $key = $row['setting_name'];
+            if (!isset($parts[$uid][$key]) || $row['locale'] === $locale) {
+                $parts[$uid][$key] = $row['setting_value'];
+            }
+        }
+        $names = array();
+        foreach ($parts as $uid => $p) {
+            $names[$uid] = trim(($p['givenName'] ?? '') . ' ' . ($p['familyName'] ?? ''));
+        }
+        return $names;
     }
 
 }

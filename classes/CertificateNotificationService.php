@@ -25,6 +25,10 @@ class CertificateNotificationService {
         if ((int) $certificate->getContextId() !== (int) $this->context->getId()) {
             throw new \DomainException('Wrong journal');
         }
+        if (method_exists($this->plugin, 'isCertificateRevoked')
+                && $this->plugin->isCertificateRevoked($this->context->getId(), $certificate->getCertificateId())) {
+            return 'skipped';
+        }
         // SMTP cannot be rolled back with a surrounding database transaction.
         // Refuse delivery until the caller commits; explicit catch-up can retry.
         if (DatabaseConnection::get()->transactionLevel() > 0) {

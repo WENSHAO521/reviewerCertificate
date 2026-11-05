@@ -228,6 +228,12 @@ msgstr "期刊名称"
 msgid "plugins.generic.reviewerCertificate.verify.dateIssued"
 msgstr "颁发日期"
 
+msgid "plugins.generic.reviewerCertificate.verify.revoked"
+msgstr "证书已撤销"
+
+msgid "plugins.generic.reviewerCertificate.verify.revokedDescription"
+msgstr "这张证书由本期刊颁发，但已于 {$date} 撤销，不再有效。"
+
 # Batch generation
 msgid "plugins.generic.reviewerCertificate.batch.title"
 msgstr "批量生成证书"
@@ -595,4 +601,91 @@ msgstr "本期刊在您完成 {$minimum} 次审稿后颁发证书。您目前已
 
 msgid "plugins.generic.reviewerCertificate.myCertificates.emailThrottled"
 msgstr "这张证书在一分钟内已寄出过。请先检查您的收件箱，再重新寄送。"
+
+msgid "plugins.generic.reviewerCertificate.manage.title"
+msgstr "已颁发的证书"
+
+msgid "plugins.generic.reviewerCertificate.manage.open"
+msgstr "查看与管理已颁发的证书"
+
+msgid "plugins.generic.reviewerCertificate.manage.description"
+msgstr "本期刊已颁发 {$count} 张证书。被撤销的证书会保留记录，并在验证页显示为已撤销。"
+
+msgid "plugins.generic.reviewerCertificate.manage.search"
+msgstr "搜索"
+
+msgid "plugins.generic.reviewerCertificate.manage.searchPlaceholder"
+msgstr "姓名、电子邮件、用户名或证书编号"
+
+msgid "plugins.generic.reviewerCertificate.manage.exportCsv"
+msgstr "导出 CSV"
+
+msgid "plugins.generic.reviewerCertificate.manage.reviewer"
+msgstr "审稿人"
+
+msgid "plugins.generic.reviewerCertificate.manage.reviewCompleted"
+msgstr "审稿完成日期"
+
+msgid "plugins.generic.reviewerCertificate.manage.downloads"
+msgstr "下载次数"
+
+msgid "plugins.generic.reviewerCertificate.manage.status"
+msgstr "状态"
+
+msgid "plugins.generic.reviewerCertificate.manage.valid"
+msgstr "有效"
+
+msgid "plugins.generic.reviewerCertificate.manage.revoked"
+msgstr "已撤销"
+
+msgid "plugins.generic.reviewerCertificate.manage.notified"
+msgstr "已通过电子邮件通知审稿人"
+
+msgid "plugins.generic.reviewerCertificate.manage.revoke"
+msgstr "撤销"
+
+msgid "plugins.generic.reviewerCertificate.manage.restore"
+msgstr "恢复"
+
+msgid "plugins.generic.reviewerCertificate.manage.revokePrompt"
+msgstr "确定撤销这张证书？审稿人将无法再下载，验证页会显示为已撤销。可选填撤销原因（只有管理者看得到）："
+
+msgid "plugins.generic.reviewerCertificate.manage.revokedNotice"
+msgstr "证书已撤销。"
+
+msgid "plugins.generic.reviewerCertificate.manage.restoredNotice"
+msgstr "证书已恢复。"
+
+msgid "plugins.generic.reviewerCertificate.manage.empty"
+msgstr "没有找到证书。"
+
+msgid "plugins.generic.reviewerCertificate.manage.pageOf"
+msgstr "第 {$page} 页，共 {$pageCount} 页"
+
+msgid "plugins.generic.reviewerCertificate.annual.title"
+msgstr "年度证书"
+
+msgid "plugins.generic.reviewerCertificate.annual.description"
+msgstr "一张证书涵盖您在一年内为本期刊完成的所有审稿。"
+
+msgid "plugins.generic.reviewerCertificate.annual.download"
+msgstr "{$year} 年（{$count} 次审稿）"
+
+msgid "plugins.generic.reviewerCertificate.settings.verifyNameDisplay"
+msgstr "验证页上的审稿人姓名"
+
+msgid "plugins.generic.reviewerCertificate.settings.verifyNameDisplay.full"
+msgstr "显示全名"
+
+msgid "plugins.generic.reviewerCertificate.settings.verifyNameDisplay.initials"
+msgstr "只显示缩写（J. S. / 王**）"
+
+msgid "plugins.generic.reviewerCertificate.settings.verifyNameDisplay.hidden"
+msgstr "不显示"
+
+msgid "plugins.generic.reviewerCertificate.settings.annualBodyTemplate"
+msgstr "年度证书"
+
+msgid "plugins.generic.reviewerCertificate.settings.annualBodyTemplateDescription"
+msgstr "审稿人可以在“我的证书”页面下载每年一张的年度证书。它使用与单张证书相同的版面、图片和样式，正文改用这里的文字。额外变量：{{$reviewCount}}（审稿次数）和 {{$reviewYear}}。年度证书没有证书编号和 QR 码。"
 

@@ -625,9 +625,31 @@ The Editors of {{$journalName}}{/literal}{/capture}
 				<label class="rc-toggle rc-toggle--block"><input type="checkbox" name="includeQRCode" value="1" {if $includeQRCode}checked{/if} /><span>{translate key="`$rcKey`includeQRCode"}</span></label>
 			</div>
 			<label class="rc-field">
+				<span class="rc-label">{translate key="`$rcKey`verifyNameDisplay"}</span>
+				<select class="rc-input" name="verifyNameDisplay">
+					{foreach from=$verifyNameDisplayOptions key=value item=label}
+						<option value="{$value|escape}" {if $verifyNameDisplay == $value}selected{/if}>{$label|escape}</option>
+					{/foreach}
+				</select>
+			</label>
+			<label class="rc-field">
 				<span class="rc-label">{translate key="`$rcKey`certificateCodeLabel"}</span>
 				<input type="text" class="rc-input" name="certificateCodeLabel" value="{$certificateCodeLabel|escape}" maxlength="60" />
 			</label>
+		</div>
+	</section>
+
+	{* ------------------------------------------------------------ Annual summary certificate *}
+	<section class="rc-card">
+		<header class="rc-card__head">
+			<span class="rc-step">★</span>
+			<div>
+				<h3>{translate key="`$rcKey`annualBodyTemplate"}</h3>
+				<p>{translate key="`$rcKey`annualBodyTemplateDescription"}</p>
+			</div>
+		</header>
+		<div class="rc-field">
+			<textarea class="rc-input rc-textarea" id="annualBodyTemplate" name="annualBodyTemplate" rows="7">{$annualBodyTemplate|escape}</textarea>
 		</div>
 	</section>
 
@@ -667,6 +689,7 @@ The Editors of {{$journalName}}{/literal}{/capture}
 <div class="rc-panel">
 	<h2>{translate key="plugins.generic.reviewerCertificate.statistics.title"}</h2>
 	<p class="description">{translate key="plugins.generic.reviewerCertificate.statistics.description"}</p>
+	{if $manageCertificatesUrl}<p><a href="{$manageCertificatesUrl|escape}" target="_blank" class="pkp_button rc-manage-link">{translate key="plugins.generic.reviewerCertificate.manage.open"}</a></p>{/if}
 	<div class="rc-stats">
 		<div class="rc-stat"><strong>{$totalCertificates|default:0}</strong><span>{translate key="plugins.generic.reviewerCertificate.statistics.totalCertificates"}</span></div>
 		<div class="rc-stat"><strong>{$totalDownloads|default:0}</strong><span>{translate key="plugins.generic.reviewerCertificate.statistics.totalDownloads"}</span></div>
