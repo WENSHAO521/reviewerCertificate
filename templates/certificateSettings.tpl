@@ -657,6 +657,21 @@ The Editors of {{$journalName}}{/literal}{/capture}
 			<p class="rc-hint">{translate key="`$rcKey`cumulativeBodyTemplateDescription"}</p>
 			<textarea class="rc-input rc-textarea" id="cumulativeBodyTemplate" name="cumulativeBodyTemplate" rows="7">{$cumulativeBodyTemplate|escape}</textarea>
 		</div>
+		<div class="rc-grid">
+			<label class="rc-field">
+				<span class="rc-label">{translate key="`$rcKey`outstandingMinReviews"}</span>
+				<input type="number" class="rc-input" name="outstandingMinReviews" value="{$outstandingMinReviews|escape}" min="0" max="999" />
+			</label>
+			<label class="rc-field">
+				<span class="rc-label">{translate key="`$rcKey`outstandingLabel"}</span>
+				<input type="text" class="rc-input" name="outstandingLabel" value="{$outstandingLabel|escape}" maxlength="60" />
+			</label>
+			<label class="rc-field">
+				<span class="rc-label">{translate key="`$rcKey`recognizedLabel"}</span>
+				<input type="text" class="rc-input" name="recognizedLabel" value="{$recognizedLabel|escape}" maxlength="60" />
+			</label>
+		</div>
+		<p class="rc-hint">{translate key="`$rcKey`outstandingDescription"}</p>
 	</section>
 
 	{* ------------------------------------------------------------ 6. Acknowledgement email *}

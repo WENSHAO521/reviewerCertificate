@@ -384,7 +384,8 @@ class CertificateGenerator {
      * @return string
      */
     public static function getDefaultCumulativeBodyTemplate() {
-        return 'This certificate is awarded to' . "\n\n" .
+        return '{{$reviewerStatus}}' . "\n\n" .
+               'This certificate is awarded to' . "\n\n" .
                '{{$reviewerName}}' . "\n\n" .
                'In recognition of {{$reviewCount}} peer reviews contributed to' . "\n\n" .
                '{{$journalName}}' . "\n\n" .
@@ -869,6 +870,12 @@ class CertificateGenerator {
             'certificateCodeLabel' => 'Certificate Code:',
             // Reviewer name on the public verify page: full, initials or hidden
             'verifyNameDisplay' => 'full',
+            // Reviewer status on the cumulative certificate ({{$reviewerStatus}}):
+            // Outstanding when the reviewer completed at least this many reviews
+            // in the last two years (0 = never), otherwise Recognized.
+            'outstandingMinReviews' => '0',
+            'recognizedLabel' => 'Recognized Reviewer',
+            'outstandingLabel' => 'Outstanding Reviewer',
         );
     }
 
@@ -891,7 +898,10 @@ class CertificateGenerator {
         if ($key === 'verifyNameDisplay') {
             return in_array($value, array('full', 'initials', 'hidden'), true) ? $value : 'full';
         }
-        if ($key === 'certificateCodeLabel') {
+        if ($key === 'outstandingMinReviews') {
+            return preg_match('/^[0-9]{1,3}$/D', $value) ? (string) (int) $value : '0';
+        }
+        if ($key === 'certificateCodeLabel' || $key === 'recognizedLabel' || $key === 'outstandingLabel') {
             if ($value === '') {
                 return $defaults[$key];
             }

@@ -300,4 +300,8 @@ Scarica Certificato: {{$certificateUrl}}
 	<message key="plugins.generic.reviewerCertificate.settings.cumulativeBodyTemplate">Cumulative certificate text</message>
 	<message key="plugins.generic.reviewerCertificate.settings.cumulativeBodyTemplateDescription">One certificate with the total number of reviews the reviewer has completed for this journal, like Elsevier's "Recognized Reviewer" certificate. {{$reviewPeriod}} is the span of years, e.g. 2021–2026.</message>
 	<message key="plugins.generic.reviewerCertificate.annual.cumulative">All years ({$count} reviews)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.outstandingMinReviews">Outstanding Reviewer: reviews in the last two years (0 = off)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.outstandingLabel">Title for outstanding reviewers</message>
+	<message key="plugins.generic.reviewerCertificate.settings.recognizedLabel">Title for other reviewers</message>
+	<message key="plugins.generic.reviewerCertificate.settings.outstandingDescription">Like Elsevier's Recognized and Outstanding Reviewer status. {{$reviewerStatus}} on the cumulative certificate shows the outstanding title when the reviewer completed at least this many reviews for the journal in the last two years, and the other title otherwise. My Certificates shows the same title.</message>
 </locale>

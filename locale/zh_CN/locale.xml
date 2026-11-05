@@ -299,4 +299,8 @@
 	<message key="plugins.generic.reviewerCertificate.settings.cumulativeBodyTemplate">累计证书正文</message>
 	<message key="plugins.generic.reviewerCertificate.settings.cumulativeBodyTemplateDescription">一张证书列出审稿人为本期刊完成的审稿总次数，类似 Elsevier 的“Recognized Reviewer”证书。{{$reviewPeriod}} 是年份区间，例如 2021–2026。</message>
 	<message key="plugins.generic.reviewerCertificate.annual.cumulative">全部年份（共 {$count} 次审稿）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.outstandingMinReviews">杰出审稿人门槛：近两年审稿次数（0 = 不启用）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.outstandingLabel">杰出审稿人的称号</message>
+	<message key="plugins.generic.reviewerCertificate.settings.recognizedLabel">其他审稿人的称号</message>
+	<message key="plugins.generic.reviewerCertificate.settings.outstandingDescription">类似 Elsevier 的 Recognized / Outstanding Reviewer。累计证书上的 {{$reviewerStatus}} 在审稿人近两年为本期刊完成的审稿次数达到门槛时显示杰出称号，否则显示另一个称号。“我的证书”页面也会显示同样的称号。</message>
 </locale>

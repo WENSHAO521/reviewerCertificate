@@ -623,6 +623,7 @@ class CertificateHandler extends Handler {
         }
         $templateMgr->assign('annualCertificates', $annual);
         $templateMgr->assign('cumulativeCertificate', $annualYears ? array(
+            'status' => $this->reviewerStatus($context, $user->getId()),
             'count' => array_sum($annualYears),
             'url' => $request->url(null, 'certificate', 'annualCertificate', array('all')),
         ) : null);
@@ -983,6 +984,7 @@ class CertificateHandler extends Handler {
             ? (min($years) === max($years) ? (string) min($years) : min($years) . '–' . max($years))
             : (string) $year;
         $generator->setExtraVariables(array(
+            'reviewerStatus' => $this->reviewerStatus($context, $user->getId())['label'],
             'reviewCount' => $count,
             'reviewYear' => $period,
             'reviewPeriod' => $period,
@@ -1000,6 +1002,42 @@ class CertificateHandler extends Handler {
             exit;
         }
         $this->sendPdf($pdfContent, 'reviewer_certificate_' . ($cumulative ? 'all' : $year) . '.pdf');
+    }
+
+    /**
+     * Reviewer status for the cumulative certificate, modelled on Elsevier's
+     * Recognized / Outstanding Reviewer: Outstanding when the reviewer has at
+     * least the configured number of certified reviews in the last two years.
+     * @return array ['outstanding' => bool, 'label' => string, 'recentReviews' => int]
+     */
+    private function reviewerStatus($context, $userId) {
+        $plugin = $this->getPlugin();
+        $generatorClass = \APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::class;
+        require_once dirname(__DIR__) . '/classes/CertificateGenerator.php';
+        $setting = function ($name) use ($plugin, $context, $generatorClass) {
+            return $generatorClass::sanitizeStructuredStringSetting($name, $plugin->getSetting($context->getId(), $name));
+        };
+        $threshold = (int) $setting('outstandingMinReviews');
+        $recent = 0;
+        if ($threshold > 0) {
+            $result = DAORegistry::getDAO('CertificateDAO')->retrieve(
+                'SELECT rc.certificate_id FROM reviewer_certificates rc
+                 INNER JOIN review_assignments ra ON ra.review_id = rc.review_id
+                 WHERE rc.reviewer_id = ? AND rc.context_id = ? AND ra.date_completed >= ?',
+                array((int) $userId, (int) $context->getId(), date('Y-m-d H:i:s', strtotime('-2 years'))));
+            $revoked = $plugin->getRevokedCertificates($context->getId());
+            foreach ($result ?: array() as $row) {
+                if (!isset($revoked[(int) ((array) $row)['certificate_id']])) {
+                    $recent++;
+                }
+            }
+        }
+        $outstanding = $threshold > 0 && $recent >= $threshold;
+        return array(
+            'outstanding' => $outstanding,
+            'label' => $setting($outstanding ? 'outstandingLabel' : 'recognizedLabel'),
+            'recentReviews' => $recent,
+        );
     }
 
     /**

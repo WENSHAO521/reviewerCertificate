@@ -123,4 +123,15 @@ class CertificateFeaturesTest extends TestCase
         $this->assertStringContainsString('In recognition of 6 peer reviews contributed to', $text);
         $this->assertStringContainsString('2021–2026', $text);
     }
+
+    public function testReviewerStatusSettingsAreSanitized(): void
+    {
+        $this->assertSame('5', CertificateGenerator::sanitizeStructuredStringSetting('outstandingMinReviews', ' 5 '));
+        $this->assertSame('0', CertificateGenerator::sanitizeStructuredStringSetting('outstandingMinReviews', '-3'));
+        $this->assertSame('0', CertificateGenerator::sanitizeStructuredStringSetting('outstandingMinReviews', null));
+        $this->assertSame('Outstanding Reviewer', CertificateGenerator::sanitizeStructuredStringSetting('outstandingLabel', ''));
+        $this->assertSame('傑出審稿人', CertificateGenerator::sanitizeStructuredStringSetting('outstandingLabel', '傑出審稿人'));
+        $this->assertSame('Recognized Reviewer', CertificateGenerator::sanitizeStructuredStringSetting('recognizedLabel', null));
+        $this->assertStringStartsWith('{{$reviewerStatus}}', CertificateGenerator::getDefaultCumulativeBodyTemplate());
+    }
 }

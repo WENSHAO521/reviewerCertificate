@@ -701,3 +701,15 @@ msgstr "一张证书列出审稿人为本期刊完成的审稿总次数，类似
 msgid "plugins.generic.reviewerCertificate.annual.cumulative"
 msgstr "全部年份（共 {$count} 次审稿）"
 
+msgid "plugins.generic.reviewerCertificate.settings.outstandingMinReviews"
+msgstr "杰出审稿人门槛：近两年审稿次数（0 = 不启用）"
+
+msgid "plugins.generic.reviewerCertificate.settings.outstandingLabel"
+msgstr "杰出审稿人的称号"
+
+msgid "plugins.generic.reviewerCertificate.settings.recognizedLabel"
+msgstr "其他审稿人的称号"
+
+msgid "plugins.generic.reviewerCertificate.settings.outstandingDescription"
+msgstr "类似 Elsevier 的 Recognized / Outstanding Reviewer。累计证书上的 {{$reviewerStatus}} 在审稿人近两年为本期刊完成的审稿次数达到门槛时显示杰出称号，否则显示另一个称号。“我的证书”页面也会显示同样的称号。"
+

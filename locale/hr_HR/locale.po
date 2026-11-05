@@ -701,3 +701,15 @@ msgstr "One certificate with the total number of reviews the reviewer has comple
 msgid "plugins.generic.reviewerCertificate.annual.cumulative"
 msgstr "All years ({$count} reviews)"
 
+msgid "plugins.generic.reviewerCertificate.settings.outstandingMinReviews"
+msgstr "Outstanding Reviewer: reviews in the last two years (0 = off)"
+
+msgid "plugins.generic.reviewerCertificate.settings.outstandingLabel"
+msgstr "Title for outstanding reviewers"
+
+msgid "plugins.generic.reviewerCertificate.settings.recognizedLabel"
+msgstr "Title for other reviewers"
+
+msgid "plugins.generic.reviewerCertificate.settings.outstandingDescription"
+msgstr "Like Elsevier's Recognized and Outstanding Reviewer status. {{$reviewerStatus}} on the cumulative certificate shows the outstanding title when the reviewer completed at least this many reviews for the journal in the last two years, and the other title otherwise. My Certificates shows the same title."
+

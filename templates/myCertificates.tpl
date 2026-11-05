@@ -101,6 +101,7 @@
 					<a href="{$cumulativeCertificate.url|escape}" class="pkp_button pkp_button_primary certificate-cumulative-btn">
 						{translate key="plugins.generic.reviewerCertificate.annual.cumulative" count=$cumulativeCertificate.count}
 					</a>
+					<strong class="certificate-reviewer-status{if $cumulativeCertificate.status.outstanding} certificate-reviewer-outstanding{/if}">{$cumulativeCertificate.status.label|escape}</strong>
 				</li>
 			{/if}
 			{foreach from=$annualCertificates item=annual}

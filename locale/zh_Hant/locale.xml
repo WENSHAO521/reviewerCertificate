@@ -299,4 +299,8 @@
 	<message key="plugins.generic.reviewerCertificate.settings.cumulativeBodyTemplate">累計證書正文</message>
 	<message key="plugins.generic.reviewerCertificate.settings.cumulativeBodyTemplateDescription">一張證書列出審稿人為本期刊完成的審稿總次數，類似 Elsevier 的「Recognized Reviewer」證書。{{$reviewPeriod}} 是年份區間，例如 2021–2026。</message>
 	<message key="plugins.generic.reviewerCertificate.annual.cumulative">全部年份（共 {$count} 次審稿）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.outstandingMinReviews">傑出審稿人門檻：近兩年審稿次數（0 = 不啟用）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.outstandingLabel">傑出審稿人的稱號</message>
+	<message key="plugins.generic.reviewerCertificate.settings.recognizedLabel">其他審稿人的稱號</message>
+	<message key="plugins.generic.reviewerCertificate.settings.outstandingDescription">類似 Elsevier 的 Recognized / Outstanding Reviewer。累計證書上的 {{$reviewerStatus}} 在審稿人近兩年為本期刊完成的審稿次數達到門檻時顯示傑出稱號，否則顯示另一個稱號。「我的證書」頁面也會顯示同樣的稱號。</message>
 </locale>
