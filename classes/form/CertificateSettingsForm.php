@@ -115,6 +115,10 @@ class CertificateSettingsForm extends Form {
             foreach (self::structuredStringSettings() as $field => $default) {
                 $this->setData($field, $this->plugin->getSetting($this->contextId, $field) ?? $default);
             }
+            $this->setData('cumulativeBodyTemplate', $this->plugin->getSetting($this->contextId, 'cumulativeBodyTemplate')
+                ?: \APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::getDefaultCumulativeBodyTemplate());
+            $this->setData('annualBodyTemplate', $this->plugin->getSetting($this->contextId, 'annualBodyTemplate')
+                ?: \APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::getDefaultAnnualBodyTemplate());
             // Acknowledgement email templates — show localized defaults so
             // editors see and can adjust the actual letter text
             $this->setData('ackEmailSubject', $this->plugin->getSetting($this->contextId, 'ackEmailSubject')
@@ -172,7 +176,9 @@ class CertificateSettingsForm extends Form {
             'removeCoverImage',
             'removeSealImage',
             'ackEmailSubject',
-            'ackEmailBody'
+            'ackEmailBody',
+            'annualBodyTemplate',
+            'cumulativeBodyTemplate'
         ), array_keys(self::typographySettings()), array_keys(self::structuredStringSettings())));
 
         // Carry the stored background image forward, since the file input is empty on
@@ -194,7 +200,7 @@ class CertificateSettingsForm extends Form {
         foreach (array_merge(['headerText', 'bodyTemplate', 'footerText', 'fontFamily', 'fontSize',
             'minimumReviews', 'bodyTopOffset', 'textColorR', 'textColorG', 'textColorB',
             'includeQRCode', 'pageOrientation', 'removeBackgroundImage', 'removeLogoImage', 'removeCoverImage',
-            'removeSealImage', 'ackEmailSubject', 'ackEmailBody', 'layoutMode'], array_keys(self::typographySettings()), array_keys(self::structuredStringSettings())) as $field) {
+            'removeSealImage', 'ackEmailSubject', 'ackEmailBody', 'layoutMode', 'annualBodyTemplate', 'cumulativeBodyTemplate'], array_keys(self::typographySettings()), array_keys(self::structuredStringSettings())) as $field) {
             $value = $this->getData($field);
             if ($value !== null && !is_scalar($value)) {
                 $this->addError($field, __('plugins.generic.reviewerCertificate.settings.invalidValue'));
@@ -308,6 +314,29 @@ class CertificateSettingsForm extends Form {
             'bottomLeft' => __('plugins.generic.reviewerCertificate.settings.footerPosition.bottomLeft'),
             'bottomCenter' => __('plugins.generic.reviewerCertificate.settings.footerPosition.bottomCenter'),
         ));
+        $templateMgr->assign('dateFormatOptions', array(
+            'en' => __('plugins.generic.reviewerCertificate.settings.dateFormat.en'),
+            'zh' => __('plugins.generic.reviewerCertificate.settings.dateFormat.zh'),
+            'iso' => __('plugins.generic.reviewerCertificate.settings.dateFormat.iso'),
+            'locale' => __('plugins.generic.reviewerCertificate.settings.dateFormat.locale'),
+        ));
+        $templateMgr->assign('verifyNameDisplayOptions', array(
+            'full' => __('plugins.generic.reviewerCertificate.settings.verifyNameDisplay.full'),
+            'initials' => __('plugins.generic.reviewerCertificate.settings.verifyNameDisplay.initials'),
+            'hidden' => __('plugins.generic.reviewerCertificate.settings.verifyNameDisplay.hidden'),
+        ));
+        // The settings form is fetched through the component router, so build
+        // the page URL with the dispatcher rather than $request->url().
+        $manageUrl = '';
+        try {
+            if (method_exists($request, 'getDispatcher')) {
+                $manageUrl = $request->getDispatcher()->url(
+                    $request, defined('ROUTE_PAGE') ? ROUTE_PAGE : 'page', null, 'certificate', 'manage');
+            }
+        } catch (\Throwable $e) {
+            error_log('ReviewerCertificate: could not build the certificate overview URL');
+        }
+        $templateMgr->assign('manageCertificatesUrl', $manageUrl);
         $templateMgr->assign('layoutModeOptions', array(
             'classic' => __('plugins.generic.reviewerCertificate.settings.layoutMode.classic'),
             'structured' => __('plugins.generic.reviewerCertificate.settings.layoutMode.structured'),
@@ -467,7 +496,7 @@ class CertificateSettingsForm extends Form {
         try {
             $this->stageUploads();
             $this->getConnection()->transaction(function () use ($functionArgs) {
-                foreach (['headerText', 'bodyTemplate', 'footerText', 'ackEmailSubject', 'ackEmailBody', 'backgroundImage', 'logoImage', 'coverImage', 'sealImage'] as $field) {
+                foreach (['headerText', 'bodyTemplate', 'footerText', 'ackEmailSubject', 'ackEmailBody', 'annualBodyTemplate', 'cumulativeBodyTemplate', 'backgroundImage', 'logoImage', 'coverImage', 'sealImage'] as $field) {
                     $this->plugin->updateSetting($this->contextId, $field, (string) $this->getData($field), 'string');
                 }
                 $font = $this->getData('fontFamily');

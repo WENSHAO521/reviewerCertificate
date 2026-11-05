@@ -11,49 +11,30 @@ test.describe('Certificate Download', () => {
   test('reviewer can download certificate for completed review', async ({ page }) => {
     await loginAsReviewer(page);
 
-    // Navigate to completed reviews / submissions
-    await page.goto('/index.php/testjournal/submissions', { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(3000);
+    // Since v1.14 the side menu has a "My Certificates" link, so a loose
+    // "a:has-text('Certificate')" selector found that HTML page instead of a
+    // download. Use the download buttons on My Certificates directly.
+    const listing = await page.goto('/index.php/testjournal/certificate/myCertificates', {
+      waitUntil: 'domcontentloaded', timeout: 15000,
+    });
+    expect(listing?.status()).toBeLessThan(500);
 
-    // Look for the "Download Certificate" button in submissions list
-    const downloadButton = page.locator(
-      'a:has-text("Download Certificate"), ' +
-      'a:has-text("Certificate"), ' +
-      'button:has-text("Download Certificate"), ' +
-      'a[href*="certificate/download"]'
-    ).first();
-
-    if (await downloadButton.isVisible({ timeout: 10000 }).catch(() => false)) {
-      const [response] = await Promise.all([
-        page.waitForResponse(resp =>
-          resp.url().includes('certificate') && resp.status() === 200
-        ),
-        downloadButton.click(),
-      ]);
-
-      const contentType = response.headers()['content-type'] || '';
-      expect(contentType).toContain('application/pdf');
+    const downloadButtons = page.locator('a.certificate-download-btn');
+    if (await downloadButtons.count()) {
+      const href = await downloadButtons.first().getAttribute('href');
+      expect(href).toContain('certificate/download');
+      const response = await page.request.get(href!);
+      expect(response.status()).toBe(200);
+      expect(response.headers()['content-type'] || '').toContain('application/pdf');
+      expect((await response.body()).subarray(0, 5).toString()).toBe('%PDF-');
     } else {
-      // Try direct download URL with review assignment ID 1
-      const response = await page.goto(
-        '/index.php/testjournal/certificate/download/1',
-        { waitUntil: 'domcontentloaded' }
-      );
-      if (response) {
-        // Should either be a PDF download or an accessible page (not 500)
-        // May return 403 if reviewer doesn't match, or 404 if route not found
-        const status = response.status();
-        const contentType = response.headers()['content-type'] || '';
-
-        if (status === 200 && contentType.includes('application/pdf')) {
-          // Success - got a PDF
-          expect(contentType).toContain('application/pdf');
-        } else {
-          // Page loaded but not a PDF - the plugin is working but
-          // the review assignment might not match this reviewer
-          expect(status).toBeLessThan(500);
-        }
-      }
+      // No eligible review for this reviewer in the fixture: the page must
+      // say so rather than fail.
+      await expect(page.locator('tr.no-certificates')).toHaveCount(1);
     }
+
+    // A review that is not the reviewer's is never served as a PDF.
+    const foreign = await page.request.get('/index.php/testjournal/certificate/download/999999');
+    expect(foreign.headers()['content-type'] || '').not.toContain('application/pdf');
   });
 });

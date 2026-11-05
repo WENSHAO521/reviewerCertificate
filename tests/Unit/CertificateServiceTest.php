@@ -115,6 +115,23 @@ class CertificateServiceTest extends TestCase {
         $this->assertNull($result['continuation']);
     }
 
+    public function testIssueMissingCreatesCertificatesForEligibleReviews() {
+        $dao = new IssuanceDAO();
+        $service = new CertificateService($dao, 2, 1);
+        $this->assertSame(2, $service->completedCount(8));
+        $this->assertSame(1, $service->issueMissing(8));
+        $this->assertSame(7, $dao->certificate->getReviewId());
+        $this->assertStringContainsString('rc.certificate_id IS NULL', $dao->missingSql);
+    }
+
+    public function testIssueMissingRespectsMinimumReviews() {
+        $dao = new IssuanceDAO();
+        $service = new CertificateService($dao, 2, 3);
+        $this->assertSame(0, $service->issueMissing(8));
+        $this->assertNull($dao->certificate);
+        $this->assertSame(3, $service->getMinimum());
+    }
+
     public function testPositiveIdsAreStrictAndDeduplicated() {
         $this->assertSame([8, 9], CertificateService::reviewerIds(['8', 8, '9']));
         foreach ([[0], ['2foo'], [[]], [true], ['-1'], '8'] as $input) {
@@ -146,8 +163,14 @@ class IssuanceDAO extends CertificateDAO {
             TestCase::assertSame([8, 2], $params);
             return new \ArrayIterator([(object) ['cnt' => $this->completed]]);
         }
+        if (strpos($sql, 'rc.certificate_id IS NULL') !== false) {
+            $this->missingSql = $sql;
+            TestCase::assertSame([8, 2], $params);
+            return new \ArrayIterator($this->certificate ? [] : [(object) ['review_id' => 7]]);
+        }
         return new \ArrayIterator([$this->review]);
     }
+    public $missingSql = '';
     public function getByReviewIdAndContext($id, $context) { return $this->certificate; }
     public function getConcurrentCertificate($id, $context) { return $this->certificate; }
     public function insertObject($certificate) {

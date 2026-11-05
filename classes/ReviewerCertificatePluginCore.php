@@ -49,6 +49,10 @@ class ReviewerCertificatePlugin extends GenericPlugin {
                 Hook::register('TemplateManager::setupBackendPage', array($this, 'addMyCertificatesMenuItem'));
                 Hook::register('TemplateManager::display', array($this, 'addCertificateButton'));
                 Hook::register('reviewerreviewstep3form::execute', array($this, 'handleReviewComplete'));
+                // Keep certificates when OJS merges two user accounts. The
+                // old account is deleted afterwards, and the reviewer_id
+                // foreign key would otherwise cascade-delete its certificates.
+                Hook::register('UserAction::mergeUsers', array($this, 'handleMergeUsers'));
                 if (class_exists('PKP\mail\Mailable')) {
                     Hook::register('Mailer::Mailables', array($this, 'addMailable'));
                 }
@@ -471,7 +475,10 @@ class ReviewerCertificatePlugin extends GenericPlugin {
                 return false;
             }
             $result = $certificateDao->retrieve(
-                'SELECT * FROM review_assignments WHERE submission_id = ? AND reviewer_id = ?',
+                // Latest round first: with several rounds the page is about the
+                // current one, not round 1.
+                'SELECT * FROM review_assignments WHERE submission_id = ? AND reviewer_id = ?
+                 ORDER BY round DESC, review_id DESC',
                 array((int) $templateVar->getId(), (int) $user->getId())
             );
 
@@ -611,6 +618,70 @@ class ReviewerCertificatePlugin extends GenericPlugin {
             error_log('ReviewerCertificate: post-review notification failed');
         }
         return false;
+    }
+
+    /**
+     * Move certificates from a merged (deleted) account to the account it was
+     * merged into. Runs before OJS deletes the old user.
+     */
+    public function handleMergeUsers($hookName, $params) {
+        try {
+            $oldUserId = (int) ($params[0] ?? 0);
+            $newUserId = (int) ($params[1] ?? 0);
+            $dao = DAORegistry::getDAO('CertificateDAO');
+            if ($dao && $oldUserId > 0 && $newUserId > 0 && $oldUserId !== $newUserId) {
+                $dao->reassignReviewer($oldUserId, $newUserId);
+            }
+        } catch (\Throwable $e) {
+            error_log('ReviewerCertificate: could not move certificates on user merge: ' . $e->getMessage());
+        }
+        return false;
+    }
+
+    /**
+     * Revoked certificates for a journal: certificate ID => ['date' => ..., 'reason' => ...].
+     * Kept in a plugin setting so revocation needs no schema change.
+     * @param int $contextId
+     * @return array
+     */
+    public function getRevokedCertificates($contextId) {
+        $value = $this->getSetting((int) $contextId, 'revokedCertificates');
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+            $value = is_array($decoded) ? $decoded : array();
+        }
+        $revoked = array();
+        foreach (is_array($value) ? $value : array() as $id => $entry) {
+            if ((int) $id > 0) {
+                $revoked[(int) $id] = is_array($entry) ? $entry : array();
+            }
+        }
+        return $revoked;
+    }
+
+    public function isCertificateRevoked($contextId, $certificateId) {
+        return isset($this->getRevokedCertificates($contextId)[(int) $certificateId]);
+    }
+
+    /**
+     * Revoke or restore a certificate.
+     * @param int $contextId
+     * @param int $certificateId
+     * @param bool $revoke
+     * @param string $reason
+     */
+    public function setCertificateRevoked($contextId, $certificateId, $revoke, $reason = '') {
+        $revoked = $this->getRevokedCertificates($contextId);
+        if ($revoke) {
+            $reason = trim(strip_tags((string) $reason));
+            $revoked[(int) $certificateId] = array(
+                'date' => date('Y-m-d H:i:s'),
+                'reason' => function_exists('mb_substr') ? mb_substr($reason, 0, 255, 'UTF-8') : substr($reason, 0, 255),
+            );
+        } else {
+            unset($revoked[(int) $certificateId]);
+        }
+        $this->updateSetting((int) $contextId, 'revokedCertificates', json_encode($revoked), 'string');
     }
 
     public function getNotificationService($request) {

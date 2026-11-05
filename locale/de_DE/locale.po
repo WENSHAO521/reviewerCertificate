@@ -78,6 +78,9 @@ msgstr "Fußzeilentext"
 msgid "plugins.generic.reviewerCertificate.settings.footerTextDescription"
 msgstr "Optionaler Text, der am unteren Rand des Zertifikats angezeigt wird"
 
+msgid "plugins.generic.reviewerCertificate.settings.previewHint"
+msgstr "The preview uses the last saved settings, so save first."
+
 msgid "plugins.generic.reviewerCertificate.settings.availableVariables"
 msgstr "Verfügbare Vorlagenvariablen"
 
@@ -224,6 +227,12 @@ msgstr "Name der Zeitschrift"
 
 msgid "plugins.generic.reviewerCertificate.verify.dateIssued"
 msgstr "Ausstellungsdatum"
+
+msgid "plugins.generic.reviewerCertificate.verify.revoked"
+msgstr "Certificate Revoked"
+
+msgid "plugins.generic.reviewerCertificate.verify.revokedDescription"
+msgstr "This certificate was issued by the journal but revoked on {$date}. It is no longer valid."
 
 # Batch generation
 msgid "plugins.generic.reviewerCertificate.batch.title"
@@ -461,9 +470,6 @@ msgstr "Page and colours"
 msgid "plugins.generic.reviewerCertificate.settings.section.pageDescription"
 msgstr "Paper orientation, font and the default text colour."
 
-msgid "plugins.generic.reviewerCertificate.settings.previewHint"
-msgstr "The preview uses the last saved settings, so save first."
-
 msgid "plugins.generic.reviewerCertificate.settings.typography.color"
 msgstr "Colour (#rrggbb)"
 
@@ -571,3 +577,139 @@ msgstr "Acknowledgement email"
 
 msgid "plugins.generic.reviewerCertificate.settings.section.eligibilityDescription"
 msgstr "Who can receive a certificate, and how it is verified."
+
+msgid "plugins.generic.reviewerCertificate.settings.dateFormat"
+msgstr "Date format on the certificate"
+
+msgid "plugins.generic.reviewerCertificate.settings.dateFormat.en"
+msgstr "English (November 5, 2026)"
+
+msgid "plugins.generic.reviewerCertificate.settings.dateFormat.zh"
+msgstr "Chinese (2026年11月5日)"
+
+msgid "plugins.generic.reviewerCertificate.settings.dateFormat.iso"
+msgstr "Numeric (2026-11-05)"
+
+msgid "plugins.generic.reviewerCertificate.settings.dateFormat.locale"
+msgstr "Reviewer's interface language"
+
+msgid "plugins.generic.reviewerCertificate.settings.certificateCodeLabel"
+msgstr "Label before the certificate code"
+
+msgid "plugins.generic.reviewerCertificate.myCertificates.notEligibleYet"
+msgstr "This journal issues certificates once you have completed {$minimum} reviews. You have completed {$completed} so far."
+
+msgid "plugins.generic.reviewerCertificate.myCertificates.emailThrottled"
+msgstr "This certificate was emailed to you less than a minute ago. Please check your inbox before sending it again."
+
+msgid "plugins.generic.reviewerCertificate.manage.title"
+msgstr "Issued Certificates"
+
+msgid "plugins.generic.reviewerCertificate.manage.open"
+msgstr "View and manage issued certificates"
+
+msgid "plugins.generic.reviewerCertificate.manage.description"
+msgstr "{$total} certificates issued by this journal. Revoked certificates stay on record and show as revoked on the verification page."
+
+msgid "plugins.generic.reviewerCertificate.manage.search"
+msgstr "Search"
+
+msgid "plugins.generic.reviewerCertificate.manage.searchPlaceholder"
+msgstr "Name, email, username or certificate code"
+
+msgid "plugins.generic.reviewerCertificate.manage.exportCsv"
+msgstr "Export CSV"
+
+msgid "plugins.generic.reviewerCertificate.manage.reviewer"
+msgstr "Reviewer"
+
+msgid "plugins.generic.reviewerCertificate.manage.reviewCompleted"
+msgstr "Review completed"
+
+msgid "plugins.generic.reviewerCertificate.manage.downloads"
+msgstr "Downloads"
+
+msgid "plugins.generic.reviewerCertificate.manage.status"
+msgstr "Status"
+
+msgid "plugins.generic.reviewerCertificate.manage.valid"
+msgstr "Valid"
+
+msgid "plugins.generic.reviewerCertificate.manage.revoked"
+msgstr "Revoked"
+
+msgid "plugins.generic.reviewerCertificate.manage.notified"
+msgstr "Reviewer notified by email"
+
+msgid "plugins.generic.reviewerCertificate.manage.revoke"
+msgstr "Revoke"
+
+msgid "plugins.generic.reviewerCertificate.manage.restore"
+msgstr "Restore"
+
+msgid "plugins.generic.reviewerCertificate.manage.revokePrompt"
+msgstr "Revoke this certificate? The reviewer can no longer download it and the verification page will show it as revoked. Optionally enter a reason (only managers see it):"
+
+msgid "plugins.generic.reviewerCertificate.manage.revokedNotice"
+msgstr "The certificate was revoked."
+
+msgid "plugins.generic.reviewerCertificate.manage.restoredNotice"
+msgstr "The certificate was restored."
+
+msgid "plugins.generic.reviewerCertificate.manage.empty"
+msgstr "No certificates found."
+
+msgid "plugins.generic.reviewerCertificate.manage.pageOf"
+msgstr "Page {$page} of {$pageCount}"
+
+msgid "plugins.generic.reviewerCertificate.annual.title"
+msgstr "Annual and cumulative certificates"
+
+msgid "plugins.generic.reviewerCertificate.annual.description"
+msgstr "One certificate covering all your reviews for this journal, either in total or for one year."
+
+msgid "plugins.generic.reviewerCertificate.annual.download"
+msgstr "{$year} ({$total} reviews)"
+
+msgid "plugins.generic.reviewerCertificate.settings.verifyNameDisplay"
+msgstr "Reviewer name on the verification page"
+
+msgid "plugins.generic.reviewerCertificate.settings.verifyNameDisplay.full"
+msgstr "Full name"
+
+msgid "plugins.generic.reviewerCertificate.settings.verifyNameDisplay.initials"
+msgstr "Initials only (J. S.)"
+
+msgid "plugins.generic.reviewerCertificate.settings.verifyNameDisplay.hidden"
+msgstr "Do not show"
+
+msgid "plugins.generic.reviewerCertificate.settings.annualBodyTemplate"
+msgstr "Annual and cumulative certificates"
+
+msgid "plugins.generic.reviewerCertificate.settings.annualBodyTemplateDescription"
+msgstr "Reviewers can download these from My Certificates. They use the same layout, images and styles as the single certificate, with the text below as the body, and have no certificate code or QR code. Extra variables: {{$reviewCount}} (number of reviews) and {{$reviewYear}}."
+
+msgid "plugins.generic.reviewerCertificate.settings.annualBodyTemplateLabel"
+msgstr "Annual certificate text"
+
+msgid "plugins.generic.reviewerCertificate.settings.cumulativeBodyTemplate"
+msgstr "Cumulative certificate text"
+
+msgid "plugins.generic.reviewerCertificate.settings.cumulativeBodyTemplateDescription"
+msgstr "One certificate with the total number of reviews the reviewer has completed for this journal, like Elsevier's \"Recognized Reviewer\" certificate. {{$reviewPeriod}} is the span of years, e.g. 2021–2026."
+
+msgid "plugins.generic.reviewerCertificate.annual.cumulative"
+msgstr "All years ({$total} reviews)"
+
+msgid "plugins.generic.reviewerCertificate.settings.outstandingMinReviews"
+msgstr "Outstanding Reviewer: reviews in the last two years (0 = off)"
+
+msgid "plugins.generic.reviewerCertificate.settings.outstandingLabel"
+msgstr "Title for outstanding reviewers"
+
+msgid "plugins.generic.reviewerCertificate.settings.recognizedLabel"
+msgstr "Title for other reviewers"
+
+msgid "plugins.generic.reviewerCertificate.settings.outstandingDescription"
+msgstr "Like Elsevier's Recognized and Outstanding Reviewer status. {{$reviewerStatus}} on the cumulative certificate shows the outstanding title when the reviewer completed at least this many reviews for the journal in the last two years, and the other title otherwise. My Certificates shows the same title."
+

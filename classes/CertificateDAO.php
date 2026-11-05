@@ -343,6 +343,18 @@ class CertificateDAO extends DAO {
     }
 
     /**
+     * Move every certificate of one reviewer to another (OJS user merge).
+     * @param int $oldUserId
+     * @param int $newUserId
+     */
+    public function reassignReviewer($oldUserId, $newUserId) {
+        return $this->update(
+            'UPDATE reviewer_certificates SET reviewer_id = ? WHERE reviewer_id = ?',
+            array((int) $newUserId, (int) $oldUserId)
+        );
+    }
+
+    /**
      * Get certificate statistics for a context
      * @param $contextId int
      * @return array Statistics array with 'total', 'downloads', and 'reviewers' counts

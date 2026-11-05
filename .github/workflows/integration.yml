@@ -44,14 +44,24 @@ jobs:
           done
       - name: Browser security, historical mail, and file permissions
         run: npx playwright test tests/e2e/batch-generation.spec.ts --retries=0
+      - name: Reviewer pages smoke (My Certificates, download, verify)
+        # These would have caught the v1.15.0 HTTP 500 on My Certificates.
+        run: >-
+          npx playwright test
+          tests/e2e/plugin-page-smoke.spec.ts
+          tests/e2e/my-certificates.spec.ts
+          tests/e2e/certificate-download.spec.ts
+          tests/e2e/certificate-verify.spec.ts
+          tests/e2e/manage-certificates.spec.ts
+          --retries=1
       - name: JavaScript regression
         run: node tests/javascript/certificate.test.cjs
       - name: Build and verify target-specific release packages
         run: |
-          bash release.sh 1.15.1
-          php tests/check-release.php 1.15.1
+          bash release.sh 1.16.0
+          php tests/check-release.php 1.16.0
           for target in 3_3 3_4 3_5; do
-            php tests/environment/check-release-pdf.php "reviewerCertificate-1.15.1-$target.tar.gz"
+            php tests/environment/check-release-pdf.php "reviewerCertificate-1.16.0-$target.tar.gz"
           done
       - uses: actions/upload-artifact@v4
         if: always()

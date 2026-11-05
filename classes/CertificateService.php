@@ -59,6 +59,15 @@ class CertificateService {
     }
 
     public function meetsMinimum($reviewerId) {
+        return $this->completedCount($reviewerId) >= $this->minimum;
+    }
+
+    public function getMinimum() {
+        return $this->minimum;
+    }
+
+    /** Completed, non-declined, non-cancelled reviews by this reviewer in this journal. */
+    public function completedCount($reviewerId) {
         $rows = $this->dao->retrieve(
             'SELECT COUNT(*) AS cnt FROM review_assignments ra
              INNER JOIN submissions s ON s.submission_id = ra.submission_id
@@ -66,7 +75,40 @@ class CertificateService {
              AND COALESCE(ra.declined, 0) = 0 AND COALESCE(ra.cancelled, 0) = 0',
             [(int) $reviewerId, $this->contextId]);
         $row = $rows ? $rows->current() : null;
-        return $row && (int) $row->cnt >= $this->minimum;
+        return $row ? (int) $row->cnt : 0;
+    }
+
+    /**
+     * Issue certificates for this reviewer's eligible completed reviews that
+     * have none yet: reviews completed before the plugin was installed, or
+     * whose completion hook did not run. Used when the reviewer opens
+     * My Certificates so the list matches the side-menu entry.
+     * @return int Number of certificates created
+     */
+    public function issueMissing($reviewerId, $limit = 100) {
+        $reviewerId = self::positiveId($reviewerId);
+        if (!$this->meetsMinimum($reviewerId)) {
+            return 0;
+        }
+        $rows = $this->dao->retrieve(
+            'SELECT ra.review_id FROM review_assignments ra
+             INNER JOIN submissions s ON s.submission_id = ra.submission_id
+             LEFT JOIN reviewer_certificates rc ON rc.review_id = ra.review_id
+             WHERE ra.reviewer_id = ? AND s.context_id = ? AND ra.date_completed IS NOT NULL
+             AND COALESCE(ra.declined, 0) = 0 AND COALESCE(ra.cancelled, 0) = 0
+             AND rc.certificate_id IS NULL
+             ORDER BY ra.review_id LIMIT ' . max(1, min(500, (int) $limit)),
+            [$reviewerId, $this->contextId]);
+        $created = 0;
+        foreach ($rows ?: [] as $row) {
+            try {
+                $issued = $this->issue($row->review_id, $reviewerId);
+                if ($issued['created']) { $created++; }
+            } catch (\Throwable $e) {
+                error_log('ReviewerCertificate: could not issue missing certificate for review ' . (int) $row->review_id);
+            }
+        }
+        return $created;
     }
 
     private function matchesReview($certificate, $row) {

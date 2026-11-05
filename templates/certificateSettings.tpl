@@ -591,6 +591,14 @@ The Editors of {{$journalName}}{/literal}{/capture}
 				<input type="number" class="rc-input" name="fontSize" value="{$fontSize|default:12|escape}" min="6" max="72" />
 			</label>
 			<label class="rc-field">
+				<span class="rc-label">{translate key="`$rcKey`dateFormat"}</span>
+				<select class="rc-input" name="dateFormat">
+					{foreach from=$dateFormatOptions key=value item=label}
+						<option value="{$value|escape}" {if $dateFormat == $value}selected{/if}>{$label|escape}</option>
+					{/foreach}
+				</select>
+			</label>
+			<label class="rc-field">
 				<span class="rc-label">{translate key="`$rcKey`bodyTopOffset"}</span>
 				<input type="number" class="rc-input" name="bodyTopOffset" value="{$bodyTopOffset|default:0|escape}" min="0" max="100" />
 			</label>
@@ -616,7 +624,54 @@ The Editors of {{$journalName}}{/literal}{/capture}
 				<span class="rc-label">{translate key="`$rcKey`verification"}</span>
 				<label class="rc-toggle rc-toggle--block"><input type="checkbox" name="includeQRCode" value="1" {if $includeQRCode}checked{/if} /><span>{translate key="`$rcKey`includeQRCode"}</span></label>
 			</div>
+			<label class="rc-field">
+				<span class="rc-label">{translate key="`$rcKey`verifyNameDisplay"}</span>
+				<select class="rc-input" name="verifyNameDisplay">
+					{foreach from=$verifyNameDisplayOptions key=value item=label}
+						<option value="{$value|escape}" {if $verifyNameDisplay == $value}selected{/if}>{$label|escape}</option>
+					{/foreach}
+				</select>
+			</label>
+			<label class="rc-field">
+				<span class="rc-label">{translate key="`$rcKey`certificateCodeLabel"}</span>
+				<input type="text" class="rc-input" name="certificateCodeLabel" value="{$certificateCodeLabel|escape}" maxlength="60" />
+			</label>
 		</div>
+	</section>
+
+	{* ------------------------------------------------------------ Annual summary certificate *}
+	<section class="rc-card">
+		<header class="rc-card__head">
+			<span class="rc-step">★</span>
+			<div>
+				<h3>{translate key="`$rcKey`annualBodyTemplate"}</h3>
+				<p>{translate key="`$rcKey`annualBodyTemplateDescription"}</p>
+			</div>
+		</header>
+		<div class="rc-field">
+			<label class="rc-label" for="annualBodyTemplate">{translate key="`$rcKey`annualBodyTemplateLabel"}</label>
+			<textarea class="rc-input rc-textarea" id="annualBodyTemplate" name="annualBodyTemplate" rows="7">{$annualBodyTemplate|escape}</textarea>
+		</div>
+		<div class="rc-field">
+			<label class="rc-label" for="cumulativeBodyTemplate">{translate key="`$rcKey`cumulativeBodyTemplate"}</label>
+			<p class="rc-hint">{translate key="`$rcKey`cumulativeBodyTemplateDescription"}</p>
+			<textarea class="rc-input rc-textarea" id="cumulativeBodyTemplate" name="cumulativeBodyTemplate" rows="7">{$cumulativeBodyTemplate|escape}</textarea>
+		</div>
+		<div class="rc-grid">
+			<label class="rc-field">
+				<span class="rc-label">{translate key="`$rcKey`outstandingMinReviews"}</span>
+				<input type="number" class="rc-input" name="outstandingMinReviews" value="{$outstandingMinReviews|escape}" min="0" max="999" />
+			</label>
+			<label class="rc-field">
+				<span class="rc-label">{translate key="`$rcKey`outstandingLabel"}</span>
+				<input type="text" class="rc-input" name="outstandingLabel" value="{$outstandingLabel|escape}" maxlength="60" />
+			</label>
+			<label class="rc-field">
+				<span class="rc-label">{translate key="`$rcKey`recognizedLabel"}</span>
+				<input type="text" class="rc-input" name="recognizedLabel" value="{$recognizedLabel|escape}" maxlength="60" />
+			</label>
+		</div>
+		<p class="rc-hint">{translate key="`$rcKey`outstandingDescription"}</p>
 	</section>
 
 	{* ------------------------------------------------------------ 6. Acknowledgement email *}
@@ -655,6 +710,7 @@ The Editors of {{$journalName}}{/literal}{/capture}
 <div class="rc-panel">
 	<h2>{translate key="plugins.generic.reviewerCertificate.statistics.title"}</h2>
 	<p class="description">{translate key="plugins.generic.reviewerCertificate.statistics.description"}</p>
+	{if $manageCertificatesUrl}<p><a href="{$manageCertificatesUrl|escape}" target="_blank" class="pkp_button rc-manage-link">{translate key="plugins.generic.reviewerCertificate.manage.open"}</a></p>{/if}
 	<div class="rc-stats">
 		<div class="rc-stat"><strong>{$totalCertificates|default:0}</strong><span>{translate key="plugins.generic.reviewerCertificate.statistics.totalCertificates"}</span></div>
 		<div class="rc-stat"><strong>{$totalDownloads|default:0}</strong><span>{translate key="plugins.generic.reviewerCertificate.statistics.totalDownloads"}</span></div>

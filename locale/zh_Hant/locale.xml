@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE locale SYSTEM "../../../../../lib/pkp/dtd/locale.dtd">
+
+<!--
+  * plugins/generic/reviewerCertificate/locale/zh_TW/locale.xml
+  *
+  * Copyright (c) 2024
+  * Distributed under the GNU GPL v3.
+  *
+  * Localization strings - Traditional Chinese
+  -->
+
+<locale name="zh_TW" full_name="正體中文 (台灣)">
+	<!-- Plugin metadata -->
+	<message key="plugins.generic.reviewerCertificate.displayName">審稿人證書外掛</message>
+	<message key="plugins.generic.reviewerCertificate.description">允許審稿人在完成審稿後產生並下載個性化的PDF榮譽證書。</message>
+
+	<!-- Certificate titles -->
+	<message key="plugins.generic.reviewerCertificate.certificateTitle">審稿證書</message>
+	<message key="plugins.generic.reviewerCertificate.certificateSubject">同行評審證書</message>
+
+	<!-- Dashboard messages -->
+	<message key="plugins.generic.reviewerCertificate.certificateAvailable">您的證書已準備就緒！</message>
+	<message key="plugins.generic.reviewerCertificate.certificateAvailableDescription">感謝您完成本次審稿。您現在可以下載您的榮譽證書。</message>
+	<message key="plugins.generic.reviewerCertificate.certificateWillBeGenerated">點選下載按鈕後，您的證書將自動產生。</message>
+	<message key="plugins.generic.reviewerCertificate.downloadCertificate">下載證書</message>
+
+	<!-- Settings form -->
+	<message key="plugins.generic.reviewerCertificate.settings">證書設定</message>
+	<message key="plugins.generic.reviewerCertificate.settings.description">設定審稿人的證書範本和資格標準。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.templateSettings">證書範本設定</message>
+
+	<!-- Background Image -->
+	<message key="plugins.generic.reviewerCertificate.settings.backgroundImage">背景圖片</message>
+	<message key="plugins.generic.reviewerCertificate.settings.backgroundImageDescription">鋪滿整頁、位於所有內容下方，例如邊框或色帶。A4 橫向請用 2970 × 2100 px，縱向請用 2100 × 2970 px。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.currentImage">目前背景圖片</message>
+	<message key="plugins.generic.reviewerCertificate.settings.removeBackgroundImage">移除背景圖片</message>
+	<message key="plugins.generic.reviewerCertificate.settings.logoImage">標誌</message>
+	<message key="plugins.generic.reviewerCertificate.settings.logoImageDescription">未設定 X 與 Y 時放在左上角。建議使用透明背景的 PNG。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.coverImage">期刊封面</message>
+	<message key="plugins.generic.reviewerCertificate.settings.coverImageDescription">未設定 X 與 Y 時放在右上角。新一期出刊時可在此更換。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.sealImage">印章</message>
+	<message key="plugins.generic.reviewerCertificate.settings.sealImageDescription">放在右下角；開啟 QR 碼時放在 QR 碼左側。圓形印章請使用透明背景的 PNG。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.removeImage">移除這張圖片</message>
+	<message key="plugins.generic.reviewerCertificate.settings.image.width">寬度（mm）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.image.x">距左邊 X（mm，-1 = 自動）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.image.y">距上方 Y（mm，-1 = 自動）</message>
+
+	<!-- Header Text -->
+	<message key="plugins.generic.reviewerCertificate.settings.headerText">標題文字</message>
+	<message key="plugins.generic.reviewerCertificate.settings.headerTextDescription">顯示在證書頂部的主標題</message>
+	<message key="plugins.generic.reviewerCertificate.settings.headerTextRequired">標題文字為必填項</message>
+
+	<!-- Body Template -->
+	<message key="plugins.generic.reviewerCertificate.settings.bodyTemplate">證書正文範本</message>
+	<message key="plugins.generic.reviewerCertificate.settings.bodyTemplateDescription">證書的主要內容。使用範本變數插入動態內容。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.bodyTemplateRequired">證書正文範本為必填項</message>
+
+	<!-- Footer Text -->
+	<message key="plugins.generic.reviewerCertificate.settings.footerText">頁尾文字</message>
+	<message key="plugins.generic.reviewerCertificate.settings.footerTextDescription">顯示在證書底部的可選文字</message>
+
+	<!-- Body Top Offset -->
+	<message key="plugins.generic.reviewerCertificate.settings.bodyTopOffset">正文上方間距（mm）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.bodyTopOffsetDescription">在正文上方加入的空白（毫米），可用來把正文往下移。正文範本開頭輸入的空行在儲存時會被移除。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography">字體排版（結構化版面）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.layoutMode">證書版面</message>
+	<message key="plugins.generic.reviewerCertificate.settings.layoutModeDescription">「經典」把正文範本當成一整段文字輸出，與舊版相同。「結構化」讓每一行有自己的樣式：只含 {{$reviewerName}}（或名、姓）的行使用審稿人姓名樣式，只含 {{$journalName}} 的行使用期刊名稱樣式，含日期或 {{$certificateCode}} 的行使用細節樣式，其餘行使用正文樣式。範本中的空行會加入段落間距。過長的姓名與標題會先縮小以容納在一行內，再換行；必要時整個版面會等比例縮小，確保維持在一頁內。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.classic">經典</message>
+	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.structured">結構化</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.title">證書標題</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.titleDescription">以 # 開頭的那一行。建議 28–46 pt。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.name">審稿人姓名</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.nameDescription">只含 {{$reviewerName}} 的那一行。建議 24–26 pt，粗體。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.journal">期刊名稱</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.journalDescription">只含 {{$journalName}} 的那一行。建議 16–20 pt。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.body">感謝文字</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.bodyDescription">其他所有行。建議 12–16 pt。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.detail">審稿日期與證書編號</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.detailDescription">含日期的行，以及證書編號。建議 8–11 pt。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.size">大小（pt）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.bold">粗體</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.spacing">間距（mm）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.spacingDescription">正文行之間每一個空行都會加入段落間距。姓名間距是審稿人姓名上下額外的空白。側邊邊界會縮窄文字區域，讓文字避開背景圖片中的標誌。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.paragraphSpacing">段落間距（mm）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.nameSpacing">姓名間距（mm）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.layout">版面與文字</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.layoutDescription">選擇證書的版面設定，並撰寫證書內容。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.classicHint">一整段文字，與舊版相同。現有證書維持這個外觀。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.structuredHint">標題、審稿人姓名、期刊與細節各有自己的樣式，像正式印製的獎狀。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.titleLineHint">以 # 開頭的行會成為證書標題，例如「# 審稿證書」。只含 {{$reviewerName}} 的行使用姓名樣式，只含 {{$journalName}} 的行使用期刊樣式，含日期的行使用較小的細節樣式。三個連字號（---）那一行以下的內容會成為頁尾。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.insertVariable">插入：</message>
+	<message key="plugins.generic.reviewerCertificate.settings.useRecognitionTemplate">使用獎狀式範本</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.images">背景、標誌、封面與印章</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.imagesDescription">PNG 或 JPEG，每張最大 5 MB。背景會鋪滿整頁，其他圖片疊在上方。X 與 Y 留空即使用自動位置。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.image.none">未設定</message>
+	<message key="plugins.generic.reviewerCertificate.settings.image.xShort">X（mm）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.image.yShort">Y（mm）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.image.auto">自動</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.typographyDescription">結構化證書中各部分的大小、顏色與粗細。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.classicNotice">這些設定只套用於結構化版面。請在步驟 1 選擇「結構化」後使用。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.element">元素</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.style">樣式</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.defaultColor">預設</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.page">頁面與顏色</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.pageDescription">紙張方向、字型與預設文字顏色。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.previewHint">預覽使用最後一次儲存的設定，請先儲存。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.color">顏色（#rrggbb）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.uppercase">全大寫</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.footer">頁尾</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.footerDescription">--- 那一行以下的內容。位置與距離在下方設定。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.footerPosition">位置</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.footerBottomSpacing">距底部距離（mm）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.sideMargin">側邊邊界（mm）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.footerPosition.flow">接在內容下方</message>
+	<message key="plugins.generic.reviewerCertificate.settings.footerPosition.bottomLeft">左下角</message>
+	<message key="plugins.generic.reviewerCertificate.settings.footerPosition.bottomCenter">底部置中</message>
+
+	<!-- Available Variables -->
+	<message key="plugins.generic.reviewerCertificate.settings.availableVariables">可用範本變數</message>
+	<message key="plugins.generic.reviewerCertificate.settings.availableVariablesDescription">在範本中使用這些變數插入動態內容：</message>
+	<message key="plugins.generic.reviewerCertificate.settings.defaultTemplate">預設範本</message>
+	<message key="plugins.generic.reviewerCertificate.settings.useDefaultTemplate">使用預設範本</message>
+
+	<!-- Appearance settings -->
+	<message key="plugins.generic.reviewerCertificate.settings.appearance">外觀設定</message>
+	<message key="plugins.generic.reviewerCertificate.settings.fontFamily">字型</message>
+	<message key="plugins.generic.reviewerCertificate.settings.font.helvetica">Helvetica</message>
+	<message key="plugins.generic.reviewerCertificate.settings.font.times">Times New Roman</message>
+	<message key="plugins.generic.reviewerCertificate.settings.font.courier">Courier</message>
+	<message key="plugins.generic.reviewerCertificate.settings.font.dejavusans">DejaVu Sans</message>
+	<message key="plugins.generic.reviewerCertificate.settings.fontSize">字號</message>
+	<message key="plugins.generic.reviewerCertificate.settings.pageOrientation">頁面方向</message>
+	<message key="plugins.generic.reviewerCertificate.settings.pageOrientationDescription">為證書選擇縱向或橫向佈局</message>
+	<message key="plugins.generic.reviewerCertificate.settings.orientation.portrait">縱向</message>
+	<message key="plugins.generic.reviewerCertificate.settings.orientation.landscape">橫向</message>
+	<message key="plugins.generic.reviewerCertificate.settings.textColor">預設文字顏色</message>
+	<message key="plugins.generic.reviewerCertificate.settings.textColorDescription">使用RGB值指定文字顏色（每個分量範圍0-255）</message>
+
+	<!-- Eligibility settings -->
+	<message key="plugins.generic.reviewerCertificate.settings.eligibility">資格標準</message>
+	<message key="plugins.generic.reviewerCertificate.settings.minimumReviews">最低完成審稿數</message>
+	<message key="plugins.generic.reviewerCertificate.settings.minimumReviewsDescription">審稿人獲得證書所需的最低完成審稿數量</message>
+	<message key="plugins.generic.reviewerCertificate.settings.minimumReviewsInvalid">最低審稿數必須是大於或等於1的數字</message>
+
+	<!-- Verification -->
+	<message key="plugins.generic.reviewerCertificate.settings.verification">驗證選項</message>
+	<message key="plugins.generic.reviewerCertificate.settings.includeQRCode">包含用於證書驗證的QR 碼</message>
+	<message key="plugins.generic.reviewerCertificate.settings.previewCertificate">預覽證書</message>
+	<message key="plugins.generic.reviewerCertificate.settings.invalidImageType">圖片型別無效。請上傳JPG或PNG檔案。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.uploadFailed">檔案上傳失敗。請重試。</message>
+
+	<!-- Error messages -->
+	<message key="plugins.generic.reviewerCertificate.error.reviewNotCompleted">此審稿尚未完成。證書僅適用於已完成的審稿。</message>
+	<message key="plugins.generic.reviewerCertificate.error.noCertificateCode">未提供證書編號</message>
+	<message key="plugins.generic.reviewerCertificate.error.invalidCertificate">證書編號無效。無法驗證此證書。</message>
+	<message key="plugins.generic.reviewerCertificate.error.noReviewersSelected">未選擇批次產生證書的審稿人</message>
+	<message key="plugins.generic.reviewerCertificate.error.accessDenied">訪問被拒絕。您沒有下載此證書的許可權。</message>
+	<message key="plugins.generic.reviewerCertificate.error.noContext">無可用的期刊上下文。請確保您從有效的期刊訪問。</message>
+	<message key="plugins.generic.reviewerCertificate.error.daoNotAvailable">資料庫訪問目前不可用。請聯絡系統管理員。</message>
+
+	<!-- Verification -->
+	<message key="plugins.generic.reviewerCertificate.verify.title">驗證證書</message>
+	<message key="plugins.generic.reviewerCertificate.verify.description">輸入證書編號以驗證其真實性</message>
+	<message key="plugins.generic.reviewerCertificate.verify.code">證書編號</message>
+	<message key="plugins.generic.reviewerCertificate.verify.button">驗證證書</message>
+	<message key="plugins.generic.reviewerCertificate.verify.valid">證書有效</message>
+	<message key="plugins.generic.reviewerCertificate.verify.invalid">證書無效</message>
+	<message key="plugins.generic.reviewerCertificate.verify.invalidDescription">您輸入的證書編號無效或在我們的系統中不存在。</message>
+	<message key="plugins.generic.reviewerCertificate.verify.certificateCode">證書編號</message>
+	<message key="plugins.generic.reviewerCertificate.verify.reviewerName">審稿人姓名</message>
+	<message key="plugins.generic.reviewerCertificate.verify.journalName">期刊名稱</message>
+	<message key="plugins.generic.reviewerCertificate.verify.dateIssued">頒發日期</message>
+
+	<!-- Batch generation -->
+	<message key="plugins.generic.reviewerCertificate.batch.title">批次產生證書</message>
+	<message key="plugins.generic.reviewerCertificate.batch.description">一次為多位審稿人產生證書。從下面的列表中選擇已完成審稿但尚未獲得證書的審稿人。</message>
+	<message key="plugins.generic.reviewerCertificate.batch.selectReviewers">選擇審稿人</message>
+	<message key="plugins.generic.reviewerCertificate.batch.completedReviews">已完成審稿</message>
+	<message key="plugins.generic.reviewerCertificate.batch.noEligibleReviewers">未找到符合條件的審稿人。所有審稿人都已獲得其完成審稿的證書。</message>
+	<message key="plugins.generic.reviewerCertificate.batch.selectMultipleHint">按住Ctrl（Windows/Linux）或Cmd（Mac）鍵可選擇多位審稿人</message>
+	<message key="plugins.generic.reviewerCertificate.batch.generate">產生證書</message>
+	<message key="plugins.generic.reviewerCertificate.batch.generating">正在產生證書...</message>
+	<message key="plugins.generic.reviewerCertificate.batch.noSelection">請至少選擇一位審稿人</message>
+	<message key="plugins.generic.reviewerCertificate.batch.certificatesGenerated">證書產生成功</message>
+	<message key="plugins.generic.reviewerCertificate.batch.error">產生證書時發生錯誤。請重試。</message>
+	<message key="plugins.generic.reviewerCertificate.batch.generated">已成功產生{$count}份證書</message>
+
+	<!-- Statistics -->
+	<message key="plugins.generic.reviewerCertificate.statistics.title">證書統計</message>
+	<message key="plugins.generic.reviewerCertificate.statistics.description">您期刊的證書產生和使用概覽</message>
+	<message key="plugins.generic.reviewerCertificate.statistics.totalCertificates">已頒發證書總數</message>
+	<message key="plugins.generic.reviewerCertificate.statistics.totalDownloads">下載總數</message>
+	<message key="plugins.generic.reviewerCertificate.statistics.uniqueReviewers">擁有證書的審稿人數</message>
+	<message key="plugins.generic.reviewerCertificate.stats.totalIssued">已頒發證書總數</message>
+	<message key="plugins.generic.reviewerCertificate.stats.totalDownloads">下載總數</message>
+	<message key="plugins.generic.reviewerCertificate.stats.averageDownloads">每份證書平均下載次數</message>
+
+	<!-- Font warning -->
+	<message key="plugins.generic.reviewerCertificate.settings.fontUnicodeWarning">注意：Helvetica、Times New Roman 和 Courier 僅支援拉丁字元。如果您的期刊使用西里爾文、阿拉伯文、中文或其他非拉丁字元，外掛將自動使用 DejaVu Sans 字型來顯示這些文字元素。</message>
+
+	<!-- My Certificates page -->
+	<message key="plugins.generic.reviewerCertificate.myCertificates.title">我的證書</message>
+	<message key="plugins.generic.reviewerCertificate.myCertificates.description">以下是您在本期刊所有審稿證書的列表。</message>
+	<message key="plugins.generic.reviewerCertificate.myCertificates.dateIssued">簽發日期</message>
+	<message key="plugins.generic.reviewerCertificate.myCertificates.submissionTitle">稿件標題</message>
+	<message key="plugins.generic.reviewerCertificate.myCertificates.certificateCode">證書編號</message>
+	<message key="plugins.generic.reviewerCertificate.myCertificates.actions">操作</message>
+	<message key="plugins.generic.reviewerCertificate.myCertificates.noCertificates">您還沒有任何證書。證書在您完成審稿後產生。</message>
+	<message key="plugins.generic.reviewerCertificate.myCertificates.viewAll">檢視我的所有證書</message>
+	<message key="plugins.generic.reviewerCertificate.myCertificates.emailAction">將證書傳送到我的信箱</message>
+	<message key="plugins.generic.reviewerCertificate.myCertificates.emailSent">證書已傳送至您的電子郵件信箱。</message>
+	<message key="plugins.generic.reviewerCertificate.myCertificates.emailError">郵件傳送失敗。請稍後重試或聯絡期刊編輯部。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.ackEmailSubject">致謝郵件主題</message>
+	<message key="plugins.generic.reviewerCertificate.settings.ackEmailBody">致謝郵件正文</message>
+	<message key="plugins.generic.reviewerCertificate.settings.ackEmailDescription">從"我的證書"頁面傳送給審稿人的信函,並附上證書 PDF。支援與證書正文相同的範本變數,以及 {{$editorName}}。</message>
+	<message key="plugins.generic.reviewerCertificate.emailCertificate.attachmentFallback">無法將證書 PDF 附加到此郵件（可能超過了郵件伺服器的大小限制）。您可以在此處下載您的證書：</message>
+	<message key="plugins.generic.reviewerCertificate.emailCertificate.defaultSubject">感謝您為《{{$journalName}}》審稿</message>
+	<message key="plugins.generic.reviewerCertificate.emailCertificate.defaultBody">{{$reviewerName}} 您好：
+
+衷心感謝您撥冗審閱投稿至《{{$journalName}}》的稿件〈{{$submissionTitle}}〉。您細緻而深入的審查意見，幫助作者改進了研究成果，也推動了相關領域的研究。
+
+您對維護本刊論文品質的貢獻，我們深表感謝。我們明白審稿是一項費心費時的工作，也感謝您仔細分析稿件，並為作者提供具建設性的意見。
+
+為表達謝意，敬請將此信轉寄至 reviews@webofscience.com。依照本刊編輯政策，審查內容將予以保密，不會顯示於 Web of Science。
+
+您的審稿證書已附於本信。
+
+再次感謝您對學術研究的投入，期待未來繼續與您合作。
+
+順頌 研祺
+
+{{$editorName}}
+{{$journalName}}</message>
+
+    <!-- English fallback for new reliability controls; translation contributions welcome. -->
+    <message key="plugins.generic.reviewerCertificate.batch.generatedCountLabel">已產生</message>
+    <message key="plugins.generic.reviewerCertificate.batch.skipped">已略過</message>
+    <message key="plugins.generic.reviewerCertificate.batch.failed">失敗</message>
+    <message key="plugins.generic.reviewerCertificate.notifications.title">補寄歷史證書通知</message>
+    <message key="plugins.generic.reviewerCertificate.notifications.description">為所選審稿人的每張證書明確寄出一封可下載通知。尚未產生的合格證書會一併建立。在通知追蹤功能推出前發出的證書，寄送紀錄未知，可能已經通知過。一般的批次產生不會寄信。</message>
+    <message key="plugins.generic.reviewerCertificate.notifications.retry">重新寄送失敗或狀態不明的通知</message>
+    <message key="plugins.generic.reviewerCertificate.notifications.retryWarning">中斷超過十分鐘的寄送狀態不明，收件人可能已經收到。請先檢查郵件紀錄，再重新寄送狀態不明的通知。</message>
+    <message key="plugins.generic.reviewerCertificate.notifications.send">寄出證書通知</message>
+    <message key="plugins.generic.reviewerCertificate.notifications.sent">已寄出</message>
+    <message key="plugins.generic.reviewerCertificate.settings.invalidValue">請輸入有效的值。</message>
+    <message key="plugins.generic.reviewerCertificate.settings.saveFailed">證書設定無法儲存。請檢查欄位與圖片（JPEG 或 PNG，最大 5 MB）後再試一次。</message>
+    <message key="plugins.generic.reviewerCertificate.email.subject">您的證書已準備就緒！</message>
+    <message key="plugins.generic.reviewerCertificate.email.body">{{$reviewerName}},
+
+感謝您完成本次審稿。您現在可以下載您的榮譽證書。
+
+下載證書: {{$certificateUrl}}
+
+{{$journalName}}
+{{$journalUrl}}</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.email">感謝信</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.eligibilityDescription">誰可以取得證書，以及證書如何驗證。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.dateFormat">證書上的日期格式</message>
+	<message key="plugins.generic.reviewerCertificate.settings.dateFormat.en">英文（November 5, 2026）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.dateFormat.zh">中文（2026年11月5日）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.dateFormat.iso">數字（2026-11-05）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.dateFormat.locale">跟隨審稿人的介面語言</message>
+	<message key="plugins.generic.reviewerCertificate.settings.certificateCodeLabel">證書編號前的文字</message>
+	<message key="plugins.generic.reviewerCertificate.myCertificates.notEligibleYet">本期刊在您完成 {$minimum} 次審稿後頒發證書。您目前已完成 {$completed} 次。</message>
+	<message key="plugins.generic.reviewerCertificate.myCertificates.emailThrottled">這張證書在一分鐘內已寄出過。請先檢查您的收件匣，再重新寄送。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.title">已頒發的證書</message>
+	<message key="plugins.generic.reviewerCertificate.manage.open">檢視與管理已頒發的證書</message>
+	<message key="plugins.generic.reviewerCertificate.manage.description">本期刊已頒發 {$total} 張證書。被撤銷的證書會保留紀錄，並在驗證頁顯示為已撤銷。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.search">搜尋</message>
+	<message key="plugins.generic.reviewerCertificate.manage.searchPlaceholder">姓名、電子郵件、帳號或證書編號</message>
+	<message key="plugins.generic.reviewerCertificate.manage.exportCsv">匯出 CSV</message>
+	<message key="plugins.generic.reviewerCertificate.manage.reviewer">審稿人</message>
+	<message key="plugins.generic.reviewerCertificate.manage.reviewCompleted">審稿完成日期</message>
+	<message key="plugins.generic.reviewerCertificate.manage.downloads">下載次數</message>
+	<message key="plugins.generic.reviewerCertificate.manage.status">狀態</message>
+	<message key="plugins.generic.reviewerCertificate.manage.valid">有效</message>
+	<message key="plugins.generic.reviewerCertificate.manage.revoked">已撤銷</message>
+	<message key="plugins.generic.reviewerCertificate.manage.notified">已以電子郵件通知審稿人</message>
+	<message key="plugins.generic.reviewerCertificate.manage.revoke">撤銷</message>
+	<message key="plugins.generic.reviewerCertificate.manage.restore">恢復</message>
+	<message key="plugins.generic.reviewerCertificate.manage.revokePrompt">確定撤銷這張證書？審稿人將無法再下載，驗證頁會顯示為已撤銷。可選填撤銷原因（只有管理者看得到）：</message>
+	<message key="plugins.generic.reviewerCertificate.manage.revokedNotice">證書已撤銷。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.restoredNotice">證書已恢復。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.empty">沒有找到證書。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.pageOf">第 {$page} 頁，共 {$pageCount} 頁</message>
+	<message key="plugins.generic.reviewerCertificate.annual.title">年度與累計證書</message>
+	<message key="plugins.generic.reviewerCertificate.annual.description">一張證書涵蓋您為本期刊完成的審稿，可選擇全部累計或單一年度。</message>
+	<message key="plugins.generic.reviewerCertificate.annual.download">{$year} 年（{$total} 次審稿）</message>
+	<message key="plugins.generic.reviewerCertificate.verify.revoked">證書已撤銷</message>
+	<message key="plugins.generic.reviewerCertificate.verify.revokedDescription">這張證書由本期刊頒發，但已於 {$date} 撤銷，不再有效。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.verifyNameDisplay">驗證頁上的審稿人姓名</message>
+	<message key="plugins.generic.reviewerCertificate.settings.verifyNameDisplay.full">顯示全名</message>
+	<message key="plugins.generic.reviewerCertificate.settings.verifyNameDisplay.initials">只顯示縮寫（J. S. / 王**）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.verifyNameDisplay.hidden">不顯示</message>
+	<message key="plugins.generic.reviewerCertificate.settings.annualBodyTemplate">年度與累計證書</message>
+	<message key="plugins.generic.reviewerCertificate.settings.annualBodyTemplateDescription">審稿人可以在「我的證書」頁面下載。它們使用與單張證書相同的版面、圖片和樣式，正文改用下方文字，沒有證書編號和 QR 碼。額外變數：{{$reviewCount}}（審稿次數）和 {{$reviewYear}}。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.annualBodyTemplateLabel">年度證書正文</message>
+	<message key="plugins.generic.reviewerCertificate.settings.cumulativeBodyTemplate">累計證書正文</message>
+	<message key="plugins.generic.reviewerCertificate.settings.cumulativeBodyTemplateDescription">一張證書列出審稿人為本期刊完成的審稿總次數，類似 Elsevier 的「Recognized Reviewer」證書。{{$reviewPeriod}} 是年份區間，例如 2021–2026。</message>
+	<message key="plugins.generic.reviewerCertificate.annual.cumulative">全部年份（共 {$total} 次審稿）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.outstandingMinReviews">傑出審稿人門檻：近兩年審稿次數（0 = 不啟用）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.outstandingLabel">傑出審稿人的稱號</message>
+	<message key="plugins.generic.reviewerCertificate.settings.recognizedLabel">其他審稿人的稱號</message>
+	<message key="plugins.generic.reviewerCertificate.settings.outstandingDescription">類似 Elsevier 的 Recognized / Outstanding Reviewer。累計證書上的 {{$reviewerStatus}} 在審稿人近兩年為本期刊完成的審稿次數達到門檻時顯示傑出稱號，否則顯示另一個稱號。「我的證書」頁面也會顯示同樣的稱號。</message>
+</locale>
