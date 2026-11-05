@@ -1081,21 +1081,32 @@ class CertificateHandler extends Handler {
 
         $templateMgr = TemplateManager::getManager($request);
 
-        // The certificate settings form is shown in a tab of this page. It
-        // saves to the plugin's component route over AJAX, as in the plugin
-        // settings modal. Render it first: the form assigns its own template
-        // variables, and the page's must not be overwritten by them.
-        $settingsFormHtml = '';
+        // The certificate settings tab loads the plugin's own settings form
+        // (the same route as the plugin settings dialog) after the page is
+        // ready, so the form's scripts run and it saves the same way.
+        $plugin = $this->getPlugin();
+        $settingsUrl = '';
         try {
-            require_once dirname(__DIR__) . '/classes/form/CertificateSettingsForm.php';
-            $settingsForm = new \APP\plugins\generic\reviewerCertificate\classes\form\CertificateSettingsForm($this->getPlugin(), $context->getId());
-            $settingsForm->initData();
-            $templateMgr->assign('rcEmbedded', true);
-            $settingsFormHtml = $settingsForm->fetch($request);
+            $settingsUrl = $request->getDispatcher()->url($request,
+                defined('ROUTE_COMPONENT') ? ROUTE_COMPONENT : 'component', null,
+                'grid.settings.plugins.SettingsPluginGridHandler', 'manage', null,
+                array('verb' => 'settings', 'plugin' => $plugin->getName(), 'category' => 'generic', 'embedded' => 1));
         } catch (\Throwable $e) {
-            error_log('ReviewerCertificate: could not render the settings form: ' . $e->getMessage());
+            error_log('ReviewerCertificate: could not build the settings URL: ' . $e->getMessage());
         }
-        $templateMgr->assign('settingsFormHtml', $settingsFormHtml);
+        $templateMgr->assign('settingsUrl', $settingsUrl);
+
+        // OJS renders backend pages inside its Vue app, which drops <style>
+        // and <script> tags in the page body: load them as backend assets.
+        $assetBase = $request->getBaseUrl() . '/' . $plugin->getPluginPath();
+        $assetDir = dirname(__DIR__);
+        $templateMgr->addStyleSheet('reviewerCertificateManage',
+            $assetBase . '/css/manageCertificates.css?v=' . @filemtime($assetDir . '/css/manageCertificates.css'),
+            array('contexts' => 'backend'));
+        $templateMgr->addJavaScript('reviewerCertificateManage',
+            $assetBase . '/js/manageCertificates.js?v=' . @filemtime($assetDir . '/js/manageCertificates.js'),
+            array('contexts' => 'backend'));
+
         $templateMgr->assign('certificates', $rows);
         $templateMgr->assign('search', $search);
         $templateMgr->assign('page', $page);
@@ -1110,7 +1121,6 @@ class CertificateHandler extends Handler {
 
         // Statistics, batch generation and notifications live on this page
         // so managers do not have to open the plugin settings for them.
-        $plugin = $this->getPlugin();
         $statistics = DAORegistry::getDAO('CertificateDAO')->getStatisticsByContext($context->getId());
         $revokedCount = count($plugin->getRevokedCertificates($context->getId()));
         $templateMgr->assign('statistics', array(

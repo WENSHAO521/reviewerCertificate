@@ -200,6 +200,9 @@ class ReviewerCertificatePlugin extends GenericPlugin {
                     return $this->createJSONMessage((bool) $saved, $form->fetch($request));
                 }
                 $form->initData();
+                // The Certificate Management page loads the form into its
+                // settings tab; there the link to that page is left out.
+                TemplateManager::getManager($request)->assign('rcEmbedded', (bool) $request->getUserVar('embedded'));
                 return $this->createJSONMessage(true, $form->fetch($request));
 
             case 'preview':

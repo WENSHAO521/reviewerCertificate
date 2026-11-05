@@ -23,7 +23,18 @@ test.describe('Issued certificates overview', () => {
     await expect(page.locator('table.certificate-manage-table')).toHaveCount(1);
     // Statistics, batch issuing and notifications moved here from the settings.
     await expect(page.locator('.certificate-statistics')).toHaveCount(1);
-    await expect(page.locator('#generateBatchBtn, .rc-manage__empty').first()).toBeVisible();
+    await expect(page.locator('#rc-panel-tools')).toHaveCount(1);
+  });
+
+  test('tabs show the batch tools and load the settings form', async ({ page }) => {
+    await page.goto('/index.php/testjournal/certificate/manage', { waitUntil: 'load', timeout: 15000 });
+    await expect(page.locator('#rc-panel-tools')).toBeHidden();
+    await page.click('#rc-tab-tools');
+    await expect(page.locator('#generateBatchBtn, #rc-panel-tools .rc-manage__empty').first()).toBeVisible();
+    await page.click('#rc-tab-settings');
+    await expect(page.locator('#rc-panel-settings #certificateSettingsForm')).toBeVisible({ timeout: 15000 });
+    // The link back to this page is only shown in the plugin settings dialog.
+    await expect(page.locator('#rc-panel-settings .rc-manage-panel')).toHaveCount(0);
   });
 
   test('side menu links to Certificate Management below Statistics', async ({ page }) => {
