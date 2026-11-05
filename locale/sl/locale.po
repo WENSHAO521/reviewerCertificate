@@ -78,6 +78,9 @@ msgstr "Besedilo Noge"
 msgid "plugins.generic.reviewerCertificate.settings.footerTextDescription"
 msgstr "Neobvezno besedilo, prikazano na dnu potrdila"
 
+msgid "plugins.generic.reviewerCertificate.settings.previewHint"
+msgstr "The preview uses the last saved settings, so save first."
+
 msgid "plugins.generic.reviewerCertificate.settings.availableVariables"
 msgstr "Razpoložljive Spremenljivke Predloge"
 
@@ -461,9 +464,6 @@ msgstr "Page and colours"
 msgid "plugins.generic.reviewerCertificate.settings.section.pageDescription"
 msgstr "Paper orientation, font and the default text colour."
 
-msgid "plugins.generic.reviewerCertificate.settings.previewHint"
-msgstr "The preview uses the last saved settings, so save first."
-
 msgid "plugins.generic.reviewerCertificate.settings.typography.color"
 msgstr "Colour (#rrggbb)"
 
@@ -571,3 +571,28 @@ msgstr "Acknowledgement email"
 
 msgid "plugins.generic.reviewerCertificate.settings.section.eligibilityDescription"
 msgstr "Who can receive a certificate, and how it is verified."
+
+msgid "plugins.generic.reviewerCertificate.settings.dateFormat"
+msgstr "Date format on the certificate"
+
+msgid "plugins.generic.reviewerCertificate.settings.dateFormat.en"
+msgstr "English (November 5, 2026)"
+
+msgid "plugins.generic.reviewerCertificate.settings.dateFormat.zh"
+msgstr "Chinese (2026年11月5日)"
+
+msgid "plugins.generic.reviewerCertificate.settings.dateFormat.iso"
+msgstr "Numeric (2026-11-05)"
+
+msgid "plugins.generic.reviewerCertificate.settings.dateFormat.locale"
+msgstr "Reviewer's interface language"
+
+msgid "plugins.generic.reviewerCertificate.settings.certificateCodeLabel"
+msgstr "Label before the certificate code"
+
+msgid "plugins.generic.reviewerCertificate.myCertificates.notEligibleYet"
+msgstr "This journal issues certificates once you have completed {$minimum} reviews. You have completed {$completed} so far."
+
+msgid "plugins.generic.reviewerCertificate.myCertificates.emailThrottled"
+msgstr "This certificate was emailed to you less than a minute ago. Please check your inbox before sending it again."
+

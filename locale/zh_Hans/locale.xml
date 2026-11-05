@@ -32,19 +32,19 @@
 
 	<!-- Background Image -->
 	<message key="plugins.generic.reviewerCertificate.settings.backgroundImage">背景图片</message>
-	<message key="plugins.generic.reviewerCertificate.settings.backgroundImageDescription">Fills the whole page behind everything else, e.g. a border or a coloured band. 2970 × 2100 px for A4 landscape, 2100 × 2970 px for portrait.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.backgroundImageDescription">铺满整页、位于所有内容下方，例如边框或色带。A4 横向请用 2970 × 2100 px，纵向请用 2100 × 2970 px。</message>
 	<message key="plugins.generic.reviewerCertificate.settings.currentImage">当前背景图片</message>
-	<message key="plugins.generic.reviewerCertificate.settings.removeBackgroundImage">Remove the background image</message>
-	<message key="plugins.generic.reviewerCertificate.settings.logoImage">Logo</message>
-	<message key="plugins.generic.reviewerCertificate.settings.logoImageDescription">Placed top left unless you set X and Y. A PNG with a transparent background works best.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.coverImage">Journal Cover</message>
-	<message key="plugins.generic.reviewerCertificate.settings.coverImageDescription">Placed top right unless you set X and Y. Swap it here when a new issue comes out.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.sealImage">Seal</message>
-	<message key="plugins.generic.reviewerCertificate.settings.sealImageDescription">Placed bottom right, or just left of the QR code when that is on. Use a transparent PNG for a round seal.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.removeImage">Remove this image</message>
-	<message key="plugins.generic.reviewerCertificate.settings.image.width">Width (mm)</message>
-	<message key="plugins.generic.reviewerCertificate.settings.image.x">X from left (mm, -1 = auto)</message>
-	<message key="plugins.generic.reviewerCertificate.settings.image.y">Y from top (mm, -1 = auto)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.removeBackgroundImage">移除背景图片</message>
+	<message key="plugins.generic.reviewerCertificate.settings.logoImage">标志</message>
+	<message key="plugins.generic.reviewerCertificate.settings.logoImageDescription">未设置 X 与 Y 时放在左上角。建议使用透明背景的 PNG。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.coverImage">期刊封面</message>
+	<message key="plugins.generic.reviewerCertificate.settings.coverImageDescription">未设置 X 与 Y 时放在右上角。新一期出刊时可在此更换。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.sealImage">印章</message>
+	<message key="plugins.generic.reviewerCertificate.settings.sealImageDescription">放在右下角；打开 QR 码时放在 QR 码左侧。圆形印章请使用透明背景的 PNG。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.removeImage">移除这张图片</message>
+	<message key="plugins.generic.reviewerCertificate.settings.image.width">宽度（mm）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.image.x">距左边 X（mm，-1 = 自动）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.image.y">距上方 Y（mm，-1 = 自动）</message>
 
 	<!-- Header Text -->
 	<message key="plugins.generic.reviewerCertificate.settings.headerText">标题文本</message>
@@ -61,60 +61,60 @@
 	<message key="plugins.generic.reviewerCertificate.settings.footerTextDescription">显示在证书底部的可选文本</message>
 
 	<!-- Body Top Offset -->
-	<message key="plugins.generic.reviewerCertificate.settings.bodyTopOffset">Body Top Spacing (mm)</message>
-	<message key="plugins.generic.reviewerCertificate.settings.bodyTopOffsetDescription">Extra blank space in millimetres above the body text. Use this to move the body down the page; blank lines typed at the start of the body template are removed when the form is saved.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography">Typography (Structured Layout)</message>
-	<message key="plugins.generic.reviewerCertificate.settings.layoutMode">Certificate Layout</message>
-	<message key="plugins.generic.reviewerCertificate.settings.layoutModeDescription">Classic renders the body template as one block of text, as in earlier versions. Structured gives each line its own style: a line holding only {{$reviewerName}} (or first/last name) uses the reviewer name style, a line holding only {{$journalName}} uses the journal name style, lines with a date or {{$certificateCode}} use the detail style, and all other lines use the body text style. Blank lines in the template add paragraph spacing. Long names and titles shrink to fit one line, then wrap, and the whole layout scales down if needed to stay on one page.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.classic">Classic</message>
-	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.structured">Structured</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.title">Certificate Title</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.titleDescription">The line starting with #. Suggested 28–46 pt.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.name">Reviewer Name</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.nameDescription">A line holding only {{$reviewerName}}. Suggested 24–26 pt, bold.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.journal">Journal Name</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.journalDescription">A line holding only {{$journalName}}. Suggested 16–20 pt.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.body">Acknowledgement Text</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.bodyDescription">All other lines. Suggested 12–16 pt.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.detail">Review Date and Certificate Code</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.detailDescription">Lines with a date, and the certificate code. Suggested 8–11 pt.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.size">Size (pt)</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.bold">Bold</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.spacing">Spacing (mm)</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.spacingDescription">Paragraph spacing is added for each blank line between body lines. Name spacing is extra space above and below the reviewer name. Side margin narrows the text area so text stays clear of logos in the background image.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.paragraphSpacing">Paragraph spacing (mm)</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.nameSpacing">Name spacing (mm)</message>
-	<message key="plugins.generic.reviewerCertificate.settings.section.layout">Layout and text</message>
-	<message key="plugins.generic.reviewerCertificate.settings.section.layoutDescription">Choose how the certificate is laid out and write what it says.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.classicHint">One block of text, as in earlier versions. Existing certificates keep this look.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.structuredHint">Title, reviewer name, journal and details each get their own style, like a printed award.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.titleLineHint">Start a line with # to make it the certificate title, e.g. "# Certificate of Reviewing". A line with only {{$reviewerName}} uses the name style, a line with only {{$journalName}} the journal style, and lines with a date the small detail style. Lines below a line of three dashes (---) form the footer.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.insertVariable">Insert:</message>
-	<message key="plugins.generic.reviewerCertificate.settings.useRecognitionTemplate">Use recognition-style template</message>
-	<message key="plugins.generic.reviewerCertificate.settings.section.images">Background, logo, cover and seal</message>
-	<message key="plugins.generic.reviewerCertificate.settings.section.imagesDescription">PNG or JPEG, up to 5 MB each. The background fills the page; the other images are placed on top. Leave X and Y empty for the automatic position.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.image.none">Not set</message>
-	<message key="plugins.generic.reviewerCertificate.settings.image.xShort">X (mm)</message>
-	<message key="plugins.generic.reviewerCertificate.settings.image.yShort">Y (mm)</message>
-	<message key="plugins.generic.reviewerCertificate.settings.image.auto">auto</message>
-	<message key="plugins.generic.reviewerCertificate.settings.section.typographyDescription">Size, colour and weight for each part of a structured certificate.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.classicNotice">These controls apply to the structured layout. Choose "Structured" in step 1 to use them.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.element">Element</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.style">Style</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.defaultColor">default</message>
-	<message key="plugins.generic.reviewerCertificate.settings.section.page">Page and colours</message>
-	<message key="plugins.generic.reviewerCertificate.settings.section.pageDescription">Paper orientation, font and the default text colour.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.previewHint">The preview uses the last saved settings, so save first.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.color">Colour (#rrggbb)</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.uppercase">Uppercase</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.footer">Footer</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.footerDescription">Lines below the --- line. Position and distance are set below.</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.footerPosition">Position</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.footerBottomSpacing">Distance from bottom (mm)</message>
-	<message key="plugins.generic.reviewerCertificate.settings.typography.sideMargin">Side margin (mm)</message>
-	<message key="plugins.generic.reviewerCertificate.settings.footerPosition.flow">Below the content</message>
-	<message key="plugins.generic.reviewerCertificate.settings.footerPosition.bottomLeft">Bottom left</message>
-	<message key="plugins.generic.reviewerCertificate.settings.footerPosition.bottomCenter">Bottom centre</message>
+	<message key="plugins.generic.reviewerCertificate.settings.bodyTopOffset">正文上方间距（mm）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.bodyTopOffsetDescription">在正文上方加入的空白（毫米），可用来把正文往下移。正文模板开头输入的空行在保存时会被移除。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography">字体排版（结构化版面）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.layoutMode">证书版面</message>
+	<message key="plugins.generic.reviewerCertificate.settings.layoutModeDescription">「经典」把正文模板当成一整段文本输出，与旧版相同。「结构化」让每一行有自己的样式：只含 {{$reviewerName}}（或名、姓）的行使用审稿人姓名样式，只含 {{$journalName}} 的行使用期刊名称样式，含日期或 {{$certificateCode}} 的行使用细节样式，其余行使用正文样式。模板中的空行会加入段落间距。过长的姓名与标题会先缩小以容纳在一行内，再换行；必要时整个版面会等比例缩小，确保维持在一页内。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.classic">经典</message>
+	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.structured">结构化</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.title">证书标题</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.titleDescription">以 # 开头的那一行。建议 28–46 pt。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.name">审稿人姓名</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.nameDescription">只含 {{$reviewerName}} 的那一行。建议 24–26 pt，粗体。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.journal">期刊名称</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.journalDescription">只含 {{$journalName}} 的那一行。建议 16–20 pt。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.body">感谢文本</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.bodyDescription">其他所有行。建议 12–16 pt。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.detail">审稿日期与证书编号</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.detailDescription">含日期的行，以及证书编号。建议 8–11 pt。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.size">大小（pt）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.bold">粗体</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.spacing">间距（mm）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.spacingDescription">正文行之间每一个空行都会加入段落间距。姓名间距是审稿人姓名上下额外的空白。侧边边界会缩窄文本区域，让文本避开背景图片中的标志。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.paragraphSpacing">段落间距（mm）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.nameSpacing">姓名间距（mm）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.layout">版面与文本</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.layoutDescription">选择证书的版面配置，并撰写证书内容。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.classicHint">一整段文本，与旧版相同。现有证书维持这个外观。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.layoutMode.structuredHint">标题、审稿人姓名、期刊与细节各有自己的样式，像正式印制的奖状。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.titleLineHint">以 # 开头的行会成为证书标题，例如「# 审稿证书」。只含 {{$reviewerName}} 的行使用姓名样式，只含 {{$journalName}} 的行使用期刊样式，含日期的行使用较小的细节样式。三个连字号（---）那一行以下的内容会成为页脚。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.insertVariable">插入：</message>
+	<message key="plugins.generic.reviewerCertificate.settings.useRecognitionTemplate">使用奖状式模板</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.images">背景、标志、封面与印章</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.imagesDescription">PNG 或 JPEG，每张最大 5 MB。背景会铺满整页，其他图片叠在上方。X 与 Y 留空即使用自动位置。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.image.none">未设置</message>
+	<message key="plugins.generic.reviewerCertificate.settings.image.xShort">X（mm）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.image.yShort">Y（mm）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.image.auto">自动</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.typographyDescription">结构化证书中各部分的大小、颜色与粗细。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.classicNotice">这些设置只套用于结构化版面。请在步骤 1 选择「结构化」后使用。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.element">元素</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.style">样式</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.defaultColor">缺省</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.page">页面与颜色</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.pageDescription">纸张方向、字体与缺省文本颜色。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.previewHint">预览使用最后一次保存的设置，请先保存。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.color">颜色（#rrggbb）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.uppercase">全大写</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.footer">页脚</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.footerDescription">--- 那一行以下的内容。位置与距离在下方设置。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.footerPosition">位置</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.footerBottomSpacing">距底部距离（mm）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.typography.sideMargin">侧边边界（mm）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.footerPosition.flow">接在内容下方</message>
+	<message key="plugins.generic.reviewerCertificate.settings.footerPosition.bottomLeft">左下角</message>
+	<message key="plugins.generic.reviewerCertificate.settings.footerPosition.bottomCenter">底部置中</message>
 
 	<!-- Available Variables -->
 	<message key="plugins.generic.reviewerCertificate.settings.availableVariables">可用模板变量</message>
@@ -134,7 +134,7 @@
 	<message key="plugins.generic.reviewerCertificate.settings.pageOrientationDescription">为证书选择纵向或横向布局</message>
 	<message key="plugins.generic.reviewerCertificate.settings.orientation.portrait">纵向</message>
 	<message key="plugins.generic.reviewerCertificate.settings.orientation.landscape">横向</message>
-	<message key="plugins.generic.reviewerCertificate.settings.textColor">Default text colour</message>
+	<message key="plugins.generic.reviewerCertificate.settings.textColor">缺省文本颜色</message>
 	<message key="plugins.generic.reviewerCertificate.settings.textColorDescription">使用RGB值指定文字颜色（每个分量范围0-255）</message>
 
 	<!-- Eligibility settings -->
@@ -215,36 +215,36 @@
 	<message key="plugins.generic.reviewerCertificate.settings.ackEmailBody">致谢邮件正文</message>
 	<message key="plugins.generic.reviewerCertificate.settings.ackEmailDescription">从"我的证书"页面发送给审稿人的信函,并附上证书 PDF。支持与证书正文相同的模板变量,以及 {{$editorName}}。</message>
 	<message key="plugins.generic.reviewerCertificate.emailCertificate.attachmentFallback">无法将证书 PDF 附加到此邮件（可能超过了邮件服务器的大小限制）。您可以在此处下载您的证书：</message>
-	<message key="plugins.generic.reviewerCertificate.emailCertificate.defaultSubject">Acknowledgement of your review for {{$journalName}}</message>
-	<message key="plugins.generic.reviewerCertificate.emailCertificate.defaultBody">Dear {{$reviewerName}},
+	<message key="plugins.generic.reviewerCertificate.emailCertificate.defaultSubject">感谢您为《{{$journalName}}》审稿</message>
+	<message key="plugins.generic.reviewerCertificate.emailCertificate.defaultBody">{{$reviewerName}} 您好：
 
-We are immensely grateful for your efforts and time devoted to reviewing the manuscript entitled "{{$submissionTitle}}" submitted to {{$journalName}}. Your meticulous and insightful evaluation has provided valuable feedback that has helped the authors improve their work and advance their research endeavors.
+衷心感谢您拨冗审阅投稿至《{{$journalName}}》的稿件〈{{$submissionTitle}}〉。您细致而深入的审查意见，帮助作者改进了研究成果，也推动了相关领域的研究。
 
-Your contribution to maintaining the quality of the articles published in our journal is highly appreciated. We understand that reviewing manuscripts is a demanding task, and we acknowledge the effort you put into thoroughly analyzing the submission and providing constructive criticism to the authors.
+您对维护本刊论文品质的贡献，我们深表感谢。我们明白审稿是一项费心费时的工作，也感谢您仔细分析稿件，并为作者提供具建设性的意见。
 
-To show our appreciation for your hard work, we would like to kindly ask you to forward this letter to reviews@webofscience.com. Please note that in accordance with our editorial policy, the content of the review will remain confidential and will not be displayed on Web of Science.
+为表达谢意，敬请将此信转寄至 reviews@webofscience.com。依照本刊编辑政策，审查内容将予以保密，不会显示于 Web of Science。
 
-Your reviewer certificate is attached to this letter.
+您的审稿证书已附于本信。
 
-Once again, we extend our gratitude for your commitment to the advancement of research in your field. We hope to continue collaborating with you in the future.
+再次感谢您对学术研究的投入，期待未来继续与您合作。
 
-Best regards,
+顺颂 研祺
 
 {{$editorName}}
 {{$journalName}}</message>
 
     <!-- English fallback for new reliability controls; translation contributions welcome. -->
-    <message key="plugins.generic.reviewerCertificate.batch.generatedCountLabel">Generated</message>
-    <message key="plugins.generic.reviewerCertificate.batch.skipped">Skipped</message>
-    <message key="plugins.generic.reviewerCertificate.batch.failed">Failed</message>
-    <message key="plugins.generic.reviewerCertificate.notifications.title">Historical certificate notifications</message>
-    <message key="plugins.generic.reviewerCertificate.notifications.description">Explicitly send one availability email per certificate to the selected reviewers. Missing eligible certificates will be created. Certificates issued before notification tracking have unknown delivery history and may already have been announced. Ordinary batch generation does not send email.</message>
-    <message key="plugins.generic.reviewerCertificate.notifications.retry">Retry failed or uncertain deliveries</message>
-    <message key="plugins.generic.reviewerCertificate.notifications.retryWarning">A delivery interrupted for more than ten minutes is uncertain: the recipient may have received it. Retry uncertain deliveries only after checking your mail logs.</message>
-    <message key="plugins.generic.reviewerCertificate.notifications.send">Send certificate notifications</message>
-    <message key="plugins.generic.reviewerCertificate.notifications.sent">Sent</message>
-    <message key="plugins.generic.reviewerCertificate.settings.invalidValue">Enter a valid value.</message>
-    <message key="plugins.generic.reviewerCertificate.settings.saveFailed">Certificate settings could not be saved. Check the fields and image (JPEG or PNG, up to 5 MB), then try again.</message>
+    <message key="plugins.generic.reviewerCertificate.batch.generatedCountLabel">已产生</message>
+    <message key="plugins.generic.reviewerCertificate.batch.skipped">已略过</message>
+    <message key="plugins.generic.reviewerCertificate.batch.failed">失败</message>
+    <message key="plugins.generic.reviewerCertificate.notifications.title">补寄历史证书通知</message>
+    <message key="plugins.generic.reviewerCertificate.notifications.description">为所选审稿人的每张证书明确寄出一封可下载通知。尚未产生的合格证书会一并创建。在通知追踪功能推出前发出的证书，寄送纪录未知，可能已经通知过。一般的批量产生不会寄信。</message>
+    <message key="plugins.generic.reviewerCertificate.notifications.retry">重新寄送失败或状态不明的通知</message>
+    <message key="plugins.generic.reviewerCertificate.notifications.retryWarning">中断超过十分钟的寄送状态不明，收件人可能已经收到。请先检查邮件纪录，再重新寄送状态不明的通知。</message>
+    <message key="plugins.generic.reviewerCertificate.notifications.send">寄出证书通知</message>
+    <message key="plugins.generic.reviewerCertificate.notifications.sent">已寄出</message>
+    <message key="plugins.generic.reviewerCertificate.settings.invalidValue">请输入有效的值。</message>
+    <message key="plugins.generic.reviewerCertificate.settings.saveFailed">证书设置无法保存。请检查字段与图片（JPEG 或 PNG，最大 5 MB）后再试一次。</message>
     <message key="plugins.generic.reviewerCertificate.email.subject">您的证书已准备就绪！</message>
     <message key="plugins.generic.reviewerCertificate.email.body">{{$reviewerName}},
 
@@ -254,6 +254,14 @@ Best regards,
 
 {{$journalName}}
 {{$journalUrl}}</message>
-	<message key="plugins.generic.reviewerCertificate.settings.section.email">Acknowledgement email</message>
-	<message key="plugins.generic.reviewerCertificate.settings.section.eligibilityDescription">Who can receive a certificate, and how it is verified.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.email">感谢信</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.eligibilityDescription">谁可以取得证书，以及证书如何验证。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.dateFormat">证书上的日期格式</message>
+	<message key="plugins.generic.reviewerCertificate.settings.dateFormat.en">英文（November 5, 2026）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.dateFormat.zh">中文（2026年11月5日）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.dateFormat.iso">数字（2026-11-05）</message>
+	<message key="plugins.generic.reviewerCertificate.settings.dateFormat.locale">跟随审稿人的界面语言</message>
+	<message key="plugins.generic.reviewerCertificate.settings.certificateCodeLabel">证书编号前的文字</message>
+	<message key="plugins.generic.reviewerCertificate.myCertificates.notEligibleYet">本期刊在您完成 {$minimum} 次审稿后颁发证书。您目前已完成 {$completed} 次。</message>
+	<message key="plugins.generic.reviewerCertificate.myCertificates.emailThrottled">这张证书在一分钟内已寄出过。请先检查您的收件箱，再重新寄送。</message>
 </locale>

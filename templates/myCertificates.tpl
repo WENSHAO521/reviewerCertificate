@@ -36,6 +36,14 @@
 		</div>
 	{/if}
 
+	{if $certificateEmailThrottled}
+		<div class="pkp_notification">
+			<div class="notifyWarning certificate-email-banner-throttled" role="status">
+				{translate key="plugins.generic.reviewerCertificate.myCertificates.emailThrottled"}
+			</div>
+		</div>
+	{/if}
+
 	<p>{translate key="plugins.generic.reviewerCertificate.myCertificates.description"}</p>
 
 	<div class="pkp_controllers_grid">
@@ -68,7 +76,13 @@
 					</tr>
 				{foreachelse}
 					<tr class="empty no-certificates">
-						<td colspan="4">{translate key="plugins.generic.reviewerCertificate.myCertificates.noCertificates"}</td>
+						<td colspan="4">
+							{if $certificatesPending}
+								{translate key="plugins.generic.reviewerCertificate.myCertificates.notEligibleYet" minimum=$minimumReviews completed=$completedReviews}
+							{else}
+								{translate key="plugins.generic.reviewerCertificate.myCertificates.noCertificates"}
+							{/if}
+						</td>
 					</tr>
 				{/foreach}
 			</tbody>

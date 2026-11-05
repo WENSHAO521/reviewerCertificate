@@ -41,7 +41,7 @@ class CertificateHandler extends Handler {
         if (defined('ROLE_ID_REVIEWER')) {
             $this->addRoleAssignment(
                 array(ROLE_ID_REVIEWER),
-                array('download', 'preview', 'myCertificates', 'emailCertificate')
+                array('download', 'myCertificates', 'emailCertificate')
             );
             $this->addRoleAssignment(
                 array(ROLE_ID_MANAGER, ROLE_ID_SITE_ADMIN),
@@ -50,7 +50,7 @@ class CertificateHandler extends Handler {
         } else {
             $this->addRoleAssignment(
                 array(Role::ROLE_ID_REVIEWER),
-                array('download', 'preview', 'myCertificates', 'emailCertificate')
+                array('download', 'myCertificates', 'emailCertificate')
             );
             $this->addRoleAssignment(
                 array(Role::ROLE_ID_MANAGER, Role::ROLE_ID_SITE_ADMIN),
@@ -240,6 +240,13 @@ class CertificateHandler extends Handler {
         $reviewAssignment = $this->loadAuthorizedReviewAssignment($reviewId, $request, 'email');
         $certificate = $this->getOrCreateCertificate($reviewId, $reviewAssignment, $context);
 
+        // One letter per certificate per minute: a reviewer clicking the
+        // button repeatedly should not burn the journal's SMTP quota.
+        if (!$this->claimEmailSlot($request, (int) $certificate->getCertificateId())) {
+            $request->redirect(null, 'certificate', 'myCertificates', null, array('emailThrottled' => 1));
+            return;
+        }
+
         // Build the PDF and the letter with the same variable engine
         $generator = $this->createConfiguredGenerator($reviewAssignment, $certificate, $context);
         try {
@@ -271,6 +278,40 @@ class CertificateHandler extends Handler {
             null, 'certificate', 'myCertificates', null,
             $sent ? array('emailSent' => 1) : array('emailError' => 1)
         );
+    }
+
+    /** Seconds a reviewer must wait before emailing the same certificate again. */
+    const EMAIL_INTERVAL = 60;
+
+    /**
+     * Rate-limit the email action per certificate using the user's session
+     * (OJS 3.3/3.4 PKP Session, OJS 3.5 Laravel session).
+     * @return bool true when sending is allowed now
+     */
+    private function claimEmailSlot($request, $certificateId) {
+        $key = 'reviewerCertificateEmail' . (int) $certificateId;
+        try {
+            $session = method_exists($request, 'getSession') ? $request->getSession() : null;
+            if (!$session) {
+                return true;
+            }
+            if (method_exists($session, 'getSessionVar')) {
+                $last = (int) $session->getSessionVar($key);
+                if ($last && time() - $last < self::EMAIL_INTERVAL) {
+                    return false;
+                }
+                $session->setSessionVar($key, time());
+            } elseif (method_exists($session, 'get') && method_exists($session, 'put')) {
+                $last = (int) $session->get($key);
+                if ($last && time() - $last < self::EMAIL_INTERVAL) {
+                    return false;
+                }
+                $session->put($key, time());
+            }
+        } catch (\Throwable $e) {
+            // Never block the email because the session is unavailable
+        }
+        return true;
     }
 
     /**
@@ -354,19 +395,6 @@ class CertificateHandler extends Handler {
     }
 
     /**
-     * Preview certificate (for editors/managers)
-     * @param $args array
-     * @param $request Request
-     */
-    public function preview($args, $request) {
-        $context = $request->getContext();
-        $user = $request->getUser();
-
-        // Generate preview with sample data
-        $this->generatePreviewPDF($context);
-    }
-
-    /**
      * Verify certificate
      * @param $args array
      * @param $request Request
@@ -407,7 +435,7 @@ class CertificateHandler extends Handler {
                 // Verify certificate belongs to current journal context
                 if ($certificate) {
                     $context = $request->getContext();
-                    if ($context && (int)$certificate->getContextId() !== (int)$context->getId()) {
+                    if (!$context || (int)$certificate->getContextId() !== (int)$context->getId()) {
                         $certificate = null; // Not from this journal
                     }
                 }
@@ -450,7 +478,7 @@ class CertificateHandler extends Handler {
                                 }
                             }
                         }
-                        $formattedDate = date('F j, Y', strtotime($displayDate));
+                        $formattedDate = $this->formatUiDate($displayDate);
                         $templateMgr->assign('dateIssued', $formattedDate);
                         $templateMgr->assign('journalName', $certContext->getLocalizedName());
                     } else {
@@ -510,6 +538,22 @@ class CertificateHandler extends Handler {
         // Get current locale for title lookup
         $locale = $this->getCurrentLocale();
 
+        // The side-menu entry appears as soon as the reviewer has a completed
+        // review, but certificates used to be created only by the review
+        // completion hook. Issue any that are missing (reviews completed
+        // before the plugin was installed, or a hook that did not run) so the
+        // page is never empty for an eligible reviewer.
+        $completedReviews = 0;
+        $minimumReviews = 1;
+        try {
+            $service = $this->getPlugin()->getCertificateService($context->getId());
+            $service->issueMissing($user->getId());
+            $completedReviews = $service->completedCount($user->getId());
+            $minimumReviews = $service->getMinimum();
+        } catch (\Throwable $e) {
+            error_log('ReviewerCertificate: could not issue missing certificates: ' . $e->getMessage());
+        }
+
         // Query certificates with review completion dates via direct SQL.
         // Pattern 3 (direct SQL for OJS 3.5) + Pattern 5 (context isolation via submissions join).
         // Join review_assignments to get date_completed (the actual review date shown in PDFs),
@@ -544,7 +588,7 @@ class CertificateHandler extends Handler {
                     'certificateId' => $row['certificate_id'],
                     'reviewId' => $row['review_id'],
                     'submissionTitle' => $title,
-                    'dateIssued' => date('F j, Y', strtotime($displayDate)),
+                    'dateIssued' => $this->formatUiDate($displayDate),
                     'downloadUrl' => $request->url(null, 'certificate', 'download', array($row['review_id'])),
                     'emailUrl' => $request->url(null, 'certificate', 'emailCertificate', array($row['review_id'])),
                     'certificateCode' => $row['certificate_code'],
@@ -554,9 +598,14 @@ class CertificateHandler extends Handler {
 
         $templateMgr = TemplateManager::getManager($request);
         $templateMgr->assign('certificates', $certificates);
+        // Explain an empty list when the journal requires more reviews
+        $templateMgr->assign('certificatesPending', !$certificates && $completedReviews > 0 && $completedReviews < $minimumReviews);
+        $templateMgr->assign('completedReviews', $completedReviews);
+        $templateMgr->assign('minimumReviews', $minimumReviews);
         // Result banners after the email action (redirect flags)
         $templateMgr->assign('certificateEmailSent', (bool) $request->getUserVar('emailSent'));
         $templateMgr->assign('certificateEmailError', (bool) $request->getUserVar('emailError'));
+        $templateMgr->assign('certificateEmailThrottled', (bool) $request->getUserVar('emailThrottled'));
 
         // Render inside the OJS backend layout, like the side-menu entry that
         // links here, so the page uses OJS's default styles and colours rather
@@ -588,6 +637,17 @@ class CertificateHandler extends Handler {
                 return $templateMgr->display('file:' . $pluginPath);
             }
         }
+    }
+
+    /**
+     * Format a date in the reader's interface language (My Certificates, verify page).
+     * @param string $date
+     * @return string
+     */
+    private function formatUiDate($date) {
+        require_once dirname(__DIR__) . '/classes/CertificateDateFormatter.php';
+        return \APP\plugins\generic\reviewerCertificate\classes\CertificateDateFormatter::format(
+            $date, 'long', 'locale', $this->getCurrentLocale());
     }
 
     /**
@@ -644,9 +704,11 @@ class CertificateHandler extends Handler {
             $result = $dao->retrieve(
                 'SELECT ps.setting_value, ps.locale FROM publication_settings ps
                  JOIN publications p ON p.publication_id = ps.publication_id
+                 JOIN submissions s ON s.submission_id = p.submission_id
                  WHERE p.submission_id = ? AND ps.setting_name = ?
                  AND ps.setting_value IS NOT NULL AND ps.setting_value != ?
-                 ORDER BY CASE WHEN ps.locale = ? THEN 0 ELSE 1 END, ps.locale
+                 ORDER BY CASE WHEN p.publication_id = s.current_publication_id THEN 0 ELSE 1 END,
+                          CASE WHEN ps.locale = ? THEN 0 ELSE 1 END, p.publication_id DESC, ps.locale
                  LIMIT 1',
                 array((int) $submissionId, 'title', '', $locale)
             );
@@ -739,50 +801,6 @@ class CertificateHandler extends Handler {
         $generator->setTemplateSettings($this->getTemplateSettings($context));
 
         return $generator;
-    }
-
-    /**
-     * Generate preview PDF
-     * @param $context Context
-     */
-    private function generatePreviewPDF($context) {
-        $plugin = $this->getPlugin();
-        require_once(dirname(__FILE__) . '/../classes/CertificateGenerator.php');
-        $generator = new \APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator();
-
-        // Create mock objects for preview
-        $mockReviewAssignment = new \stdClass();
-        $mockReviewAssignment->dateCompleted = date('Y-m-d H:i:s');
-
-        $mockReviewer = new \stdClass();
-        $mockReviewer->fullName = 'Dr. Jane Smith';
-
-        $mockSubmission = new \stdClass();
-        $mockSubmission->title = 'Sample Article Title: A Comprehensive Study';
-
-        // Note: This is a simplified preview. In production, you'd want to create proper mock objects
-        // or modify CertificateGenerator to handle preview mode
-
-        $generator->setContext($context);
-        $generator->setLocale($this->getCurrentLocale());
-        $templateSettings = $this->getTemplateSettings($context);
-        $generator->setTemplateSettings($templateSettings);
-
-        try {
-            $pdfContent = $generator->generatePDF();
-        } catch (\Throwable $e) {
-            error_log('ReviewerCertificate: Preview PDF generation failed: ' . $e->getMessage());
-            http_response_code(500);
-            echo 'An error occurred generating the preview. Please try again later.';
-            exit;
-        }
-
-        header('Content-Type: application/pdf');
-        header('Content-Disposition: inline; filename="certificate_preview.pdf"');
-        header('Content-Length: ' . strlen($pdfContent));
-
-        echo $pdfContent;
-        exit;
     }
 
     /**

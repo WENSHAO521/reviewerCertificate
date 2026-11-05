@@ -308,6 +308,12 @@ class CertificateSettingsForm extends Form {
             'bottomLeft' => __('plugins.generic.reviewerCertificate.settings.footerPosition.bottomLeft'),
             'bottomCenter' => __('plugins.generic.reviewerCertificate.settings.footerPosition.bottomCenter'),
         ));
+        $templateMgr->assign('dateFormatOptions', array(
+            'en' => __('plugins.generic.reviewerCertificate.settings.dateFormat.en'),
+            'zh' => __('plugins.generic.reviewerCertificate.settings.dateFormat.zh'),
+            'iso' => __('plugins.generic.reviewerCertificate.settings.dateFormat.iso'),
+            'locale' => __('plugins.generic.reviewerCertificate.settings.dateFormat.locale'),
+        ));
         $templateMgr->assign('layoutModeOptions', array(
             'classic' => __('plugins.generic.reviewerCertificate.settings.layoutMode.classic'),
             'structured' => __('plugins.generic.reviewerCertificate.settings.layoutMode.structured'),

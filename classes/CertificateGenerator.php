@@ -689,7 +689,7 @@ class CertificateGenerator {
         // Windows-1252 and render non-Latin chars as "??????". DejaVu Sans is the
         // only bundled Unicode font.
         $needsUnicodeFont = false;
-        foreach (array_merge(array_values($variables), [$headerText, $bodyTemplate, $footerText]) as $value) {
+        foreach (array_merge(array_values($variables), [$headerText, $bodyTemplate, $footerText, $this->getCertificateCodeLabel()]) as $value) {
             if ($this->containsNonLatin((string) $value)) {
                 $needsUnicodeFont = true;
                 break;
@@ -707,7 +707,7 @@ class CertificateGenerator {
         // TCPDF's Adobe CJK fonts. These are not embedded (the viewer supplies
         // the glyphs), which keeps the PDF small.
         if ($needsUnicodeFont) {
-            $cjkFont = self::selectCjkFont(array_merge(array_values($variables), [$headerText, $bodyTemplate, $footerText]));
+            $cjkFont = self::selectCjkFont(array_merge(array_values($variables), [$headerText, $bodyTemplate, $footerText, $this->getCertificateCodeLabel()]));
             if ($cjkFont !== null) {
                 $this->effectiveFont = $cjkFont;
             }
@@ -770,7 +770,7 @@ class CertificateGenerator {
         if (($this->certificate || $this->previewMode) && !$this->getTemplateSetting('includeQRCode', false)) {
             $code = $this->previewMode ? 'PREVIEW12345' : $this->certificate->getCertificateCode();
             $pdf->SetFont($this->effectiveFont, '', $codeSize);
-            $pdf->Cell(0, 5, 'Certificate Code: ' . $code, 0, 1, 'C');
+            $pdf->Cell(0, 5, $this->getCertificateCodeLabel() . ' ' . $code, 0, 1, 'C');
         }
     }
 
@@ -828,6 +828,10 @@ class CertificateGenerator {
             'detailColor' => '',
             'footerColor' => '',
             'footerPosition' => 'flow',
+            // Certificate date style: en (November 5, 2026), zh (2026年11月5日),
+            // iso (2026-11-05) or locale (the reader's interface language).
+            'dateFormat' => 'en',
+            'certificateCodeLabel' => 'Certificate Code:',
         );
     }
 
@@ -843,6 +847,17 @@ class CertificateGenerator {
             return $defaults[$key] ?? '';
         }
         $value = trim((string) $value);
+        if ($key === 'dateFormat') {
+            require_once __DIR__ . '/CertificateDateFormatter.php';
+            return in_array($value, CertificateDateFormatter::FORMATS, true) ? $value : 'en';
+        }
+        if ($key === 'certificateCodeLabel') {
+            if ($value === '') {
+                return $defaults[$key];
+            }
+            $value = preg_replace('/[\x00-\x1F\x7F]+/u', ' ', strip_tags($value));
+            return function_exists('mb_substr') ? mb_substr($value, 0, 60, 'UTF-8') : substr($value, 0, 60);
+        }
         if ($key === 'footerPosition') {
             return in_array($value, array('flow', 'bottomLeft', 'bottomCenter'), true) ? $value : 'flow';
         }
@@ -1055,7 +1070,7 @@ class CertificateGenerator {
         }
         if ($code !== null) {
             $y += ($footerText && $footerFlows) ? $paragraphSpacing : $paragraphSpacing * 2;
-            $y += $this->emitStructured($pdf, 'code', 'Certificate Code: ' . $code, $x, $y, $width, $scale, $draw);
+            $y += $this->emitStructured($pdf, 'code', $this->getCertificateCodeLabel() . ' ' . $code, $x, $y, $width, $scale, $draw);
         }
 
         return $y - $startY;
@@ -1246,8 +1261,31 @@ class CertificateGenerator {
         $pdf->SetFont($this->effectiveFont ?: $pdf->getFontFamily(), '', 6.5);
         $paddings = $pdf->getCellPaddings();
         $pdf->setCellPaddings(0, 0, 0, 0);
-        $pdf->Cell($labelWidth, 3, 'Certificate Code: ' . $code, 0, 0, 'R');
+        $pdf->Cell($labelWidth, 3, $this->getCertificateCodeLabel() . ' ' . $code, 0, 0, 'R');
         $pdf->setCellPaddings($paddings['L'], $paddings['T'], $paddings['R'], $paddings['B']);
+    }
+
+    /**
+     * Format a certificate date in the style chosen in the settings
+     * (dateFormat: en, zh, iso, or locale = the reader's interface language).
+     * @param string|null $date
+     * @param string $style long|monthYear
+     * @return string
+     */
+    private function formatDate($date, $style) {
+        require_once __DIR__ . '/CertificateDateFormatter.php';
+        $format = self::sanitizeStructuredStringSetting('dateFormat', $this->getTemplateSetting('dateFormat', 'en'));
+        return CertificateDateFormatter::format($date, $style, $format, $this->getEffectiveLocale());
+    }
+
+    /**
+     * Label printed before the certificate code (configurable, so it can
+     * match the certificate's language).
+     * @return string
+     */
+    private function getCertificateCodeLabel() {
+        $label = self::sanitizeStructuredStringSetting('certificateCodeLabel', $this->getTemplateSetting('certificateCodeLabel', null));
+        return $label;
     }
 
     /**
@@ -1264,11 +1302,11 @@ class CertificateGenerator {
             $variables['reviewerLastName'] = 'Smith';
             $variables['submissionTitle'] = 'Sample Article Title: A Study on Research Methods';
             $variables['submissionId'] = '12345';
-            $variables['reviewDate'] = date('F j, Y');
+            $variables['reviewDate'] = $this->formatDate(null, 'long');
             $variables['reviewYear'] = date('Y');
-            $variables['reviewMonthYear'] = date('F Y');
+            $variables['reviewMonthYear'] = $this->formatDate(null, 'monthYear');
             $variables['certificateCode'] = 'PREVIEW12345';
-            $variables['dateIssued'] = date('F j, Y');
+            $variables['dateIssued'] = $this->formatDate(null, 'long');
 
             if ($this->context) {
                 $variables['journalName'] = $this->getContextName($this->context);
@@ -1337,16 +1375,16 @@ class CertificateGenerator {
             if ($this->reviewAssignment) {
                 $dateCompleted = $this->reviewAssignment->getDateCompleted();
                 if ($dateCompleted) {
-                    $variables['reviewDate'] = date('F j, Y', strtotime($dateCompleted));
+                    $variables['reviewDate'] = $this->formatDate($dateCompleted, 'long');
                     $variables['reviewYear'] = date('Y', strtotime($dateCompleted));
-                    $variables['reviewMonthYear'] = date('F Y', strtotime($dateCompleted));
+                    $variables['reviewMonthYear'] = $this->formatDate($dateCompleted, 'monthYear');
                 }
             }
 
             // Certificate information
             if ($this->certificate) {
                 $variables['certificateCode'] = $this->certificate->getCertificateCode();
-                $variables['dateIssued'] = date('F j, Y', strtotime($this->certificate->getDateIssued()));
+                $variables['dateIssued'] = $this->formatDate($this->certificate->getDateIssued(), 'long');
             }
         }
 
@@ -1355,7 +1393,7 @@ class CertificateGenerator {
         $variables['editorName'] = $this->getContextContactName($this->context);
 
         // Current date (always set)
-        $variables['currentDate'] = date('F j, Y');
+        $variables['currentDate'] = $this->formatDate(null, 'long');
         $variables['currentYear'] = date('Y');
 
         return $variables;

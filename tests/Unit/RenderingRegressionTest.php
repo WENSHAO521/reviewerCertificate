@@ -35,5 +35,22 @@ class RenderingRegressionTest extends TestCase {
         // Font dictionary is uncompressed; this tests the actual generated PDF.
         $this->assertStringContainsString('DejaVuSans', $pdf);
     }
+    public function testChineseDateAndCodeLabelSwitchToCjkFont() {
+        $generator = new CertificateGenerator();
+        $generator->setPreviewMode(true);
+        $generator->setContext(new class {
+            public function getLocalizedName() { return 'Test Journal'; }
+            public function getData($key) { return null; }
+            public function getId() { return 2; }
+            public function getPath() { return 'testjournal'; }
+        });
+        $generator->setTemplateSettings(['fontFamily' => 'helvetica', 'headerText' => 'Certificate',
+            'bodyTemplate' => 'Reviewed on {{$reviewDate}}', 'footerText' => '',
+            'dateFormat' => 'zh', 'certificateCodeLabel' => '證書編號：']);
+        $pdf = $generator->generatePDF();
+        $this->assertStringStartsWith('%PDF-', $pdf);
+        // Han text in the date and label selects a non-embedded Adobe CJK font.
+        $this->assertMatchesRegularExpression('/MSung|STSong/', $pdf);
+    }
     protected function tearDown(): void { unset($_SERVER['REQUEST_URI']); }
 }

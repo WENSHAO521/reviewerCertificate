@@ -30,7 +30,7 @@ class LocaleValidationTest extends PHPUnitTestCase {
         'ko_KR' => 'ko', 'lt_LT' => 'lt', 'nb_NO' => 'nb', 'nl_NL' => 'nl',
         'pl_PL' => 'pl', 'ro_RO' => 'ro', 'ru_RU' => 'ru', 'sk_SK' => 'sk',
         'sl_SI' => 'sl', 'sv_SE' => 'sv', 'tr_TR' => 'tr', 'uk_UA' => 'uk',
-        'zh_CN' => 'zh_Hans',
+        'zh_CN' => 'zh_Hans', 'zh_TW' => 'zh_Hant',
     ];
 
     protected function setUp(): void {

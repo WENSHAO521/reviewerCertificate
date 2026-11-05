@@ -57,9 +57,9 @@ for OJS_VERSION in 3.3 3.4 3.5; do
     LOCALE_NAME="${LOCALE_DIR##*/}"
     if [ "$OJS_VERSION" = '3.3' ]; then
       [[ "$LOCALE_NAME" == *_* ]] || continue
-      [[ "$LOCALE_NAME" != 'zh_Hans' ]] || continue
+      [[ "$LOCALE_NAME" != 'zh_Hans' && "$LOCALE_NAME" != 'zh_Hant' ]] || continue
     else
-      [[ "$LOCALE_NAME" != *_* || "$LOCALE_NAME" = 'pt_BR' || "$LOCALE_NAME" = 'zh_Hans' ]] || continue
+      [[ "$LOCALE_NAME" != *_* || "$LOCALE_NAME" = 'pt_BR' || "$LOCALE_NAME" = 'zh_Hans' || "$LOCALE_NAME" = 'zh_Hant' ]] || continue
     fi
     mkdir -p "$DEST/locale/$LOCALE_NAME"
     cp "$LOCALE_DIR/locale.po" "$LOCALE_DIR/emails.po" "$DEST/locale/$LOCALE_NAME/"

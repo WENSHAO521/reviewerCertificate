@@ -319,7 +319,7 @@ class OJS35CompatibilityTest extends TestCase
         $expectedRoutes = [
             '/certificate/download/',
             '/certificate/verify/',
-            '/certificate/preview',
+            '/certificate/myCertificates',
         ];
 
         foreach ($expectedRoutes as $route) {

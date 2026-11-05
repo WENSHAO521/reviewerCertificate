@@ -591,6 +591,14 @@ The Editors of {{$journalName}}{/literal}{/capture}
 				<input type="number" class="rc-input" name="fontSize" value="{$fontSize|default:12|escape}" min="6" max="72" />
 			</label>
 			<label class="rc-field">
+				<span class="rc-label">{translate key="`$rcKey`dateFormat"}</span>
+				<select class="rc-input" name="dateFormat">
+					{foreach from=$dateFormatOptions key=value item=label}
+						<option value="{$value|escape}" {if $dateFormat == $value}selected{/if}>{$label|escape}</option>
+					{/foreach}
+				</select>
+			</label>
+			<label class="rc-field">
 				<span class="rc-label">{translate key="`$rcKey`bodyTopOffset"}</span>
 				<input type="number" class="rc-input" name="bodyTopOffset" value="{$bodyTopOffset|default:0|escape}" min="0" max="100" />
 			</label>
@@ -616,6 +624,10 @@ The Editors of {{$journalName}}{/literal}{/capture}
 				<span class="rc-label">{translate key="`$rcKey`verification"}</span>
 				<label class="rc-toggle rc-toggle--block"><input type="checkbox" name="includeQRCode" value="1" {if $includeQRCode}checked{/if} /><span>{translate key="`$rcKey`includeQRCode"}</span></label>
 			</div>
+			<label class="rc-field">
+				<span class="rc-label">{translate key="`$rcKey`certificateCodeLabel"}</span>
+				<input type="text" class="rc-input" name="certificateCodeLabel" value="{$certificateCodeLabel|escape}" maxlength="60" />
+			</label>
 		</div>
 	</section>
 

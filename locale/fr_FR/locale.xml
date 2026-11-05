@@ -257,4 +257,12 @@ Télécharger le Certificat: {{$certificateUrl}}
 {{$journalUrl}}</message>
 	<message key="plugins.generic.reviewerCertificate.settings.section.email">Acknowledgement email</message>
 	<message key="plugins.generic.reviewerCertificate.settings.section.eligibilityDescription">Who can receive a certificate, and how it is verified.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.dateFormat">Date format on the certificate</message>
+	<message key="plugins.generic.reviewerCertificate.settings.dateFormat.en">English (November 5, 2026)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.dateFormat.zh">Chinese (2026年11月5日)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.dateFormat.iso">Numeric (2026-11-05)</message>
+	<message key="plugins.generic.reviewerCertificate.settings.dateFormat.locale">Reviewer's interface language</message>
+	<message key="plugins.generic.reviewerCertificate.settings.certificateCodeLabel">Label before the certificate code</message>
+	<message key="plugins.generic.reviewerCertificate.myCertificates.notEligibleYet">This journal issues certificates once you have completed {$minimum} reviews. You have completed {$completed} so far.</message>
+	<message key="plugins.generic.reviewerCertificate.myCertificates.emailThrottled">This certificate was emailed to you less than a minute ago. Please check your inbox before sending it again.</message>
 </locale>

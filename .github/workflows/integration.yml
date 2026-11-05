@@ -44,6 +44,15 @@ jobs:
           done
       - name: Browser security, historical mail, and file permissions
         run: npx playwright test tests/e2e/batch-generation.spec.ts --retries=0
+      - name: Reviewer pages smoke (My Certificates, download, verify)
+        # These would have caught the v1.15.0 HTTP 500 on My Certificates.
+        run: >-
+          npx playwright test
+          tests/e2e/plugin-page-smoke.spec.ts
+          tests/e2e/my-certificates.spec.ts
+          tests/e2e/certificate-download.spec.ts
+          tests/e2e/certificate-verify.spec.ts
+          --retries=1
       - name: JavaScript regression
         run: node tests/javascript/certificate.test.cjs
       - name: Build and verify target-specific release packages

@@ -471,7 +471,10 @@ class ReviewerCertificatePlugin extends GenericPlugin {
                 return false;
             }
             $result = $certificateDao->retrieve(
-                'SELECT * FROM review_assignments WHERE submission_id = ? AND reviewer_id = ?',
+                // Latest round first: with several rounds the page is about the
+                // current one, not round 1.
+                'SELECT * FROM review_assignments WHERE submission_id = ? AND reviewer_id = ?
+                 ORDER BY round DESC, review_id DESC',
                 array((int) $templateVar->getId(), (int) $user->getId())
             );
 
