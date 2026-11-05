@@ -48,10 +48,10 @@ jobs:
         run: node tests/javascript/certificate.test.cjs
       - name: Build and verify target-specific release packages
         run: |
-          bash release.sh 1.14.0
-          php tests/check-release.php 1.14.0
+          bash release.sh 1.15.0
+          php tests/check-release.php 1.15.0
           for target in 3_3 3_4 3_5; do
-            php tests/environment/check-release-pdf.php "reviewerCertificate-1.14.0-$target.tar.gz"
+            php tests/environment/check-release-pdf.php "reviewerCertificate-1.15.0-$target.tar.gz"
           done
       - uses: actions/upload-artifact@v4
         if: always()
