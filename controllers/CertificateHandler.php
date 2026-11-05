@@ -558,14 +558,15 @@ class CertificateHandler extends Handler {
         $templateMgr->assign('certificateEmailSent', (bool) $request->getUserVar('emailSent'));
         $templateMgr->assign('certificateEmailError', (bool) $request->getUserVar('emailError'));
 
-        // Load CSS
+        // Render inside the OJS backend layout, like the side-menu entry that
+        // links here, so the page uses OJS's default styles and colours rather
+        // than the journal's frontend theme. setupBackendPage() loads the
+        // backend assets and side menu on OJS 3.3, 3.4 and 3.5.
+        $templateMgr->assign('pageTitle', __('plugins.generic.reviewerCertificate.myCertificates.title'));
+        $templateMgr->setupBackendPage();
+
         $plugin = $this->getPlugin();
         if ($plugin) {
-            $templateMgr->addStyleSheet(
-                'reviewerCertificateCSS',
-                $request->getBaseUrl() . '/' . $plugin->getPluginPath() . '/css/certificate.css',
-                array('contexts' => 'frontend')
-            );
             return $templateMgr->display($plugin->getTemplateResource('myCertificates.tpl'));
         } else {
             $pluginPath = dirname(__FILE__) . '/../templates/myCertificates.tpl';

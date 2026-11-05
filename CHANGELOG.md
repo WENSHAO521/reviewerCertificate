@@ -5,6 +5,16 @@ All notable changes to the Reviewer Certificate Plugin will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- The My Certificates page now opens inside the OJS backend layout, next to its side-menu entry, and uses only OJS's own table, button and notification styles. It follows OJS's default look and colours whatever the journal's frontend theme does, and the plugin's custom table, button and banner CSS is gone.
+
+### Notes
+
+- Certificate PDFs are not stored on the server. Each download, email and preview builds the PDF in memory and sends it straight away. On OJS 3.3 the email attachment goes through a temporary file that is deleted right after sending. The only files the plugin keeps are the uploaded background, logo, cover and seal images (plus one downscaled copy of a large background).
+
 ## [1.14.0] - 2026-11-02
 
 ### Added
