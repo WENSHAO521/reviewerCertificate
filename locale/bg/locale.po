@@ -713,3 +713,24 @@ msgstr "Title for other reviewers"
 msgid "plugins.generic.reviewerCertificate.settings.outstandingDescription"
 msgstr "Like Elsevier's Recognized and Outstanding Reviewer status. {{$reviewerStatus}} on the cumulative certificate shows the outstanding title when the reviewer completed at least this many reviews for the journal in the last two years, and the other title otherwise. My Certificates shows the same title."
 
+msgid "plugins.generic.reviewerCertificate.manage.menu"
+msgstr "Certificate Management"
+
+msgid "plugins.generic.reviewerCertificate.manage.pageDescription"
+msgstr "Statistics, issued certificates, batch issuing, email notifications and settings for this journal's reviewer certificates, all in one place."
+
+msgid "plugins.generic.reviewerCertificate.manage.settingsNotice"
+msgstr "Statistics, issued certificates, batch issuing, email notifications and these certificate settings are all on the Certificate Management page, listed below Statistics in the side menu."
+
+msgid "plugins.generic.reviewerCertificate.manage.clearSearch"
+msgstr "Clear"
+
+msgid "plugins.generic.reviewerCertificate.manage.tabOverview"
+msgstr "Overview"
+
+msgid "plugins.generic.reviewerCertificate.manage.tabTools"
+msgstr "Batch issuing & notifications"
+
+msgid "plugins.generic.reviewerCertificate.manage.tabSettings"
+msgstr "Certificate settings"
+

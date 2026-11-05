@@ -45,7 +45,7 @@ class CertificateHandler extends Handler {
             );
             $this->addRoleAssignment(
                 array(ROLE_ID_MANAGER, ROLE_ID_SITE_ADMIN),
-                array('manage', 'generateBatch', 'exportCertificates', 'revokeCertificate', 'managerDownload')
+                array('manage', 'generateBatch', 'notifyBatch', 'exportCertificates', 'revokeCertificate', 'managerDownload')
             );
         } else {
             $this->addRoleAssignment(
@@ -54,7 +54,7 @@ class CertificateHandler extends Handler {
             );
             $this->addRoleAssignment(
                 array(Role::ROLE_ID_MANAGER, Role::ROLE_ID_SITE_ADMIN),
-                array('manage', 'generateBatch', 'exportCertificates', 'revokeCertificate', 'managerDownload')
+                array('manage', 'generateBatch', 'notifyBatch', 'exportCertificates', 'revokeCertificate', 'managerDownload')
             );
         }
         // Make verify publicly accessible (no role restriction)
@@ -889,6 +889,16 @@ class CertificateHandler extends Handler {
         return \APP\plugins\generic\reviewerCertificate\classes\BatchAction::run($this->getPlugin(), $request);
     }
 
+    /**
+     * Send certificate notifications in batches (certificate management page)
+     * @param $args array
+     * @param $request Request
+     */
+    public function notifyBatch($args, $request) {
+        require_once dirname(__DIR__) . '/classes/BatchAction.php';
+        return \APP\plugins\generic\reviewerCertificate\classes\BatchAction::run($this->getPlugin(), $request, true);
+    }
+
 
     /**
      * Reviewer name as shown on the public verify page.
@@ -1070,6 +1080,33 @@ class CertificateHandler extends Handler {
         $rows = $this->listContextCertificates($context, $search, ($page - 1) * self::MANAGE_PAGE_SIZE, self::MANAGE_PAGE_SIZE);
 
         $templateMgr = TemplateManager::getManager($request);
+
+        // The certificate settings tab loads the plugin's own settings form
+        // (the same route as the plugin settings dialog) after the page is
+        // ready, so the form's scripts run and it saves the same way.
+        $plugin = $this->getPlugin();
+        $settingsUrl = '';
+        try {
+            $settingsUrl = $request->getDispatcher()->url($request,
+                defined('ROUTE_COMPONENT') ? ROUTE_COMPONENT : 'component', null,
+                'grid.settings.plugins.SettingsPluginGridHandler', 'manage', null,
+                array('verb' => 'settings', 'plugin' => $plugin->getName(), 'category' => 'generic', 'embedded' => 1));
+        } catch (\Throwable $e) {
+            error_log('ReviewerCertificate: could not build the settings URL: ' . $e->getMessage());
+        }
+        $templateMgr->assign('settingsUrl', $settingsUrl);
+
+        // OJS renders backend pages inside its Vue app, which drops <style>
+        // and <script> tags in the page body: load them as backend assets.
+        $assetBase = $request->getBaseUrl() . '/' . $plugin->getPluginPath();
+        $assetDir = dirname(__DIR__);
+        $templateMgr->addStyleSheet('reviewerCertificateManage',
+            $assetBase . '/css/manageCertificates.css?v=' . @filemtime($assetDir . '/css/manageCertificates.css'),
+            array('contexts' => 'backend'));
+        $templateMgr->addJavaScript('reviewerCertificateManage',
+            $assetBase . '/js/manageCertificates.js?v=' . @filemtime($assetDir . '/js/manageCertificates.js'),
+            array('contexts' => 'backend'));
+
         $templateMgr->assign('certificates', $rows);
         $templateMgr->assign('search', $search);
         $templateMgr->assign('page', $page);
@@ -1082,6 +1119,23 @@ class CertificateHandler extends Handler {
         $templateMgr->assign('certificateRevoked', (bool) $request->getUserVar('revoked'));
         $templateMgr->assign('certificateRestored', (bool) $request->getUserVar('restored'));
 
+        // Statistics, batch generation and notifications live on this page
+        // so managers do not have to open the plugin settings for them.
+        $statistics = DAORegistry::getDAO('CertificateDAO')->getStatisticsByContext($context->getId());
+        $revokedCount = count($plugin->getRevokedCertificates($context->getId()));
+        $templateMgr->assign('statistics', array(
+            'total' => (int) $statistics['total'],
+            'valid' => max(0, (int) $statistics['total'] - $revokedCount),
+            'revoked' => $revokedCount,
+            'downloads' => (int) $statistics['downloads'],
+            'reviewers' => (int) $statistics['reviewers'],
+        ));
+        $templateMgr->assign('eligibleReviewers', $plugin->getEligibleReviewers($context->getId()));
+        $templateMgr->assign('notificationReviewers', $plugin->getEligibleReviewers($context->getId(), true));
+        $templateMgr->assign('generateBatchUrl', $request->url(null, 'certificate', 'generateBatch'));
+        $templateMgr->assign('notifyBatchUrl', $request->url(null, 'certificate', 'notifyBatch'));
+        $templateMgr->assign('isFiltered', $search !== '');
+
         $this->setupTemplate($request);
         if (!is_array($templateMgr->getTemplateVars('userRoles'))) {
             $userRolesAssoc = defined('ASSOC_TYPE_USER_ROLES')
@@ -1089,7 +1143,7 @@ class CertificateHandler extends Handler {
                 : \APP\core\Application::ASSOC_TYPE_USER_ROLES;
             $templateMgr->assign('userRoles', (array) $this->getAuthorizedContextObject($userRolesAssoc));
         }
-        $templateMgr->assign('pageTitle', __('plugins.generic.reviewerCertificate.manage.title'));
+        $templateMgr->assign('pageTitle', __('plugins.generic.reviewerCertificate.manage.menu'));
         $templateMgr->setupBackendPage();
         return $templateMgr->display($this->getPlugin()->getTemplateResource('manageCertificates.tpl'));
     }

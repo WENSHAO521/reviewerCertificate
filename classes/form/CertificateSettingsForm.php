@@ -394,92 +394,10 @@ class CertificateSettingsForm extends Form {
             'sealImage' => 'seal',
         ));
 
-        // Statistics
-        $certificateDao = DAORegistry::getDAO('CertificateDAO');
-        if (!$certificateDao) {
-            error_log('ReviewerCertificate: CertificateDAO not registered - statistics unavailable');
-            $templateMgr->assign('totalCertificates', 0);
-            $templateMgr->assign('totalDownloads', 0);
-            $templateMgr->assign('uniqueReviewers', 0);
-        } else {
-            $statistics = $certificateDao->getStatisticsByContext($this->contextId);
-            $templateMgr->assign('totalCertificates', $statistics['total']);
-            $templateMgr->assign('totalDownloads', $statistics['downloads']);
-            $templateMgr->assign('uniqueReviewers', $statistics['reviewers']);
-        }
-
-        // Eligible reviewers for batch generation
-        $eligibleReviewers = $this->getEligibleReviewers();
-        $templateMgr->assign('eligibleReviewers', $eligibleReviewers);
-        $templateMgr->assign('notificationReviewers', $this->getEligibleReviewers(true));
 
         return parent::fetch($request, $template, $display);
     }
 
-    /**
-     * Get eligible reviewers for batch certificate generation
-     * @return array
-     */
-    private function getEligibleReviewers($includeIssued = false) {
-        $certificateDao = DAORegistry::getDAO('CertificateDAO');
-
-        // Check if DAO is available
-        if (!$certificateDao) {
-            error_log('ReviewerCertificate: CertificateDAO not registered - cannot get eligible reviewers');
-            return array();
-        }
-
-        // Use direct database query for OJS 3.4 compatibility
-        // Note: review_id is the primary key in review_assignments table
-        $result = $certificateDao->retrieve(
-            'SELECT DISTINCT ra.reviewer_id,
-                    COUNT(*) as completed_reviews,
-                    SUM(CASE WHEN rc.certificate_id IS NULL THEN 1 ELSE 0 END) as missing_certificates
-             FROM review_assignments ra
-             LEFT JOIN submissions s ON ra.submission_id = s.submission_id
-             LEFT JOIN reviewer_certificates rc ON ra.review_id = rc.review_id
-             WHERE s.context_id = ?
-                   AND ra.date_completed IS NOT NULL
-                   AND COALESCE(ra.declined, 0) = 0 AND COALESCE(ra.cancelled, 0) = 0
-             GROUP BY ra.reviewer_id
-             HAVING (COUNT(*) >= ?' . ($includeIssued ? ' OR COUNT(rc.certificate_id) > 0' : '') . ')
-             ORDER BY completed_reviews DESC
-             LIMIT 100',
-            array((int) $this->contextId, max(1, (int) $this->plugin->getSetting($this->contextId, 'minimumReviews')))
-        );
-
-        $reviewers = array();
-        $count = 0;
-        foreach ($result as $row) {
-            if ($count >= 100) {
-                break;
-            }
-            try {
-                // OJS 3.3 compatibility
-                if (class_exists('APP\facades\Repo')) {
-                    $user = \APP\facades\Repo::user()->get($row->reviewer_id);
-                } else {
-                    $userDao = DAORegistry::getDAO('UserDAO');
-                    $user = $userDao->getById($row->reviewer_id);
-                }
-                if ($user) {
-                    $reviewers[] = array(
-                        'id' => $row->reviewer_id,
-                        'name' => $user->getFullName(),
-                        'completedReviews' => $row->completed_reviews,
-                        'missingCertificates' => $row->missing_certificates
-                    );
-                    $count++;
-                }
-            } catch (Exception $e) {
-                error_log('ReviewerCertificate: Error getting user ' . $row->reviewer_id . ': ' . $e->getMessage());
-                // Skip this reviewer and continue
-                continue;
-            }
-        }
-
-        return $reviewers;
-    }
 
     /**
      * @copydoc Form::execute()

@@ -1,6 +1,6 @@
 # Reviewer Certificate Plugin for OJS
 
-**Version 1.16.0** | [Changelog](CHANGELOG.md) | OJS 3.3 / 3.4 / 3.5
+**Version 1.17.0** | [Changelog](CHANGELOG.md) | OJS 3.3 / 3.4 / 3.5
 
 ## Overview
 
@@ -9,6 +9,11 @@ The Reviewer Certificate Plugin enables reviewers to generate and download perso
 **Changes in v1.15.1**:
 
 - Fixes the My Certificates page failing to open (HTTP 500) in v1.15.0.
+
+**Changes in v1.17.0**:
+
+- New "Certificate Management" entry in the backend side menu, right below Statistics (managers and site admins).
+- One redesigned page in OJS's default style with three tabs: overview (statistics and issued certificates), batch issuing and notifications, and certificate settings.
 
 **Changes in v1.16.0**:
 
@@ -412,7 +417,9 @@ The plugin provides these API endpoints:
 | `GET /certificate/myCertificates` | Browse all my certificates | Reviewer |
 | `GET /certificate/verify/{certificateCode}` | Verify certificate | Public |
 | `GET /certificate/preview` | Preview certificate template | Manager |
+| `GET /certificate/manage` | Certificate Management page (statistics, issued certificates, batch issuing, notifications, settings) | Manager |
 | `POST /certificate/generateBatch` | Generate batch certificates | Manager |
+| `POST /certificate/notifyBatch` | Send certificate notifications in batches | Manager |
 
 ## Security Considerations
 
