@@ -412,7 +412,9 @@ The plugin provides these API endpoints:
 | `GET /certificate/myCertificates` | Browse all my certificates | Reviewer |
 | `GET /certificate/verify/{certificateCode}` | Verify certificate | Public |
 | `GET /certificate/preview` | Preview certificate template | Manager |
+| `GET /certificate/manage` | Certificate Management page (statistics, issued certificates, batch issuing, notifications, settings) | Manager |
 | `POST /certificate/generateBatch` | Generate batch certificates | Manager |
+| `POST /certificate/notifyBatch` | Send certificate notifications in batches | Manager |
 
 ## Security Considerations
 

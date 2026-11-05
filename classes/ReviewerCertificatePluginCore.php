@@ -341,8 +341,10 @@ class ReviewerCertificatePlugin extends GenericPlugin {
     }
 
     /**
-     * Add a "My Certificates" entry to the backend side menu (below Statistics)
-     * for users who have completed at least one review in this journal.
+     * Add the plugin's entries to the backend side menu, right below
+     * Statistics: "My Certificates" for users who have completed at least
+     * one review in this journal, and "Certificate Management" for journal
+     * managers and site administrators.
      */
     public function addMyCertificatesMenuItem($hookName, $params = array()) {
         try {
@@ -359,32 +361,138 @@ class ReviewerCertificatePlugin extends GenericPlugin {
                 return false;
             }
 
-            if (!$this->userHasCompletedReview((int) $user->getId(), (int) $context->getId())) {
-                return false;
-            }
-
             $this->ensurePluginLocaleLoaded();
             $router = $request->getRouter();
-            $item = array(
-                'name' => __('plugins.generic.reviewerCertificate.myCertificates.title'),
-                'url' => $request->url(null, 'certificate', 'myCertificates'),
-                'isCurrent' => $router && method_exists($router, 'getRequestedPage')
-                    && $router->getRequestedPage($request) === 'certificate',
-                // OJS 3.5 side menu icon (ignored by 3.3/3.4)
-                'icon' => 'Download',
-            );
-            // Place it right after Statistics when that entry exists, else at the end.
+            $onCertificatePage = $router && method_exists($router, 'getRequestedPage')
+                && $router->getRequestedPage($request) === 'certificate';
+            $op = $onCertificatePage && method_exists($router, 'getRequestedOp')
+                ? (string) $router->getRequestedOp($request) : '';
+            $items = array();
+
+            if ($this->userHasCompletedReview((int) $user->getId(), (int) $context->getId())) {
+                $items['reviewerCertificates'] = array(
+                    'name' => __('plugins.generic.reviewerCertificate.myCertificates.title'),
+                    'url' => $request->url(null, 'certificate', 'myCertificates'),
+                    'isCurrent' => $onCertificatePage && $op !== 'manage',
+                    // OJS 3.5 side menu icon (ignored by 3.3/3.4)
+                    'icon' => 'Download',
+                );
+                $this->myCertificatesMenuAdded = true;
+            }
+
+            if ($this->userCanManageCertificates($request, $templateMgr)) {
+                $items['reviewerCertificatesManage'] = array(
+                    'name' => __('plugins.generic.reviewerCertificate.manage.menu'),
+                    'url' => $request->url(null, 'certificate', 'manage'),
+                    'isCurrent' => $onCertificatePage && $op === 'manage',
+                    'icon' => 'Catalog',
+                );
+            }
+
+            if (!$items) {
+                return false;
+            }
+            // Place them right after Statistics when that entry exists, else at the end.
             $position = array_search('statistics', array_keys($menu), true);
             $position = $position === false ? count($menu) : $position + 1;
             $menu = array_slice($menu, 0, $position, true)
-                + array('reviewerCertificates' => $item)
+                + $items
                 + array_slice($menu, $position, null, true);
             $templateMgr->setState(array('menu' => $menu));
-            $this->myCertificatesMenuAdded = true;
         } catch (\Throwable $e) {
             error_log('ReviewerCertificate: could not add menu item: ' . $e->getMessage());
         }
         return false;
+    }
+
+    /**
+     * Whether the current user is a journal manager or site administrator.
+     * Reads the same role list the core uses to build the backend menu, so
+     * the entry shows exactly when the core shows the manager entries.
+     */
+    private function userCanManageCertificates($request, $templateMgr) {
+        $roles = null;
+        $router = $request->getRouter();
+        $handler = $router && method_exists($router, 'getHandler') ? $router->getHandler() : null;
+        if ($handler && method_exists($handler, 'getAuthorizedContextObject')) {
+            $assoc = defined('ASSOC_TYPE_USER_ROLES') ? ASSOC_TYPE_USER_ROLES : Application::ASSOC_TYPE_USER_ROLES;
+            $roles = $handler->getAuthorizedContextObject($assoc);
+        }
+        if (!is_array($roles)) {
+            $roles = $templateMgr->getTemplateVars('userRoles');
+        }
+        if (!is_array($roles)) {
+            return false;
+        }
+        $manager = defined('ROLE_ID_MANAGER') ? ROLE_ID_MANAGER : \PKP\security\Role::ROLE_ID_MANAGER;
+        $admin = defined('ROLE_ID_SITE_ADMIN') ? ROLE_ID_SITE_ADMIN : \PKP\security\Role::ROLE_ID_SITE_ADMIN;
+        return in_array($manager, $roles) || in_array($admin, $roles);
+    }
+
+    /**
+     * Reviewers eligible for batch certificate generation (or, with
+     * $includeIssued, for certificate notifications) in a journal
+     * @return array
+     */
+    public function getEligibleReviewers($contextId, $includeIssued = false) {
+        $certificateDao = DAORegistry::getDAO('CertificateDAO');
+
+        // Check if DAO is available
+        if (!$certificateDao) {
+            error_log('ReviewerCertificate: CertificateDAO not registered - cannot get eligible reviewers');
+            return array();
+        }
+
+        // Use direct database query for OJS 3.4 compatibility
+        // Note: review_id is the primary key in review_assignments table
+        $result = $certificateDao->retrieve(
+            'SELECT DISTINCT ra.reviewer_id,
+                    COUNT(*) as completed_reviews,
+                    SUM(CASE WHEN rc.certificate_id IS NULL THEN 1 ELSE 0 END) as missing_certificates
+             FROM review_assignments ra
+             LEFT JOIN submissions s ON ra.submission_id = s.submission_id
+             LEFT JOIN reviewer_certificates rc ON ra.review_id = rc.review_id
+             WHERE s.context_id = ?
+                   AND ra.date_completed IS NOT NULL
+                   AND COALESCE(ra.declined, 0) = 0 AND COALESCE(ra.cancelled, 0) = 0
+             GROUP BY ra.reviewer_id
+             HAVING (COUNT(*) >= ?' . ($includeIssued ? ' OR COUNT(rc.certificate_id) > 0' : '') . ')
+             ORDER BY completed_reviews DESC
+             LIMIT 100',
+            array((int) $contextId, max(1, (int) $this->getSetting($contextId, 'minimumReviews')))
+        );
+
+        $reviewers = array();
+        $count = 0;
+        foreach ($result as $row) {
+            if ($count >= 100) {
+                break;
+            }
+            try {
+                // OJS 3.3 compatibility
+                if (class_exists('APP\facades\Repo')) {
+                    $user = \APP\facades\Repo::user()->get($row->reviewer_id);
+                } else {
+                    $userDao = DAORegistry::getDAO('UserDAO');
+                    $user = $userDao->getById($row->reviewer_id);
+                }
+                if ($user) {
+                    $reviewers[] = array(
+                        'id' => $row->reviewer_id,
+                        'name' => $user->getFullName(),
+                        'completedReviews' => $row->completed_reviews,
+                        'missingCertificates' => $row->missing_certificates
+                    );
+                    $count++;
+                }
+            } catch (Exception $e) {
+                error_log('ReviewerCertificate: Error getting user ' . $row->reviewer_id . ': ' . $e->getMessage());
+                // Skip this reviewer and continue
+                continue;
+            }
+        }
+
+        return $reviewers;
     }
 
     /**

@@ -1,6 +1,5 @@
 <?php
 /** Included by check-postgres.php inside its disposable schema, after issuance. */
-require_once __DIR__ . '/../../classes/form/CertificateSettingsForm.php';
 
 // Execute the production SQL through the real DAO. Capture database rows before
 // user-name hydration, which needs a complete OJS user/settings schema. The full
@@ -14,19 +13,13 @@ $pickerDao = new class extends \APP\plugins\generic\reviewerCertificate\classes\
     }
 };
 \PKP\db\DAORegistry::registerDAO('CertificateDAO', $pickerDao);
-$pickerPlugin = new class {
+// The picker query lives on the plugin (Certificate Management page). Skip the
+// plugin constructor and stub the minimum review setting.
+$pickerPlugin = new class extends \APP\plugins\generic\reviewerCertificate\ReviewerCertificatePlugin {
     public $minimum = 1;
+    public function __construct() {}
     public function getSetting($contextId, $name) { return $this->minimum; }
 };
-$reflection = new ReflectionClass(\APP\plugins\generic\reviewerCertificate\classes\form\CertificateSettingsForm::class);
-$pickerForm = $reflection->newInstanceWithoutConstructor();
-foreach (['plugin' => $pickerPlugin, 'contextId' => 1] as $name => $value) {
-    $property = $reflection->getProperty($name);
-    $property->setAccessible(true);
-    $property->setValue($pickerForm, $value);
-}
-$picker = $reflection->getMethod('getEligibleReviewers');
-$picker->setAccessible(true);
 $db->beginTransaction();
 try {
     $db->table('users')->insert(['user_id' => 4]);
@@ -42,15 +35,15 @@ try {
         $db->table('review_assignments')->insert(array_combine(
             ['review_id', 'submission_id', 'reviewer_id', 'date_completed', 'declined', 'cancelled'], $values));
     }
-    $picker->invoke($pickerForm, false);
+    $pickerPlugin->getEligibleReviewers(1, false);
     check(count($pickerDao->rows) === 1, 'Picker included an ineligible or cross-journal reviewer');
     $row = $pickerDao->rows[0];
     check((int) $row->reviewer_id === 3 && (int) $row->completed_reviews === 2
         && (int) $row->missing_certificates === 1, 'Picker aggregates are incorrect');
     $pickerPlugin->minimum = 3;
-    $picker->invoke($pickerForm, false);
+    $pickerPlugin->getEligibleReviewers(1, false);
     check($pickerDao->rows === [], 'Picker ignored the minimum review count');
-    $picker->invoke($pickerForm, true);
+    $pickerPlugin->getEligibleReviewers(1, true);
     check(count($pickerDao->rows) === 1 && (int) $pickerDao->rows[0]->reviewer_id === 3,
         'Historical picker lost existing certificates after threshold increase');
     echo "PASS: $driver production picker SQL uses portable HAVING and respects eligibility/history (PR #75)\n";

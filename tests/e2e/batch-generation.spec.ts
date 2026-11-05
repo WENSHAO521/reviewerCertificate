@@ -24,7 +24,9 @@ test.describe('Secure certificate batches', () => {
     expect(settings.ok()).toBeTruthy();
     const settingsJson = await settings.json();
     expect(settingsJson.status).toBe(true);
-    expect(settingsJson.content).toContain('notificationReviewers');
+    // The pickers moved from the plugin settings to the Certificate Management page.
+    expect(settingsJson.content).not.toContain('notificationReviewers');
+    expect(settingsJson.content).toContain('rc-manage-link');
     const token = settingsJson.content.match(/name="csrfToken"[^>]*value="([^"]+)"/)?.[1];
     expect(token).toBeTruthy();
     const form = { 'reviewerIds[]': reviewer, csrfToken: token };
@@ -40,8 +42,8 @@ test.describe('Secure certificate batches', () => {
     // Raising the issuance threshold must not hide already-issued certificates
     // from the historical-notification picker or prevent their announcement.
     setPluginSetting(project, 'minimumReviews', '10', 'int');
-    const raised = await (await page.request.get(manage + '&verb=settings')).json();
-    const picker = raised.content.match(/id="notificationReviewers"[\s\S]*?<\/select>/)?.[0] || '';
+    const managePage = await (await page.request.get('/index.php/testjournal/certificate/manage')).text();
+    const picker = managePage.match(/id="notificationReviewers"[\s\S]*?<\/ul>/)?.[0] || '';
     expect(picker).toContain('value="' + reviewer + '"');
 
     const recipient = 'reviewer-' + project + '@test.local';

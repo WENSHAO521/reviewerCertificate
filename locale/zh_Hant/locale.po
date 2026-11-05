@@ -713,3 +713,24 @@ msgstr "其他審稿人的稱號"
 msgid "plugins.generic.reviewerCertificate.settings.outstandingDescription"
 msgstr "類似 Elsevier 的 Recognized / Outstanding Reviewer。累計證書上的 {{$reviewerStatus}} 在審稿人近兩年為本期刊完成的審稿次數達到門檻時顯示傑出稱號，否則顯示另一個稱號。「我的證書」頁面也會顯示同樣的稱號。"
 
+
+msgid "plugins.generic.reviewerCertificate.manage.menu"
+msgstr "證書管理"
+
+msgid "plugins.generic.reviewerCertificate.manage.pageDescription"
+msgstr "本期刊審稿證書的統計、已頒發證書、批次頒發、郵件通知與證書設定，都在這裡管理。"
+
+msgid "plugins.generic.reviewerCertificate.manage.settingsNotice"
+msgstr "統計、已頒發證書、批次頒發、郵件通知與證書設定，現在都集中在「證書管理」頁，可從左側選單「統計」下方進入。"
+
+msgid "plugins.generic.reviewerCertificate.manage.clearSearch"
+msgstr "清除"
+
+msgid "plugins.generic.reviewerCertificate.manage.tabOverview"
+msgstr "總覽"
+
+msgid "plugins.generic.reviewerCertificate.manage.tabTools"
+msgstr "批次頒發與通知"
+
+msgid "plugins.generic.reviewerCertificate.manage.tabSettings"
+msgstr "證書設定"

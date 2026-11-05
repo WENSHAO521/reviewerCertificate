@@ -121,10 +121,6 @@
 .rc-panel .rc-input[multiple] { padding: 6px; }
 .rc-panel .rc-toggle { margin: 10px 0 0; }
 .rc-panel__actions { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
-.rc-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin: 14px 0 0; }
-.rc-stat { background: var(--rc-soft, #f5f7fa); border-radius: 8px; padding: 16px; }
-.rc-stat strong { display: block; font-size: 1.75rem; line-height: 1.1; color: #006798; }
-.rc-stat span { color: #5f6b7a; font-size: .8125rem; }
 
 @media (max-width: 900px) {
 	.rc-image-grid, .pkp_form.rc-settings .rc-image-grid { grid-template-columns: 1fr; }
@@ -343,6 +339,15 @@ in recognition of the review contributed to the journal
 
 ---
 The Editors of {{$journalName}}{/literal}{/capture}
+
+{if !$rcEmbedded}
+<!-- Certificate management lives on its own page (side menu, below Statistics) -->
+<div class="rc-panel rc-manage-panel" style="margin: 0 0 20px;">
+	<h2>{translate key="plugins.generic.reviewerCertificate.manage.menu"}</h2>
+	<p class="description">{translate key="plugins.generic.reviewerCertificate.manage.settingsNotice"}</p>
+	{if $manageCertificatesUrl}<p><a href="{$manageCertificatesUrl|escape}" target="_blank" class="pkp_button rc-manage-link">{translate key="plugins.generic.reviewerCertificate.manage.open"}</a></p>{/if}
+</div>
+{/if}
 
 <form class="pkp_form rc-settings" id="certificateSettingsForm" method="post" action="{url router=$smarty.const.ROUTE_COMPONENT op="manage" category="generic" plugin=$pluginName verb="settings" save=true}" enctype="multipart/form-data" data-layout="{$layoutMode|escape}">
 	{csrf}
@@ -704,118 +709,3 @@ The Editors of {{$journalName}}{/literal}{/capture}
 		{fbvFormButtons hideCancel=true submitText="common.save"}
 	</div>
 </form>
-
-
-<!-- Certificate Statistics -->
-<div class="rc-panel">
-	<h2>{translate key="plugins.generic.reviewerCertificate.statistics.title"}</h2>
-	<p class="description">{translate key="plugins.generic.reviewerCertificate.statistics.description"}</p>
-	{if $manageCertificatesUrl}<p><a href="{$manageCertificatesUrl|escape}" target="_blank" class="pkp_button rc-manage-link">{translate key="plugins.generic.reviewerCertificate.manage.open"}</a></p>{/if}
-	<div class="rc-stats">
-		<div class="rc-stat"><strong>{$totalCertificates|default:0}</strong><span>{translate key="plugins.generic.reviewerCertificate.statistics.totalCertificates"}</span></div>
-		<div class="rc-stat"><strong>{$totalDownloads|default:0}</strong><span>{translate key="plugins.generic.reviewerCertificate.statistics.totalDownloads"}</span></div>
-		<div class="rc-stat"><strong>{$uniqueReviewers|default:0}</strong><span>{translate key="plugins.generic.reviewerCertificate.statistics.uniqueReviewers"}</span></div>
-	</div>
-</div>
-
-<!-- Batch Certificate Generation -->
-<div class="rc-panel">
-	<h2>{translate key="plugins.generic.reviewerCertificate.batch.title"}</h2>
-	<p>{translate key="plugins.generic.reviewerCertificate.batch.description"}</p>
-
-	{if $eligibleReviewers}
-		<form id="batchGenerateForm">
-			<div class="rc-field">
-				<label class="rc-label" for="batchReviewers">{translate key="plugins.generic.reviewerCertificate.batch.selectReviewers"}</label>
-				<select id="batchReviewers" class="rc-input" name="reviewerIds[]" multiple size="8">
-					{foreach from=$eligibleReviewers item=reviewer}
-						<option value="{$reviewer.id|escape}">{$reviewer.name|escape} ({$reviewer.completedReviews|escape} {translate key="plugins.generic.reviewerCertificate.batch.completedReviews"})</option>
-					{/foreach}
-				</select>
-				<p class="rc-hint">{translate key="plugins.generic.reviewerCertificate.batch.selectMultipleHint"}</p>
-			</div>
-			<div class="rc-panel__actions">
-				<button type="button" id="generateBatchBtn" class="pkp_button pkp_button_primary">
-					{translate key="plugins.generic.reviewerCertificate.batch.generate"}
-				</button>
-				<span id="batchProgress" style="display: none;">
-					<span class="pkp_spinner"></span> {translate key="plugins.generic.reviewerCertificate.batch.generating"}
-				</span>
-			</div>
-		</form>
-	{else}
-		<p class="rc-notice">{translate key="plugins.generic.reviewerCertificate.batch.noEligibleReviewers"}</p>
-	{/if}
-
-	<div id="batchResult" style="margin-top: 16px; display: none;"></div>
-</div>
-
-<div class="rc-panel">
-	<h2>{translate key="plugins.generic.reviewerCertificate.notifications.title"}</h2>
-	<p>{translate key="plugins.generic.reviewerCertificate.notifications.description"}</p>
-	<div class="rc-field">
-		<label class="rc-label" for="notificationReviewers">{translate key="plugins.generic.reviewerCertificate.batch.selectReviewers"}</label>
-		<select id="notificationReviewers" class="rc-input" multiple size="6">
-			{foreach from=$notificationReviewers item=reviewer}
-				<option value="{$reviewer.id|escape}">{$reviewer.name|escape}</option>
-			{/foreach}
-		</select>
-		<p class="rc-hint">{translate key="plugins.generic.reviewerCertificate.batch.selectMultipleHint"}</p>
-		<label class="rc-toggle"><input type="checkbox" id="retryNotifications" /> {translate key="plugins.generic.reviewerCertificate.notifications.retry"}</label>
-		<p class="rc-hint">{translate key="plugins.generic.reviewerCertificate.notifications.retryWarning"}</p>
-	</div>
-	<div class="rc-panel__actions">
-		<button type="button" id="notifyBatchBtn" class="pkp_button">{translate key="plugins.generic.reviewerCertificate.notifications.send"}</button>
-	</div>
-	<div id="notificationResult" role="status"></div>
-</div>
-<script>
-$(function() {ldelim}
-    $('#generateBatchBtn, #notifyBatchBtn').on('click', function() {ldelim}
-        var notify = this.id === 'notifyBatchBtn';
-        var resultBox = notify ? '#notificationResult' : '#batchResult';
-        var reviewers = $(notify ? '#notificationReviewers' : '#batchReviewers').val();
-        if (!reviewers || !reviewers.length) {ldelim}
-            alert('{translate key="plugins.generic.reviewerCertificate.batch.noSelection" escape="js"}');
-            return;
-        {rdelim}
-        var totals = {ldelim}generated: 0, skipped: 0, failed: 0, sent: 0{rdelim};
-        var button = $(this).prop('disabled', true);
-        $('#batchProgress').show();
-        function finish() {ldelim} button.prop('disabled', false); $('#batchProgress').hide(); {rdelim}
-        function page(cursor) {ldelim}
-            $.ajax({ldelim}
-                url: notify
-                    ? '{url router=$smarty.const.ROUTE_COMPONENT op="manage" category="generic" plugin=$pluginName verb="notifyBatch" escape=false}'
-                    : '{url router=$smarty.const.ROUTE_COMPONENT op="manage" category="generic" plugin=$pluginName verb="generateBatch" escape=false}',
-                type: 'POST', dataType: 'json',
-                data: {ldelim}reviewerIds: reviewers, cursor: cursor,
-                    retry: $('#retryNotifications').is(':checked') ? '1' : '0',
-                    csrfToken: $('#certificateSettingsForm input[name="csrfToken"]').val(){rdelim}
-            {rdelim}).done(function(response) {ldelim}
-                var result = response.content;
-                if (!result || typeof result.generated !== 'number') {ldelim}
-                    $(resultBox).text('{translate key="plugins.generic.reviewerCertificate.batch.error" escape="js"}').show();
-                    finish(); return;
-                {rdelim}
-                totals.generated += result.generated;
-                totals.skipped += result.skipped;
-                totals.failed += result.failed;
-                totals.sent += result.sent || 0;
-                $(resultBox).text(
-                    '{translate key="plugins.generic.reviewerCertificate.batch.generatedCountLabel" escape="js"}: ' + totals.generated +
-                    ' / {translate key="plugins.generic.reviewerCertificate.batch.skipped" escape="js"}: ' + totals.skipped +
-                    ' / {translate key="plugins.generic.reviewerCertificate.batch.failed" escape="js"}: ' + totals.failed +
-                    (notify ? ' / {translate key="plugins.generic.reviewerCertificate.notifications.sent" escape="js"}: ' + totals.sent : '')
-                ).show().attr('role', 'status');
-                if (result.continuation !== null) {ldelim} page(result.continuation); {rdelim}
-                else {ldelim} finish(); {rdelim}
-            {rdelim}).fail(function() {ldelim}
-                $(resultBox).append(document.createTextNode(' {translate key="plugins.generic.reviewerCertificate.batch.error" escape="js"}')).show();
-                finish();
-            {rdelim});
-        {rdelim}
-        page(0);
-    {rdelim});
-{rdelim});
-</script>

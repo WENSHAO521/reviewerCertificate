@@ -6,7 +6,6 @@ if (class_exists('PKP\\cliTool\\CommandLineTool')) {
 } else { new \CommandLineTool([]); }
 require_once __DIR__ . '/../../classes/CertificateDAO.php';
 require_once __DIR__ . '/../../classes/CertificateService.php';
-require_once __DIR__ . '/../../classes/form/CertificateSettingsForm.php';
 $plugin = new class extends \APP\plugins\generic\reviewerCertificate\ReviewerCertificatePlugin {
     public function getSetting($contextId, $name) { return $name === 'minimumReviews' ? 99999 : parent::getSetting($contextId, $name); }
 };
@@ -18,12 +17,10 @@ $reviewId = $db->table('review_assignments')->where('reviewer_id', $reviewerId)-
 $db->beginTransaction();
 try {
     (new \APP\plugins\generic\reviewerCertificate\classes\CertificateService($dao, $context->getId(), 1))->issue($reviewId, $reviewerId);
-    $form = new \APP\plugins\generic\reviewerCertificate\classes\form\CertificateSettingsForm($plugin, $context->getId());
-    $method = new ReflectionMethod($form, 'getEligibleReviewers');
-    $method->setAccessible(true);
-    $historical = $method->invoke($form, true);
+    // The pickers live on the Certificate Management page; the plugin builds them.
+    $historical = $plugin->getEligibleReviewers($context->getId(), true);
     if (!in_array($reviewerId, array_column($historical, 'id'))) { throw new RuntimeException('Historical certificate hidden by raised threshold'); }
-    $eligible = $method->invoke($form, false);
+    $eligible = $plugin->getEligibleReviewers($context->getId(), false);
     if (in_array($reviewerId, array_column($eligible, 'id'))) { throw new RuntimeException('Raised issuance threshold ignored'); }
     echo "PASS: historical picker preserves issued certificates without relaxing issuance threshold\n";
 } finally { $db->rollBack(); }

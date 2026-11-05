@@ -5,6 +5,15 @@ All notable changes to the Reviewer Certificate Plugin will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Changed
+
+- **Certificate Management page**: journal managers and site administrators get a "Certificate Management" entry in the backend side menu, right below Statistics (and My Certificates). The page brings everything together in three tabs: Overview (statistics plus the issued certificates with search, CSV export, download, revoke and restore), Batch issuing & notifications, and Certificate settings (the same settings form as the plugin settings, saved the same way).
+- The page was redesigned with OJS's own backend styles: statistic cards, a grid panel with the search row, status badges, and checkbox lists with "Select all" instead of multi-select boxes for picking reviewers.
+- The plugin settings dialog no longer shows statistics, batch issuing and notifications; it links to the Certificate Management page instead. The settings form is still available there for compatibility.
+- New page route `POST /certificate/notifyBatch` (manager only, CSRF-checked) for notifications from the Certificate Management page.
+
 ## [1.16.0] - 2026-11-05
 
 ### Added
