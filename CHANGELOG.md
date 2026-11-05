@@ -5,6 +5,31 @@ All notable changes to the Reviewer Certificate Plugin will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.16.0] - 2026-11-05
+
+### Added
+
+- Traditional Chinese interface (`zh_TW` for OJS 3.3, `zh_Hant` for OJS 3.4/3.5). The Simplified Chinese strings that were still in English are translated too.
+- Setting for the date format printed on certificates: English (November 5, 2026, the default and the earlier behaviour), Chinese (2026年11月5日), numeric (2026-11-05), or the reader's interface language.
+- Setting for the label printed before the certificate code (default "Certificate Code:"), so it can match the certificate's language. Chinese text in the label selects a CJK font automatically.
+
+### Fixed
+
+- My Certificates could be empty although its side-menu entry was shown: certificates were only created when a review was submitted. Opening the page now issues certificates for the reviewer's eligible completed reviews that have none (for example reviews completed before the plugin was installed). When the journal's minimum review count is not reached yet, the page says how many reviews are needed.
+- My Certificates and the verify page show dates in the interface language.
+- With several review rounds, the button on the review page linked to the round 1 certificate. It now uses the latest round.
+- The verify page no longer accepts codes outside a journal.
+- The email action sends at most one letter per certificate per minute.
+- The My Certificates list prefers the title of the current publication.
+
+### Removed
+
+- The unused `certificate/preview` page that reviewers could open. The settings page preview is unchanged.
+
+### Internal
+
+- CI now runs the My Certificates, download, verify and page smoke browser tests, which would have caught the v1.15.0 HTTP 500.
+
 ## [1.15.1] - 2026-11-05
 
 ### Fixed

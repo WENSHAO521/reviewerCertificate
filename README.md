@@ -1,6 +1,6 @@
 # Reviewer Certificate Plugin for OJS
 
-**Version 1.15.1** | [Changelog](CHANGELOG.md) | OJS 3.3 / 3.4 / 3.5
+**Version 1.16.0** | [Changelog](CHANGELOG.md) | OJS 3.3 / 3.4 / 3.5
 
 ## Overview
 
@@ -9,6 +9,11 @@ The Reviewer Certificate Plugin enables reviewers to generate and download perso
 **Changes in v1.15.1**:
 
 - Fixes the My Certificates page failing to open (HTTP 500) in v1.15.0.
+
+**Changes in v1.16.0**:
+
+- Traditional Chinese interface, and certificate dates in English, Chinese, numeric or the reader's language.
+- My Certificates issues missing certificates for eligible completed reviews and explains when more reviews are needed.
 
 **Changes in v1.15.0**:
 
