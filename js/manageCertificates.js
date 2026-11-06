@@ -51,6 +51,14 @@
 			if (on && focus) {
 				tab.focus();
 			}
+			// Narrow screens: scroll the tab strip (not the page) to the open tab
+			var strip = tab.parentNode;
+			if (on && strip && strip.scrollWidth > strip.clientWidth) {
+				var left = tab.offsetLeft - strip.offsetLeft;
+				if (left < strip.scrollLeft || left + tab.offsetWidth > strip.scrollLeft + strip.clientWidth - 32) {
+					strip.scrollLeft = Math.max(0, left - 16);
+				}
+			}
 		});
 		if (name === 'settings') {
 			loadSettings();

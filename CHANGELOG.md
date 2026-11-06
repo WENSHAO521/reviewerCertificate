@@ -5,6 +5,24 @@ All notable changes to the Reviewer Certificate Plugin will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.21.0] - 2026-11-06
+
+### Fixed
+
+- **Image cards in the certificate settings.** The "Remove" checkbox of a stored image sat on its own line and its label ran over the "Width (mm)" field. Cause: the Certificate Management page styled its own row checkboxes with the class `rc-check`, which the settings form (loaded into the Settings tab) also used for the remove label, squeezing it to 16 px. The page rule now targets checkboxes only, and the form uses its own `rc-remove` class.
+- Image cards line up: the hint takes the slack, so the stored-file row, upload box and position fields sit at the same height in all three cards, with or without a stored image. Cards switch between three columns and one by the form's own width (it sits beside the OJS side menu), never leaving a lone card in a second row.
+- Settings form on phones no longer scrolls sideways (long image file names kept the cards wider than the screen).
+- Issued certificates on narrow screens: the "select all on this page" box is shown above the cards (it was hidden with the table header), the revocation date and reason get their own line instead of squeezing the e-mail, and dates no longer break in the middle.
+- Overview: dates in the latest-certificates list line up whether the badge says Valid or Revoked.
+- Tabs on narrow screens fade at the edge and scroll to the open tab, so a cut-off tab reads as more to scroll.
+- A full stop after a `{{$variable}}` chip in help texts no longer wraps onto its own line.
+
+### Changed
+
+- **More modern settings form.** Styled file pickers, a pill-shaped "Remove" toggle that turns red and strikes through the stored file name when ticked, a thumbnail of a newly chosen image before saving, a focus ring on the active image card, and a Save bar that stays at the bottom of the window while the long form scrolls.
+- **Public verification page redesigned** in the plugin's palette: a card with a clear valid / revoked / invalid banner and icon, the details as aligned rows, and a code field with the button beside it (stacked on phones). Its styles are now scoped, so the old unscoped `.btn`, `.form-control` and `.form-group` rules no longer leak into the journal theme.
+- The reviewer dashboard notice and download button use the same colours instead of the old purple gradient.
+
 ## [1.20.0] - 2026-11-06
 
 ### Added

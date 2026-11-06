@@ -10,6 +10,11 @@ The Reviewer Certificate Plugin enables reviewers to generate and download perso
 
 - Fixes the My Certificates page failing to open (HTTP 500) in v1.15.0.
 
+**Changes in v1.21.0**:
+
+- Fixes the image cards in the certificate settings: the "Remove" checkbox no longer overlaps the width field, and the cards line up. Fixes several smaller layout issues on narrow screens (settings scrolling sideways, issued-certificate cards, tabs).
+- More modern look for the settings form (file pickers, remove toggle, image preview, Save bar that stays in view) and a redesigned public certificate verification page.
+
 **Changes in v1.20.0**:
 
 - Certificate images (background, logo, cover, seal) can be uploaded as WEBP, which is usually much smaller than PNG or JPEG. The PDF embeds an automatically converted copy, since PDF readers cannot show WEBP.
