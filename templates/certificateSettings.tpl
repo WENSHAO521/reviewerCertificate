@@ -69,20 +69,34 @@
 .rc-chip, .pkp_form.rc-settings .rc-chip { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: .75rem; padding: 3px 8px; border-radius: 999px; border: 1px solid var(--rc-line); background: var(--rc-soft); color: var(--rc-ink); cursor: pointer; }
 .rc-chip:hover, .pkp_form.rc-settings .rc-chip:hover { border-color: var(--rc-accent); color: var(--rc-accent); }
 
-/* Images */
-.rc-image-grid, .pkp_form.rc-settings .rc-image-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
-.rc-image, .pkp_form.rc-settings .rc-image { border: 1px solid var(--rc-line); border-radius: var(--rc-radius); padding: 14px; background: var(--rc-soft); }
+/* Images: each card is a column; the hint takes the slack so the stored
+   file row, the upload box and the position fields line up across cards. */
+.rc-image-grid, .pkp_form.rc-settings .rc-image-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-bottom: 16px; }
+.rc-image, .pkp_form.rc-settings .rc-image { display: flex; flex-direction: column; min-width: 0; border: 1px solid var(--rc-line); border-radius: 10px; padding: 16px; background: var(--rc-soft); transition: border-color .15s, box-shadow .15s; }
+.rc-image:focus-within, .pkp_form.rc-settings .rc-image:focus-within { border-color: #9cc3d8; box-shadow: 0 0 0 3px var(--rc-accent-soft); }
 .rc-image--wide, .pkp_form.rc-settings .rc-image--wide { grid-column: 1 / -1; }
-.rc-image__head, .pkp_form.rc-settings .rc-image__head { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
-.rc-image .rc-hint, .pkp_form.rc-settings .rc-image .rc-hint { margin: 4px 0 10px; }
-.rc-badge, .pkp_form.rc-settings .rc-badge { font-size: .75rem; padding: 2px 8px; border-radius: 999px; background: #e3f4ea; color: #1f6b3b; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.rc-badge--empty, .pkp_form.rc-settings .rc-badge--empty { background: #eceff3; color: var(--rc-muted); }
-.rc-file, .pkp_form.rc-settings .rc-file { display: block; width: 100%; font-size: .8125rem; height: auto; line-height: 1.4; padding: 10px; border: 1.5px dashed #b8c2cd; border-radius: 6px; background: #fff; box-sizing: border-box; cursor: pointer; }
-.rc-file:hover, .pkp_form.rc-settings .rc-file:hover { border-color: var(--rc-accent); }
-.rc-file-chosen, .pkp_form.rc-settings .rc-file-chosen { display: block; margin-top: 6px; font-size: .8rem; color: #1f6b3b; }
-.rc-check, .pkp_form.rc-settings .rc-check { display: block; margin-top: 8px; font-size: .8125rem; }
-.rc-inline, .pkp_form.rc-settings .rc-inline { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
-.rc-inline label, .pkp_form.rc-settings .rc-inline label { flex: 1 1 60px; display: flex; flex-direction: column; gap: 4px; font-size: .75rem; color: var(--rc-muted); }
+.rc-image__title, .pkp_form.rc-settings .rc-image__title { font-size: .9rem; font-weight: 700; }
+.rc-image .rc-hint, .pkp_form.rc-settings .rc-image .rc-hint { flex: 1 0 auto; margin: 4px 0 12px; }
+.rc-image--wide .rc-hint, .pkp_form.rc-settings .rc-image--wide .rc-hint { flex: none; }
+.rc-image__current, .pkp_form.rc-settings .rc-image__current { display: flex; align-items: center; gap: 8px; min-height: 28px; margin-bottom: 8px; min-width: 0; }
+.rc-badge, .pkp_form.rc-settings .rc-badge { display: inline-block; flex: 0 1 auto; min-width: 0; font-size: .75rem; font-weight: 600; line-height: 1.6; padding: 2px 10px; border-radius: 999px; background: #e3f4ea; color: #1f6b3b; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rc-badge--empty, .pkp_form.rc-settings .rc-badge--empty { background: #eceff3; color: var(--rc-muted); font-weight: 400; }
+.rc-remove, .pkp_form.rc-settings .rc-remove { display: inline-flex; flex: none; align-items: center; gap: 6px; margin: 0 0 0 auto; padding: 2px 10px 2px 8px; border: 1px solid var(--rc-line); border-radius: 999px; background: #fff; font-size: .75rem; line-height: 1.6; font-weight: 600; color: var(--rc-muted); white-space: nowrap; cursor: pointer; }
+.rc-remove input, .pkp_form.rc-settings .rc-remove input { width: 14px; height: 14px; margin: 0; accent-color: #b42318; }
+.rc-remove:hover, .pkp_form.rc-settings .rc-remove:hover { border-color: #e3a4a4; color: #b42318; }
+.rc-remove:has(input:checked), .pkp_form.rc-settings .rc-remove:has(input:checked) { border-color: #f5c2bd; background: #fdecea; color: #b42318; }
+.rc-image:has(.rc-remove input:checked) .rc-badge, .pkp_form.rc-settings .rc-image:has(.rc-remove input:checked) .rc-badge { text-decoration: line-through; opacity: .7; }
+.rc-file, .pkp_form.rc-settings .rc-file { display: block; width: 100%; height: auto; margin: 0; font: inherit; font-size: .8125rem; line-height: 1.4; color: var(--rc-muted); padding: 8px; border: 1.5px dashed #b8c2cd; border-radius: 8px; background: #fff; box-sizing: border-box; cursor: pointer; transition: border-color .15s, background-color .15s; }
+.rc-file:hover, .pkp_form.rc-settings .rc-file:hover { border-color: var(--rc-accent); background: #fbfdfe; }
+.rc-file::file-selector-button { margin-right: 10px; padding: 6px 12px; border: 1px solid #c4ccd6; border-radius: 6px; background: var(--rc-soft); font: inherit; font-weight: 600; color: var(--rc-accent); cursor: pointer; }
+.rc-file:hover::file-selector-button { border-color: var(--rc-accent); background: var(--rc-accent-soft); }
+.rc-image__thumb, .pkp_form.rc-settings .rc-image__thumb { flex: none; width: 28px; height: 28px; object-fit: contain; border: 1px solid #9cc3d8; border-radius: 6px; background: #fff repeating-conic-gradient(#eef1f4 0 25%, #fff 0 50%) 0 0 / 8px 8px; }
+.rc-image.has-new .rc-badge:not(.rc-badge--empty), .pkp_form.rc-settings .rc-image.has-new .rc-badge:not(.rc-badge--empty) { text-decoration: line-through; opacity: .7; }
+.rc-image.has-new .rc-badge--empty, .pkp_form.rc-settings .rc-image.has-new .rc-badge--empty { display: none; }
+.rc-inline, .pkp_form.rc-settings .rc-inline { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--rc-line); }
+.rc-inline label, .pkp_form.rc-settings .rc-inline label { display: flex; flex-direction: column; gap: 4px; min-width: 0; margin: 0; font-size: .75rem; font-weight: 600; color: var(--rc-muted); }
+.rc-inline__label, .pkp_form.rc-settings .rc-inline__label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pkp_form.rc-settings .rc-inline .rc-input { height: 36px; padding: 6px 8px; }
 
 /* Typography table */
 .rc-type-table, .pkp_form.rc-settings .rc-type-table { width: 100%; border-collapse: collapse; margin-bottom: 18px; }
@@ -109,14 +123,16 @@
 .rc-switch, .pkp_form.rc-settings .rc-switch { display: flex; align-items: center; gap: 10px; min-height: 38px; padding: 8px 12px; border: 1px solid var(--rc-line); border-radius: 6px; background: var(--rc-soft); font-size: .875rem; cursor: pointer; }
 .rc-switch input, .pkp_form.rc-settings .rc-switch input { flex: none; width: 16px; height: 16px; margin: 0; accent-color: var(--rc-accent); }
 /* Template variables named in help texts */
-.rc-var, .pkp_form.rc-settings .rc-var { display: inline-block; padding: 0 6px; border-radius: 4px; background: var(--rc-soft); border: 1px solid var(--rc-line); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .75rem; line-height: 1.35rem; color: var(--rc-ink); white-space: nowrap; }
+/* inline (not inline-block) so following punctuation stays on the chip's line */
+.rc-var, .pkp_form.rc-settings .rc-var { display: inline; padding: 1px 6px; -webkit-box-decoration-break: clone; box-decoration-break: clone; border-radius: 4px; background: var(--rc-soft); border: 1px solid var(--rc-line); font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .75rem; line-height: 1.35rem; color: var(--rc-ink); white-space: nowrap; }
 .rc-notice, .pkp_form.rc-settings .rc-notice { background: var(--rc-soft); border: 1px dashed var(--rc-line); border-radius: var(--rc-radius); padding: 12px 14px; color: var(--rc-muted); font-size: .875rem; margin: 0 0 16px; }
 
 /* Show only what applies to the chosen layout */
 .rc-settings[data-layout="structured"] .rc-only-classic, .rc-settings:not([data-layout="structured"]) .rc-only-structured { display: none !important; }
 
 /* Save bar */
-.rc-savebar, .pkp_form.rc-settings .rc-savebar { margin-top: 20px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 12px 16px; background: #fff; border: 1px solid var(--rc-line); border-radius: var(--rc-radius); }
+/* Stays in view at the bottom of the window while the long form scrolls */
+.rc-savebar, .pkp_form.rc-settings .rc-savebar { position: sticky; bottom: 12px; z-index: 3; box-shadow: 0 4px 16px rgba(16, 24, 40, .12); margin-top: 20px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 12px 16px; background: #fff; border: 1px solid var(--rc-line); border-radius: var(--rc-radius); }
 .rc-savebar .formButtons, .pkp_form.rc-settings .rc-savebar .formButtons { margin: 0; padding: 0; border: 0; }
 .rc-savebar__status, .pkp_form.rc-settings .rc-savebar__status { margin-left: auto; font-size: .85rem; font-weight: 600; }
 .rc-savebar__status.is-ok, .pkp_form.rc-settings .rc-savebar__status.is-ok { color: #1f6b3b; }
@@ -133,8 +149,18 @@
 .rc-panel .rc-toggle { margin: 10px 0 0; }
 .rc-panel__actions { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
 
+/* The form sits in the management page next to the OJS side menu, so the
+   breakpoints follow the form's own width rather than the window's. */
+.pkp_form.rc-settings { container-type: inline-size; container-name: rcsettings; }
+@container rcsettings (max-width: 46rem) {
+	/* Keep the floating Save bar to one short row */
+	.pkp_form.rc-settings .rc-savebar { gap: 8px 12px; padding: 8px 12px; bottom: 8px; }
+	.pkp_form.rc-settings .rc-savebar__hint { display: none; }
+	.pkp_form.rc-settings .rc-image-grid { grid-template-columns: minmax(0, 1fr); }
+	.pkp_form.rc-settings .rc-image .rc-hint { flex: none; }
+}
 @media (max-width: 900px) {
-	.rc-image-grid, .pkp_form.rc-settings .rc-image-grid { grid-template-columns: 1fr; }
+	.rc-image-grid { grid-template-columns: 1fr; }
 }
 @media (max-width: 640px) {
 	.rc-card, .pkp_form.rc-settings .rc-card { padding: 16px 14px 4px; }
@@ -293,14 +319,21 @@ $(function() {
 
 	// ---- Image files: show the chosen name; uploads need a regular (non-AJAX) POST
 	$form.on('change', imageInputs, function(e) {
-		var file = e.target.files[0], $info = $(this).siblings('.rc-file-chosen');
+		var file = e.target.files[0], $card = $(this).closest('.rc-image'), $current = $card.find('.rc-image__current');
 		if (file && (!file.type.match('image.*') || file.size > 5 * 1024 * 1024)) {
 			alert('Please choose a PNG, JPEG or WEBP image under 5 MB.');
 			$(this).val('');
 			file = null;
 		}
-		if (!$info.length) { $info = $('<span class="rc-file-chosen"></span>').insertAfter(this); }
-		$info.text(file ? file.name : '').toggle(!!file);
+		// Thumbnail of the new image in the stored-file row, so the card keeps
+		// its height and the cards beside it stay lined up
+		var $old = $current.find('.rc-image__thumb');
+		if ($old.length && window.URL) { URL.revokeObjectURL($old.attr('src')); }
+		$old.remove();
+		$card.toggleClass('has-new', !!file);
+		if (file && window.URL && URL.createObjectURL) {
+			$('<img class="rc-image__thumb" alt="">').attr({ src: URL.createObjectURL(file), title: file.name }).prependTo($current);
+		}
 	});
 	// ---- Save: post the whole form (files included) over AJAX and stay on
 	// this page. OJS's AjaxFormHandler cannot send files, and the regular POST
@@ -456,38 +489,43 @@ The Editors of {{$journalName}}{/literal}{/capture}
 
 		<div class="rc-image-grid">
 			<div class="rc-image rc-image--wide">
-				<div class="rc-image__head">
-					<strong>{translate key="`$rcKey`backgroundImage"}</strong>
-					{if $backgroundImage}<span class="rc-badge">{$backgroundImageName|escape}</span>{else}<span class="rc-badge rc-badge--empty">{translate key="`$rcKey`image.none"}</span>{/if}
-				</div>
+				<strong class="rc-image__title">{translate key="`$rcKey`backgroundImage"}</strong>
 				<p class="rc-hint">{translate key="`$rcKey`backgroundImageDescription"}</p>
+				<div class="rc-image__current">
+					{if $backgroundImage}
+						<span class="rc-badge" title="{$backgroundImageName|escape}">{$backgroundImageName|escape}</span>
+						<label class="rc-remove"><input type="checkbox" id="removeBackgroundImage" name="removeBackgroundImage" value="1" /> {translate key="`$rcKey`removeBackgroundImage"}</label>
+					{else}
+						<span class="rc-badge rc-badge--empty">{translate key="`$rcKey`image.none"}</span>
+					{/if}
+				</div>
 				<input type="file" id="backgroundImage" name="backgroundImage" accept="image/png,image/jpeg,image/webp" class="rc-file" />
-				{if $backgroundImage}
-					<label class="rc-check"><input type="checkbox" id="removeBackgroundImage" name="removeBackgroundImage" value="1" /> {translate key="`$rcKey`removeBackgroundImage"}</label>
-				{/if}
 			</div>
 			{foreach from=$overlayImages key=field item=name}
+				{if $field == 'logoImage'}{assign var=rcImage value=$logoImage}{assign var=rcImageName value=$logoImageName}{assign var=removeField value='removeLogoImage'}
+				{elseif $field == 'coverImage'}{assign var=rcImage value=$coverImage}{assign var=rcImageName value=$coverImageName}{assign var=removeField value='removeCoverImage'}
+				{else}{assign var=rcImage value=$sealImage}{assign var=rcImageName value=$sealImageName}{assign var=removeField value='removeSealImage'}{/if}
+				{if $name == 'logo'}{assign var=w value=$logoWidth}{assign var=x value=$logoX}{assign var=y value=$logoY}
+				{elseif $name == 'cover'}{assign var=w value=$coverWidth}{assign var=x value=$coverX}{assign var=y value=$coverY}
+				{else}{assign var=w value=$sealWidth}{assign var=x value=$sealX}{assign var=y value=$sealY}{/if}
 				<div class="rc-image">
-					<div class="rc-image__head">
-						<strong>{translate key="`$rcKey``$field`"}</strong>
-						{if $field == 'logoImage' && $logoImage}<span class="rc-badge">{$logoImageName|escape}</span>
-						{elseif $field == 'coverImage' && $coverImage}<span class="rc-badge">{$coverImageName|escape}</span>
-						{elseif $field == 'sealImage' && $sealImage}<span class="rc-badge">{$sealImageName|escape}</span>
-						{else}<span class="rc-badge rc-badge--empty">{translate key="`$rcKey`image.none"}</span>{/if}
-					</div>
+					<strong class="rc-image__title">{translate key="`$rcKey``$field`"}</strong>
 					<p class="rc-hint">{translate key="`$rcKey``$field`Description"}</p>
+					{* Same height with or without a stored image, so the upload
+					   boxes and position fields line up across the row *}
+					<div class="rc-image__current">
+						{if $rcImage}
+							<span class="rc-badge" title="{$rcImageName|escape}">{$rcImageName|escape}</span>
+							<label class="rc-remove"><input type="checkbox" id="{$removeField}" name="{$removeField}" value="1" /> {translate key="`$rcKey`removeImage"}</label>
+						{else}
+							<span class="rc-badge rc-badge--empty">{translate key="`$rcKey`image.none"}</span>
+						{/if}
+					</div>
 					<input type="file" id="{$field}" name="{$field}" accept="image/png,image/jpeg,image/webp" class="rc-file" />
-					{if ($field == 'logoImage' && $logoImage) || ($field == 'coverImage' && $coverImage) || ($field == 'sealImage' && $sealImage)}
-						{if $field == 'logoImage'}{assign var=removeField value='removeLogoImage'}{elseif $field == 'coverImage'}{assign var=removeField value='removeCoverImage'}{else}{assign var=removeField value='removeSealImage'}{/if}
-						<label class="rc-check"><input type="checkbox" id="{$removeField}" name="{$removeField}" value="1" /> {translate key="`$rcKey`removeImage"}</label>
-					{/if}
-					{if $name == 'logo'}{assign var=w value=$logoWidth}{assign var=x value=$logoX}{assign var=y value=$logoY}
-					{elseif $name == 'cover'}{assign var=w value=$coverWidth}{assign var=x value=$coverX}{assign var=y value=$coverY}
-					{else}{assign var=w value=$sealWidth}{assign var=x value=$sealX}{assign var=y value=$sealY}{/if}
 					<div class="rc-inline">
-						<label>{translate key="`$rcKey`image.width"}<input type="number" class="rc-input rc-input--num" name="{$name}Width" value="{$w|escape}" min="5" max="200" /></label>
-						<label>{translate key="`$rcKey`image.xShort"}<input type="number" class="rc-input rc-input--num" name="{$name}X" value="{if $x >= 0}{$x|escape}{/if}" min="0" max="297" placeholder="{translate key="`$rcKey`image.auto"}" /></label>
-						<label>{translate key="`$rcKey`image.yShort"}<input type="number" class="rc-input rc-input--num" name="{$name}Y" value="{if $y >= 0}{$y|escape}{/if}" min="0" max="297" placeholder="{translate key="`$rcKey`image.auto"}" /></label>
+						<label><span class="rc-inline__label">{translate key="`$rcKey`image.width"}</span><input type="number" class="rc-input rc-input--num" name="{$name}Width" value="{$w|escape}" min="5" max="200" /></label>
+						<label><span class="rc-inline__label">{translate key="`$rcKey`image.xShort"}</span><input type="number" class="rc-input rc-input--num" name="{$name}X" value="{if $x >= 0}{$x|escape}{/if}" min="0" max="297" placeholder="{translate key="`$rcKey`image.auto"}" /></label>
+						<label><span class="rc-inline__label">{translate key="`$rcKey`image.yShort"}</span><input type="number" class="rc-input rc-input--num" name="{$name}Y" value="{if $y >= 0}{$y|escape}{/if}" min="0" max="297" placeholder="{translate key="`$rcKey`image.auto"}" /></label>
 					</div>
 				</div>
 			{/foreach}

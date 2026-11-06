@@ -45,7 +45,7 @@
 
 .rc-manage .rc-manage__tabs { display: flex; gap: 24px; margin: 0 0 24px; border-bottom: 1px solid var(--rc-line); overflow-x: auto; scrollbar-width: none; }
 .rc-manage .rc-manage__tab { flex: none; margin: 0 0 -1px; padding: 12px 0; background: none; border: 0; border-bottom: 3px solid transparent; border-radius: 0; font: inherit; font-weight: 700; color: var(--rc-muted); cursor: pointer; white-space: nowrap; box-shadow: none; }
-.rc-manage .rc-manage__tab:hover { color: var(--rc-ink); }
+.rc-manage .rc-manage__tab:hover { color: var(--rc-ink); border-bottom-color: var(--rc-line); }
 .rc-manage .rc-manage__tab:focus-visible { outline: 2px solid var(--rc-accent); outline-offset: 2px; }
 .rc-manage .rc-manage__tab[aria-selected="true"] { color: var(--rc-accent); border-bottom-color: var(--rc-accent); }
 
@@ -104,7 +104,10 @@
 .rc-manage .rc-bulk__scope { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 4px 12px; padding: 8px 20px; border-top: 1px solid #b9d6e6; background: #f2f8fb; text-align: center; color: var(--rc-ink); }
 .rc-manage .rc-bulk__note { margin: 0; padding: 0 20px 10px; color: var(--rc-muted); font-size: .8125rem; }
 .rc-manage button.rc-link { margin: 0; padding: 0; height: auto; background: none; border: 0; box-shadow: none; font: inherit; font-weight: 600; cursor: pointer; }
-.rc-manage .rc-check { width: 16px; height: 16px; margin: 0; vertical-align: middle; accent-color: var(--rc-accent); cursor: pointer; }
+/* input only: the settings form (loaded into the Settings tab) has its own
+   label.rc-check, which this rule squeezed to 16px so its text overlapped
+   the fields below. */
+.rc-manage input.rc-check { width: 16px; height: 16px; margin: 0; vertical-align: middle; accent-color: var(--rc-accent); cursor: pointer; }
 
 /* ---- Certificates table ------------------------------------------------- */
 .rc-manage .rc-table-wrap { overflow-x: auto; }
@@ -131,6 +134,7 @@
 .rc-manage .rc-name { display: block; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .rc-manage .rc-title { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
 .rc-manage .rc-sub { display: block; margin-top: 2px; font-size: .75rem; line-height: 1.125rem; color: var(--rc-muted); }
+.rc-manage .rc-nowrap { white-space: nowrap; }
 .rc-manage .rc-ellipsis { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .rc-manage .rc-cell-status .rc-sub { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; overflow-wrap: anywhere; }
 .rc-manage .rc-code { padding: 0; background: none; border: 0; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: .75rem; letter-spacing: .02em; color: var(--rc-muted); }
@@ -154,7 +158,7 @@
 .rc-manage .rc-list__main { flex: 1; min-width: 0; }
 .rc-manage .rc-list__date { flex: none; color: var(--rc-muted); font-size: .8125rem; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .rc-manage .rc-list__item.is-revoked .rc-name { color: var(--rc-muted); }
-.rc-manage .rc-list__item .rc-badge { min-width: 4.5em; text-align: center; }
+.rc-manage .rc-list__item .rc-badge { min-width: 6.5em; text-align: center; }
 
 /* ---- Batch tools -------------------------------------------------------- */
 .rc-manage .rc-tools { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; align-items: stretch; }
@@ -217,8 +221,13 @@
 	.rc-manage .rc-stat:nth-child(4) { border-left: 0; }
 	.rc-manage .rc-stat:nth-child(n+4) { border-top: 1px solid var(--rc-line); }
 	.rc-manage .rc-table { min-width: 0; }
-	.rc-manage .rc-table colgroup, .rc-manage .rc-table thead { display: none; }
-	.rc-manage .rc-table, .rc-manage .rc-table tbody { display: block; }
+	.rc-manage .rc-table colgroup { display: none; }
+	.rc-manage .rc-table, .rc-manage .rc-table tbody, .rc-manage .rc-table thead { display: block; }
+	/* Keep the select-all box as a strip above the cards */
+	.rc-manage .rc-table thead tr { display: flex; align-items: center; padding: 10px 20px; background: var(--rc-soft); border-bottom: 1px solid var(--rc-line); }
+	.rc-manage .rc-table thead th { display: none; }
+	.rc-manage .rc-table thead th.rc-cell-check { display: flex; align-items: center; gap: 12px; width: auto; padding: 0; border: 0; font-size: .8125rem; font-weight: 600; color: var(--rc-muted); }
+	.rc-manage .rc-table thead th.rc-cell-check::after { content: attr(data-label); }
 	.rc-manage .rc-table tbody tr { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; gap: 4px 12px; padding: 14px 20px; border-bottom: 1px solid var(--rc-line); }
 	.rc-manage .rc-table .rc-cell-check { grid-column: 1; grid-row: 1 / span 2; width: auto; padding-top: 2px; }
 	.rc-manage .rc-table tbody tr.is-selected { background: #f2f8fb; }
@@ -231,7 +240,13 @@
 	.rc-manage .rc-table .rc-cell-status { grid-column: 3; grid-row: 1; text-align: right; }
 	.rc-manage .rc-table .rc-cell-title { grid-column: 2 / -1; }
 	.rc-manage .rc-table .rc-cell-date, .rc-manage .rc-table td.rc-num { font-size: .75rem; color: var(--rc-muted); }
-	.rc-manage .rc-table .rc-cell-date { grid-column: 2; }
+	.rc-manage .rc-table .rc-cell-date { grid-column: 2; white-space: normal; }
+	/* Revocation date and reason get their own line instead of squeezing the e-mail */
+	.rc-manage .rc-table .rc-cell-status { display: contents; }
+	.rc-manage .rc-table .rc-cell-status > .rc-badge { grid-column: 3; grid-row: 1; justify-self: end; align-self: start; }
+	.rc-manage .rc-table .rc-cell-status > .rc-sub { grid-column: 2 / -1; margin: 0; text-align: left; }
+	.rc-manage .rc-table .is-revoked .rc-cell-status > .rc-sub { color: var(--rc-bad); }
+	.rc-manage .rc-table thead tr:not(:has(input)) { display: none; }
 	.rc-manage .rc-table td.rc-num { grid-column: 3; text-align: right; }
 	.rc-manage .rc-table tbody tr.is-revoked { background: #fcfcfd; }
 	.rc-manage .rc-table tbody tr.is-revoked td, .rc-manage .rc-table tbody tr:hover td { background: none; }
@@ -239,6 +254,10 @@
 	.rc-manage .rc-table .rc-cell-actions { grid-column: 2 / -1; margin-top: 8px; text-align: left; white-space: normal; }
 	.rc-manage .rc-table .rc-cell-actions form { margin-left: 6px; }
 	.rc-manage .rc-table .rc-empty-row { display: block; }
+}
+@container rcmanage (max-width: 40rem) {
+	/* Tabs scroll sideways here; fade the edge so the cut-off tab reads as more */
+	.rc-manage .rc-manage__tabs { gap: 20px; -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent); mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent); padding-right: 24px; }
 }
 @container rcmanage (max-width: 32rem) {
 	.rc-manage .rc-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }

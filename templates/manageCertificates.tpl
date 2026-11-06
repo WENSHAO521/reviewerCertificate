@@ -175,7 +175,7 @@
 					</colgroup>
 					<thead>
 						<tr>
-							<th scope="col" class="rc-cell-check">{if $certificates}<input type="checkbox" class="rc-check rc-check--page" aria-label="{translate key="plugins.generic.reviewerCertificate.manage.selectPage"}" title="{translate key="plugins.generic.reviewerCertificate.manage.selectPage"}" />{/if}</th>
+							<th scope="col" class="rc-cell-check" data-label="{translate key="plugins.generic.reviewerCertificate.manage.selectPage"}">{if $certificates}<input type="checkbox" class="rc-check rc-check--page" aria-label="{translate key="plugins.generic.reviewerCertificate.manage.selectPage"}" title="{translate key="plugins.generic.reviewerCertificate.manage.selectPage"}" />{/if}</th>
 							<th scope="col">{translate key="plugins.generic.reviewerCertificate.manage.reviewer"}</th>
 							<th scope="col">{translate key="plugins.generic.reviewerCertificate.myCertificates.submissionTitle"}</th>
 							<th scope="col">{translate key="plugins.generic.reviewerCertificate.manage.reviewCompleted"}</th>
@@ -196,7 +196,7 @@
 									<span class="rc-title" title="{$cert.submissionTitle|escape}">{$cert.submissionTitle|escape}</span>
 									<span class="rc-sub"><code class="rc-code">{$cert.certificateCode|escape}</code></span>
 								</td>
-								<td class="rc-cell-date" data-label="{translate key="plugins.generic.reviewerCertificate.manage.reviewCompleted"}">{$cert.reviewCompleted|escape}</td>
+								<td class="rc-cell-date" data-label="{translate key="plugins.generic.reviewerCertificate.manage.reviewCompleted"}"><span class="rc-nowrap">{$cert.reviewCompleted|escape}</span></td>
 								<td class="rc-num" data-label="{translate key="plugins.generic.reviewerCertificate.manage.downloads"}">{$cert.downloads|escape}</td>
 								<td class="rc-cell-status">
 									{if $cert.revoked}
