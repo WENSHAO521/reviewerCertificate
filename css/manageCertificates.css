@@ -189,11 +189,19 @@
 
 /* ---- My Certificates (reviewers; same design) -------------------------- */
 .rc-manage.rc-mine { max-width: 64rem; }
-.rc-mine .rc-table { min-width: 36rem; }
-.rc-mine .rc-table .rc-col-date { width: 10rem; }
-.rc-mine .rc-table .rc-col-mine-actions { width: 20rem; }
-.rc-mine .rc-cell-date { color: var(--rc-muted); }
-.rc-mine .rc-cell-actions form { margin-left: 6px; }
+/* My Certificates: no fixed column widths. The button labels differ a lot
+   between locales ("Email me the certificate", "Отправить сертификат на мою
+   электронную почту"), so a fixed actions column let the buttons spill out
+   of the card and gave the table a horizontal scrollbar. The table now
+   sizes the date and action columns to their content and gives the title
+   whatever is left; titles wrap. */
+.rc-mine .rc-table { min-width: 0; table-layout: auto; }
+.rc-mine .rc-table .rc-cell-title { width: 100%; min-width: 12rem; }
+.rc-mine .rc-table .rc-cell-date { width: 1%; color: var(--rc-muted); }
+.rc-mine .rc-table .rc-cell-actions { width: 1%; }
+.rc-mine .rc-title { display: block; -webkit-line-clamp: none; line-clamp: none; overflow: visible; overflow-wrap: break-word; }
+.rc-mine .rc-actions { display: flex; flex-wrap: nowrap; align-items: center; justify-content: flex-end; gap: 8px; }
+.rc-mine .rc-table .rc-cell-actions .rc-actions form { display: flex; margin: 0; }
 .rc-mine .rc-summary__cumulative { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 16px 20px; border-bottom: 1px solid var(--rc-line-soft); }
 .rc-mine .rc-summary__years { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 16px 20px; list-style: none; }
 .rc-mine .rc-summary__years li { margin: 0; }
@@ -243,10 +251,20 @@
 	.rc-manage .rc-box__head { flex-wrap: wrap; }
 	.rc-manage .rc-search { max-width: none; }
 }
+/* Medium: stack the two buttons so the title keeps a readable width. */
+@container rcmanage (max-width: 60rem) {
+	.rc-mine .rc-actions { flex-direction: column; align-items: stretch; gap: 6px; }
+	.rc-mine .rc-actions .rc-btn { flex: 1 1 auto; }
+}
 @container rcmanage (max-width: 52rem) {
 	.rc-mine .rc-table tbody tr { grid-template-columns: minmax(0, 1fr); }
-	.rc-mine .rc-table .rc-cell-title, .rc-mine .rc-table .rc-cell-date, .rc-mine .rc-table .rc-cell-actions { grid-column: 1; grid-row: auto; }
+	.rc-mine .rc-table .rc-cell-title, .rc-mine .rc-table .rc-cell-date, .rc-mine .rc-table .rc-cell-actions { grid-column: 1; grid-row: auto; width: auto; min-width: 0; }
 	.rc-mine .rc-table .rc-cell-date { font-size: .75rem; }
-	.rc-mine .rc-cell-actions .rc-btn { margin-top: 4px; }
-	.rc-mine .rc-cell-actions form { margin-left: 4px; }
+	.rc-mine .rc-table .rc-cell-date::before { content: none; }
+	.rc-mine .rc-actions { flex-direction: row; flex-wrap: wrap; justify-content: flex-start; align-items: center; }
+	.rc-mine .rc-actions .rc-btn { flex: none; }
+}
+@container rcmanage (max-width: 30rem) {
+	.rc-mine .rc-actions { flex-direction: column; align-items: stretch; }
+	.rc-mine .rc-actions .rc-btn { flex: 1 1 auto; height: auto; min-height: 30px; padding-top: 6px; padding-bottom: 6px; line-height: 1.25; white-space: normal; text-align: center; }
 }

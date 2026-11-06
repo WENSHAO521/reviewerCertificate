@@ -5,6 +5,12 @@ All notable changes to the Reviewer Certificate Plugin will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.19.1] - 2026-11-06
+
+### Fixed
+
+- **My Certificates table overflowing its card.** The actions column had a fixed width that the two buttons ("Download Certificate", "Email me the certificate", and longer in some languages) did not fit, so the table scrolled sideways: titles and codes were cut off on the left, the buttons ran past the right edge and the row lines stopped short. The table now sizes the date and button columns to their content and gives the title the rest, with full titles wrapping instead of being clamped. On medium widths the two buttons stack; below that each certificate becomes a card with the buttons in a row, and full-width (labels may wrap) on phones. The stray ": " before the date in card view is gone.
+
 ## [1.19.0] - 2026-11-06
 
 ### Added
