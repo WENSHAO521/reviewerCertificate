@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Overview: dates in the latest-certificates list line up whether the badge says Valid or Revoked.
 - Tabs on narrow screens fade at the edge and scroll to the open tab, so a cut-off tab reads as more to scroll.
 - A full stop after a `{{$variable}}` chip in help texts no longer wraps onto its own line.
+- Verification page: a code that is not a certificate code at all (wrong characters or length, e.g. `/certificate/verify/FAKE-CODE`) now shows "Certificate Invalid" above the form instead of an empty form, as if nothing had been entered.
 
 ### Changed
 

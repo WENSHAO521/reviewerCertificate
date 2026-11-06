@@ -51,6 +51,15 @@
 				{/if}
 			{else}
 				{* Manual verification form *}
+				{if $malformedCode}
+					<div class="certificate-verify-result error rc-verify__result rc-verify__result--bad rc-verify__result--spaced" role="alert">
+						<span class="rc-verify__icon" aria-hidden="true"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M7 7l10 10M17 7L7 17"/></svg></span>
+						<div>
+							<h2>{translate key="plugins.generic.reviewerCertificate.verify.invalid"}</h2>
+							<p>{translate key="plugins.generic.reviewerCertificate.verify.invalidDescription"}</p>
+						</div>
+					</div>
+				{/if}
 				<div class="certificate-verify-form">
 					<p class="rc-verify__intro">{translate key="plugins.generic.reviewerCertificate.verify.description"}</p>
 					<form method="get" action="{url page="certificate" op="verify"}">
@@ -79,6 +88,7 @@
 .rc-verify .rc-verify__result p { margin: .35rem 0 0; line-height: 1.5; }
 .rc-verify .rc-verify__result--ok { background: #e9f6ee; border-color: #b7e0c5; color: #1f6b3b; }
 .rc-verify .rc-verify__result--bad { background: #fdecea; border-color: #f5c2bd; color: #8a1f1f; }
+.rc-verify .rc-verify__result--spaced { margin-bottom: 1.25rem; }
 .rc-verify .rc-verify__icon { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; background: currentColor; }
 .rc-verify .rc-verify__icon svg { stroke: #fff; }
 .rc-verify .rc-verify__details { margin: 1.25rem 0 0; padding: 0; }

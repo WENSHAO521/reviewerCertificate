@@ -426,6 +426,11 @@ class CertificateHandler extends Handler {
 
         $templateMgr = TemplateManager::getManager($request);
         $templateMgr->assign('certificateCode', $certificateCode);
+        // A code was entered but is not a certificate code at all (wrong
+        // characters or length): say so above the form instead of showing
+        // the empty form as if nothing had been entered.
+        $rawCode = $args[0] ?? $request->getUserVar('code');
+        $templateMgr->assign('malformedCode', !$certificateCode && is_string($rawCode) && trim($rawCode) !== '');
 
         if ($certificateCode) {
             // Lookup certificate
