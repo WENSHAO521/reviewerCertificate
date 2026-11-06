@@ -117,6 +117,22 @@ test.describe('My Certificates Page', () => {
       if (hasTable) {
         console.log('Certificate table found on My Certificates page');
         expect(hasDownloadLink).toBeTruthy();
+
+        // The table must fit its card: no horizontal scrolling and no
+        // button past the card's right edge (v1.19.0 regression).
+        const layout = await page.evaluate(() => {
+          const wrap = document.querySelector('.rc-mine .rc-table-wrap');
+          const box = document.querySelector('.rc-mine .rc-table-wrap')?.closest('.rc-box');
+          if (!wrap || !box) return null;
+          const right = box.getBoundingClientRect().right;
+          const outside = Array.from(wrap.querySelectorAll('.rc-btn'))
+            .filter((b) => b.getBoundingClientRect().right > right + 1).length;
+          return { overflow: wrap.scrollWidth - wrap.clientWidth, outside };
+        });
+        if (layout) {
+          expect(layout.overflow).toBeLessThanOrEqual(1);
+          expect(layout.outside).toBe(0);
+        }
       } else {
         // Page loaded but maybe different template structure
         expect(bodyText).toBeTruthy();

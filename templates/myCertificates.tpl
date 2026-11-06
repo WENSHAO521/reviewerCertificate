@@ -62,7 +62,6 @@
 			</div>
 			<div class="rc-table-wrap">
 			<table class="rc-table certificate-list-table">
-				<colgroup><col /><col class="rc-col-date" /><col class="rc-col-mine-actions" /></colgroup>
 				<thead>
 					<tr>
 						<th scope="col">{translate key="plugins.generic.reviewerCertificate.myCertificates.submissionTitle"}</th>
@@ -82,11 +81,13 @@
 								{if $cert.revoked}
 									<span class="rc-badge rc-badge--bad certificate-revoked">{translate key="plugins.generic.reviewerCertificate.manage.revoked"}</span>
 								{else}
-									<a href="{$cert.downloadUrl|escape}" class="rc-btn rc-btn--sm rc-btn--primary certificate-download-btn">{translate key="plugins.generic.reviewerCertificate.downloadCertificate"}</a>
-									<form class="certificate-email-form" method="post" action="{$cert.emailUrl|escape}">
-										{csrf}
-										<button type="submit" class="rc-btn rc-btn--sm certificate-email-btn">{translate key="plugins.generic.reviewerCertificate.myCertificates.emailAction"}</button>
-									</form>
+									<div class="rc-actions">
+										<a href="{$cert.downloadUrl|escape}" class="rc-btn rc-btn--sm rc-btn--primary certificate-download-btn">{translate key="plugins.generic.reviewerCertificate.downloadCertificate"}</a>
+										<form class="certificate-email-form" method="post" action="{$cert.emailUrl|escape}">
+											{csrf}
+											<button type="submit" class="rc-btn rc-btn--sm certificate-email-btn">{translate key="plugins.generic.reviewerCertificate.myCertificates.emailAction"}</button>
+										</form>
+									</div>
 								{/if}
 							</td>
 						</tr>

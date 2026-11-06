@@ -1,6 +1,6 @@
 # Reviewer Certificate Plugin for OJS
 
-**Version 1.18.0** | [Changelog](CHANGELOG.md) | OJS 3.3 / 3.4 / 3.5
+**Version 1.19.1** | [Changelog](CHANGELOG.md) | OJS 3.3 / 3.4 / 3.5
 
 ## Overview
 
@@ -9,6 +9,10 @@ The Reviewer Certificate Plugin enables reviewers to generate and download perso
 **Changes in v1.15.1**:
 
 - Fixes the My Certificates page failing to open (HTTP 500) in v1.15.0.
+
+**Changes in v1.19.1**:
+
+- My Certificates: the review certificates table fits its card again. No horizontal scrollbar or cut-off titles; titles wrap in full, the buttons stay aligned (stacked on medium widths, full-width cards on phones), whatever the button label length in the interface language.
 
 **Changes in v1.19.0**:
 
