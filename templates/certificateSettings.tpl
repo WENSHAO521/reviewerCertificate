@@ -366,9 +366,6 @@ in recognition of the review contributed to the journal
 ---
 The Editors of {{$journalName}}{/literal}{/capture}
 
-</div>
-{/if}
-
 <form class="pkp_form rc-settings" id="certificateSettingsForm" method="post" action="{url router=$smarty.const.ROUTE_COMPONENT op="manage" category="generic" plugin=$pluginName verb="settings" save=true}" enctype="multipart/form-data" data-layout="{$layoutMode|escape}">
 	{csrf}
 	{include file="controllers/notification/inPlaceNotification.tpl" notificationId="certificateSettingsFormNotification"}
