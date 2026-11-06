@@ -5,6 +5,19 @@ All notable changes to the Reviewer Certificate Plugin will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.19.0] - 2026-11-06
+
+### Added
+
+- **Issued certificates tab with multi-select** on the Certificate Management page. Tick single certificates, or every certificate on the page from the header box; when a list spans several pages, "Select all N matching certificates" extends the selection to everything that matches the search and the new status filter (all / valid / revoked). The batch bar then downloads the selected certificates as one ZIP of PDFs (built on demand, at most 200 per download, temporary file deleted after sending; needs PHP ext-zip), exports them as CSV, or revokes (with one optional reason) or restores them in one step. New page route `POST /certificate/bulkCertificates` (manager only, CSRF-checked; posted IDs are limited to the journal's own certificates).
+- The Overview tab keeps the statistics and lists the five latest certificates with a link to the full list.
+
+### Changed
+
+- **My Certificates** (reviewers) now uses the same design as Certificate Management: a card for the annual and cumulative certificates with the reviewer status badge, and a certificate table that turns into cards on narrow screens.
+- **Plugin list keeps only the on/off switch**: the plugin no longer adds a Settings link there, because statistics, certificates, batch tools and settings all live in Certificate Management. The settings form is loaded into that page's settings tab as before; a non-AJAX image upload now returns to that tab.
+- New interface strings in every locale (Traditional and Simplified Chinese translated).
+
 ## [1.18.0] - 2026-11-05
 
 ### Changed

@@ -26,7 +26,6 @@ test.describe('Secure certificate batches', () => {
     expect(settingsJson.status).toBe(true);
     // The pickers moved from the plugin settings to the Certificate Management page.
     expect(settingsJson.content).not.toContain('notificationReviewers');
-    expect(settingsJson.content).toContain('rc-manage-link');
     const token = settingsJson.content.match(/name="csrfToken"[^>]*value="([^"]+)"/)?.[1];
     expect(token).toBeTruthy();
     const form = { 'reviewerIds[]': reviewer, csrfToken: token };

@@ -45,7 +45,7 @@ class CertificateHandler extends Handler {
             );
             $this->addRoleAssignment(
                 array(ROLE_ID_MANAGER, ROLE_ID_SITE_ADMIN),
-                array('manage', 'generateBatch', 'notifyBatch', 'exportCertificates', 'revokeCertificate', 'managerDownload')
+                array('manage', 'generateBatch', 'notifyBatch', 'exportCertificates', 'revokeCertificate', 'managerDownload', 'bulkCertificates')
             );
         } else {
             $this->addRoleAssignment(
@@ -54,7 +54,7 @@ class CertificateHandler extends Handler {
             );
             $this->addRoleAssignment(
                 array(Role::ROLE_ID_MANAGER, Role::ROLE_ID_SITE_ADMIN),
-                array('manage', 'generateBatch', 'notifyBatch', 'exportCertificates', 'revokeCertificate', 'managerDownload')
+                array('manage', 'generateBatch', 'notifyBatch', 'exportCertificates', 'revokeCertificate', 'managerDownload', 'bulkCertificates')
             );
         }
         // Make verify publicly accessible (no role restriction)
@@ -655,9 +655,17 @@ class CertificateHandler extends Handler {
             $templateMgr->assign('userRoles', (array) $this->getAuthorizedContextObject($userRolesAssoc));
         }
         $templateMgr->assign('pageTitle', __('plugins.generic.reviewerCertificate.myCertificates.title'));
+        // Same design as the Certificate Management page. Loaded as a
+        // backend stylesheet: the Vue app drops <style> in the page body.
+        $plugin = $this->getPlugin();
+        if ($plugin) {
+            $templateMgr->addStyleSheet('reviewerCertificateManage',
+                $request->getBaseUrl() . '/' . $plugin->getPluginPath() . '/css/manageCertificates.css?v='
+                    . @filemtime(dirname(__DIR__) . '/css/manageCertificates.css'),
+                array('contexts' => 'backend'));
+        }
         $templateMgr->setupBackendPage();
 
-        $plugin = $this->getPlugin();
         if ($plugin) {
             return $templateMgr->display($plugin->getTemplateResource('myCertificates.tpl'));
         } else {
@@ -1075,9 +1083,10 @@ class CertificateHandler extends Handler {
         $this->ensurePluginLocaleLoaded();
         $context = $request->getContext();
         $search = trim((string) $request->getUserVar('search'));
+        $status = self::statusFilter($request->getUserVar('status'));
         $page = max(1, (int) $request->getUserVar('page'));
-        $total = $this->countContextCertificates($context, $search);
-        $rows = $this->listContextCertificates($context, $search, ($page - 1) * self::MANAGE_PAGE_SIZE, self::MANAGE_PAGE_SIZE);
+        $total = $this->countContextCertificates($context, $search, $status);
+        $rows = $this->listContextCertificates($context, $search, ($page - 1) * self::MANAGE_PAGE_SIZE, self::MANAGE_PAGE_SIZE, $status);
 
         $templateMgr = TemplateManager::getManager($request);
 
@@ -1107,17 +1116,32 @@ class CertificateHandler extends Handler {
             $assetBase . '/js/manageCertificates.js?v=' . @filemtime($assetDir . '/js/manageCertificates.js'),
             array('contexts' => 'backend'));
 
+        // The issued certificates have their own tab (#certificates); search,
+        // status filter and paging keep the reader on it.
+        $filter = array_filter(array('search' => $search, 'status' => $status), 'strlen');
         $templateMgr->assign('certificates', $rows);
         $templateMgr->assign('search', $search);
+        $templateMgr->assign('status', $status);
         $templateMgr->assign('page', $page);
         $templateMgr->assign('pageCount', max(1, (int) ceil($total / self::MANAGE_PAGE_SIZE)));
         $templateMgr->assign('totalCertificates', $total);
-        $templateMgr->assign('exportUrl', $request->url(null, 'certificate', 'exportCertificates', null, $search !== '' ? array('search' => $search) : array()));
-        $templateMgr->assign('manageUrl', $request->url(null, 'certificate', 'manage'));
-        $templateMgr->assign('prevUrl', $page > 1 ? $request->url(null, 'certificate', 'manage', null, array('search' => $search, 'page' => $page - 1)) : null);
-        $templateMgr->assign('nextUrl', $page * self::MANAGE_PAGE_SIZE < $total ? $request->url(null, 'certificate', 'manage', null, array('search' => $search, 'page' => $page + 1)) : null);
+        $templateMgr->assign('exportUrl', $request->url(null, 'certificate', 'exportCertificates', null, $filter));
+        $templateMgr->assign('manageUrl', $request->url(null, 'certificate', 'manage', null, null, 'certificates'));
+        $templateMgr->assign('bulkUrl', $request->url(null, 'certificate', 'bulkCertificates'));
+        $templateMgr->assign('prevUrl', $page > 1 ? $request->url(null, 'certificate', 'manage', null, $filter + array('page' => $page - 1), 'certificates') : null);
+        $templateMgr->assign('nextUrl', $page * self::MANAGE_PAGE_SIZE < $total ? $request->url(null, 'certificate', 'manage', null, $filter + array('page' => $page + 1), 'certificates') : null);
         $templateMgr->assign('certificateRevoked', (bool) $request->getUserVar('revoked'));
         $templateMgr->assign('certificateRestored', (bool) $request->getUserVar('restored'));
+        $templateMgr->assign('bulkRevoked', max(0, (int) $request->getUserVar('bulkRevoked')));
+        $templateMgr->assign('bulkRestored', max(0, (int) $request->getUserVar('bulkRestored')));
+        $bulkError = (string) $request->getUserVar('bulkError');
+        $templateMgr->assign('bulkError', in_array($bulkError, array('tooMany', 'noZip', 'empty', 'failed'), true) ? $bulkError : '');
+        $templateMgr->assign('bulkZipLimit', self::BULK_ZIP_LIMIT);
+        // The overview shows the latest certificates; the full list is a tab.
+        $templateMgr->assign('recentCertificates', ($search === '' && $status === '' && $page === 1)
+            ? array_slice($rows, 0, 5)
+            : $this->listContextCertificates($context, '', 0, 5));
+        $templateMgr->assign('allCertificatesUrl', $request->url(null, 'certificate', 'manage', null, null, 'certificates'));
 
         // Statistics, batch generation and notifications live on this page
         // so managers do not have to open the plugin settings for them.
@@ -1134,7 +1158,7 @@ class CertificateHandler extends Handler {
         $templateMgr->assign('notificationReviewers', $plugin->getEligibleReviewers($context->getId(), true));
         $templateMgr->assign('generateBatchUrl', $request->url(null, 'certificate', 'generateBatch'));
         $templateMgr->assign('notifyBatchUrl', $request->url(null, 'certificate', 'notifyBatch'));
-        $templateMgr->assign('isFiltered', $search !== '');
+        $templateMgr->assign('isFiltered', $search !== '' || $status !== '');
 
         $this->setupTemplate($request);
         if (!is_array($templateMgr->getTemplateVars('userRoles'))) {
@@ -1155,7 +1179,16 @@ class CertificateHandler extends Handler {
         $this->ensurePluginLocaleLoaded();
         $context = $request->getContext();
         $search = trim((string) $request->getUserVar('search'));
-        $rows = $this->listContextCertificates($context, $search, 0, 10000);
+        $rows = $this->listContextCertificates($context, $search, 0, 10000,
+            self::statusFilter($request->getUserVar('status')));
+        $this->outputCsv($rows);
+    }
+
+    /**
+     * Send certificate rows as a CSV download.
+     * @param array $rows rows from listContextCertificates()
+     */
+    private function outputCsv(array $rows) {
         header('Content-Type: text/csv; charset=UTF-8');
         header('Content-Disposition: attachment; filename="reviewer_certificates_' . date('Ymd') . '.csv"');
         header('Cache-Control: private, max-age=0, must-revalidate');
@@ -1195,8 +1228,132 @@ class CertificateHandler extends Handler {
         $request->redirect(null, 'certificate', 'manage', null, array(
             $restore ? 'restored' : 'revoked' => 1,
             'search' => (string) $request->getUserVar('search'),
+            'status' => self::statusFilter($request->getUserVar('status')),
             'page' => max(1, (int) $request->getUserVar('page')),
-        ));
+        ), 'certificates');
+    }
+
+    /** Most certificates one ZIP download may hold (each PDF is built on the fly). */
+    const BULK_ZIP_LIMIT = 200;
+
+    /** The status filter of the certificate list: '', 'valid' or 'revoked'. */
+    public static function statusFilter($value) {
+        return in_array($value, array('valid', 'revoked'), true) ? $value : '';
+    }
+
+    /**
+     * Batch action on the certificates ticked in the list, or on every
+     * certificate that matches the list's search and status filter
+     * ("select all"). POST + CSRF; managers only.
+     *
+     * action: download (ZIP of PDFs), export (CSV), revoke, restore.
+     */
+    public function bulkCertificates($args, $request) {
+        if (strtoupper($_SERVER['REQUEST_METHOD'] ?? '') !== 'POST'
+                || !method_exists($request, 'checkCSRF') || !$request->checkCSRF()) {
+            http_response_code(403);
+            throw new Exception('Forbidden', 403);
+        }
+        $this->ensurePluginLocaleLoaded();
+        $context = $request->getContext();
+        $search = trim((string) $request->getUserVar('search'));
+        $status = self::statusFilter($request->getUserVar('status'));
+        $action = (string) $request->getUserVar('bulkAction');
+        $back = array_filter(array('search' => $search, 'status' => $status,
+            'page' => max(1, (int) $request->getUserVar('page'))), 'strlen');
+
+        if ($request->getUserVar('scope') === 'all') {
+            $ids = $this->listContextCertificateIds($context, $search, $status);
+        } else {
+            $ids = array();
+            foreach ((array) $request->getUserVar('certificateIds') as $id) {
+                if (is_scalar($id) && preg_match('/^[1-9][0-9]*$/D', (string) $id)) {
+                    $ids[(int) $id] = (int) $id;
+                }
+            }
+            // Only this journal's certificates, whatever was posted.
+            $ids = $ids ? $this->listContextCertificateIds($context, '', '', array_values($ids)) : array();
+        }
+        if (!$ids) {
+            $request->redirect(null, 'certificate', 'manage', null, $back + array('bulkError' => 'empty'), 'certificates');
+            return;
+        }
+
+        switch ($action) {
+            case 'revoke':
+            case 'restore':
+                $this->getPlugin()->setCertificatesRevoked($context->getId(), $ids, $action === 'revoke',
+                    (string) $request->getUserVar('reason'));
+                $request->redirect(null, 'certificate', 'manage', null,
+                    $back + array($action === 'revoke' ? 'bulkRevoked' : 'bulkRestored' => count($ids)), 'certificates');
+                return;
+            case 'export':
+                $this->outputCsv($this->listContextCertificates($context, '', 0, 10000, '', $ids));
+                return;
+            case 'download':
+                if (count($ids) > self::BULK_ZIP_LIMIT) {
+                    $request->redirect(null, 'certificate', 'manage', null, $back + array('bulkError' => 'tooMany'), 'certificates');
+                    return;
+                }
+                if (!class_exists('ZipArchive')) {
+                    $request->redirect(null, 'certificate', 'manage', null, $back + array('bulkError' => 'noZip'), 'certificates');
+                    return;
+                }
+                $this->outputZip($context, $ids, $request, $back);
+                return;
+        }
+        http_response_code(400);
+        throw new Exception('Unknown batch action', 400);
+    }
+
+    /**
+     * Build the PDFs of the given certificates into a ZIP (a temporary
+     * file, deleted right after sending) and send it. PDFs are generated
+     * on demand like every other download; nothing is kept on the server.
+     */
+    private function outputZip($context, array $ids, $request, array $back) {
+        @set_time_limit(0);
+        $dao = DAORegistry::getDAO('CertificateDAO');
+        $service = $this->getPlugin()->getCertificateService($context->getId());
+        $file = tempnam(sys_get_temp_dir(), 'rccert');
+        $zip = new \ZipArchive();
+        if ($file === false || $zip->open($file, \ZipArchive::OVERWRITE) !== true) {
+            $request->redirect(null, 'certificate', 'manage', null, $back + array('bulkError' => 'failed'), 'certificates');
+            return;
+        }
+        $added = 0;
+        $names = array();
+        foreach ($ids as $id) {
+            try {
+                $certificate = $dao->getById((int) $id);
+                if (!$certificate || (int) $certificate->getContextId() !== (int) $context->getId()) {
+                    continue;
+                }
+                $reviewAssignment = $dao->reviewAssignmentFromRow($service->loadReview($certificate->getReviewId()));
+                $pdf = $this->createConfiguredGenerator($reviewAssignment, $certificate, $context)->generatePDF();
+                $code = preg_replace('/[^A-Za-z0-9_-]+/', '', (string) $certificate->getCertificateCode());
+                $name = 'reviewer_certificate_' . ($code !== '' ? $code : $certificate->getCertificateId());
+                $name = isset($names[$name]) ? $name . '_' . $certificate->getCertificateId() : $name;
+                $names[$name] = true;
+                $zip->addFromString($name . '.pdf', $pdf);
+                $added++;
+            } catch (\Throwable $e) {
+                error_log('ReviewerCertificate: batch PDF for certificate ' . (int) $id . ' failed: ' . $e->getMessage());
+            }
+        }
+        $zip->close();
+        if (!$added) {
+            @unlink($file);
+            $request->redirect(null, 'certificate', 'manage', null, $back + array('bulkError' => 'failed'), 'certificates');
+            return;
+        }
+        header('Content-Type: application/zip');
+        header('Content-Disposition: attachment; filename="reviewer_certificates_' . date('Ymd') . '.zip"');
+        header('Content-Length: ' . filesize($file));
+        header('Cache-Control: private, max-age=0, must-revalidate');
+        readfile($file);
+        @unlink($file);
+        exit;
     }
 
     /**
@@ -1238,9 +1395,25 @@ class CertificateHandler extends Handler {
      * WHERE clause and parameters for the manager list and its search box
      * (certificate code, reviewer email, username, given or family name).
      */
-    private function contextCertificateFilter($context, $search) {
+    private function contextCertificateFilter($context, $search, $status = '', $ids = null) {
         $where = 'rc.context_id = ?';
         $params = array((int) $context->getId());
+        if ($status !== '') {
+            // Revocations live in a plugin setting, not in the table.
+            $revoked = array_keys($this->getPlugin()->getRevokedCertificates($context->getId()));
+            if ($revoked) {
+                $where .= ' AND rc.certificate_id ' . ($status === 'revoked' ? 'IN' : 'NOT IN')
+                    . ' (' . implode(',', array_fill(0, count($revoked), '?')) . ')';
+                $params = array_merge($params, $revoked);
+            } elseif ($status === 'revoked') {
+                $where .= ' AND 1 = 0';
+            }
+        }
+        if ($ids !== null) {
+            $ids = array_values(array_filter(array_map('intval', (array) $ids)));
+            $where .= $ids ? ' AND rc.certificate_id IN (' . implode(',', array_fill(0, count($ids), '?')) . ')' : ' AND 1 = 0';
+            $params = array_merge($params, $ids);
+        }
         if ($search !== '') {
             $lower = function_exists('mb_strtolower') ? mb_strtolower($search, 'UTF-8') : strtolower($search);
             $like = '%' . str_replace(array('\\', '%', '_'), array('\\\\', '\\%', '\\_'), $lower) . '%';
@@ -1252,8 +1425,8 @@ class CertificateHandler extends Handler {
         return array($where, $params);
     }
 
-    private function countContextCertificates($context, $search) {
-        list($where, $params) = $this->contextCertificateFilter($context, $search);
+    private function countContextCertificates($context, $search, $status = '') {
+        list($where, $params) = $this->contextCertificateFilter($context, $search, $status);
         $result = DAORegistry::getDAO('CertificateDAO')->retrieve(
             'SELECT COUNT(*) AS cnt FROM reviewer_certificates rc
              INNER JOIN users u ON u.user_id = rc.reviewer_id
@@ -1263,13 +1436,32 @@ class CertificateHandler extends Handler {
     }
 
     /**
+     * IDs of this journal's certificates that match the list filter
+     * (and, when given, are among $ids). Newest first.
+     * @return int[]
+     */
+    private function listContextCertificateIds($context, $search, $status, $ids = null) {
+        list($where, $params) = $this->contextCertificateFilter($context, $search, $status, $ids);
+        $result = DAORegistry::getDAO('CertificateDAO')->retrieve(
+            'SELECT rc.certificate_id FROM reviewer_certificates rc
+             INNER JOIN users u ON u.user_id = rc.reviewer_id
+             WHERE ' . $where . '
+             ORDER BY rc.certificate_id DESC', $params);
+        $list = array();
+        foreach ($result ?: array() as $row) {
+            $list[] = (int) ((array) $row)['certificate_id'];
+        }
+        return $list;
+    }
+
+    /**
      * One page of the journal's certificates with reviewer, title, delivery
      * and revocation details.
      * @return array
      */
-    private function listContextCertificates($context, $search, $offset, $limit) {
+    private function listContextCertificates($context, $search, $offset, $limit, $status = '', $ids = null) {
         $dao = DAORegistry::getDAO('CertificateDAO');
-        list($where, $params) = $this->contextCertificateFilter($context, $search);
+        list($where, $params) = $this->contextCertificateFilter($context, $search, $status, $ids);
         $result = $dao->retrieve(
             'SELECT rc.certificate_id, rc.reviewer_id, rc.submission_id, rc.date_issued, rc.certificate_code,
                     rc.download_count, u.email, ra.date_completed, n.status AS notification_status

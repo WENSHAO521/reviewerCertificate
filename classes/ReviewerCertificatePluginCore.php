@@ -125,24 +125,15 @@ class ReviewerCertificatePlugin extends GenericPlugin {
 
     /**
      * @copydoc Plugin::getActions()
+     *
+     * No "Settings" link in the plugin list: statistics, certificates, batch
+     * tools and the certificate settings all live on the Certificate
+     * Management page (side menu, below Statistics). The plugin list keeps
+     * only the enable switch. The settings route below still serves the
+     * form to that page's settings tab.
      */
     public function getActions($request, $verb) {
-        $router = $request->getRouter();
-
-        $linkAction = new \PKP\linkAction\LinkAction(
-            'settings',
-            new \PKP\linkAction\request\AjaxModal(
-                $router->url($request, null, null, 'manage', null, array('verb' => 'settings', 'plugin' => $this->getName(), 'category' => 'generic')),
-                $this->getDisplayName()
-            ),
-            __('manager.plugins.settings'),
-            null
-        );
-
-        return array_merge(
-            $this->getEnabled() ? array($linkAction) : array(),
-            parent::getActions($request, $verb)
-        );
+        return parent::getActions($request, $verb);
     }
 
     /**
@@ -189,7 +180,8 @@ class ReviewerCertificatePlugin extends GenericPlugin {
                     }
                     if ($isNonAjaxUpload) {
                         if (!$saved) { $this->notifySettingsFailure($request); }
-                        $request->redirect(null, 'management', 'settings', ['website']);
+                        // The form lives in the settings tab of Certificate Management.
+                        $request->redirect(null, 'certificate', 'manage', null, null, 'settings');
                     }
                     if ($saved) {
                         // The page stays open after an AJAX save; send the fresh
@@ -782,15 +774,34 @@ class ReviewerCertificatePlugin extends GenericPlugin {
      * @param string $reason
      */
     public function setCertificateRevoked($contextId, $certificateId, $revoke, $reason = '') {
+        $this->setCertificatesRevoked($contextId, array($certificateId), $revoke, $reason);
+    }
+
+    /**
+     * Revoke or restore several certificates in one setting write.
+     * Revoking one that is already revoked keeps its first date and reason.
+     * @param int $contextId
+     * @param int[] $certificateIds
+     * @param bool $revoke
+     * @param string $reason
+     */
+    public function setCertificatesRevoked($contextId, array $certificateIds, $revoke, $reason = '') {
         $revoked = $this->getRevokedCertificates($contextId);
-        if ($revoke) {
-            $reason = trim(strip_tags((string) $reason));
-            $revoked[(int) $certificateId] = array(
-                'date' => date('Y-m-d H:i:s'),
-                'reason' => function_exists('mb_substr') ? mb_substr($reason, 0, 255, 'UTF-8') : substr($reason, 0, 255),
-            );
-        } else {
-            unset($revoked[(int) $certificateId]);
+        $reason = trim(strip_tags((string) $reason));
+        $entry = array(
+            'date' => date('Y-m-d H:i:s'),
+            'reason' => function_exists('mb_substr') ? mb_substr($reason, 0, 255, 'UTF-8') : substr($reason, 0, 255),
+        );
+        foreach ($certificateIds as $certificateId) {
+            $id = (int) $certificateId;
+            if ($id <= 0) {
+                continue;
+            }
+            if (!$revoke) {
+                unset($revoked[$id]);
+            } elseif (!isset($revoked[$id]) || count($certificateIds) === 1) {
+                $revoked[$id] = $entry;
+            }
         }
         $this->updateSetting((int) $contextId, 'revokedCertificates', json_encode($revoked), 'string');
     }

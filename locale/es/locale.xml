@@ -312,4 +312,27 @@ Descargar Certificado: {{$certificateUrl}}
 	<message key="plugins.generic.reviewerCertificate.manage.tabTools">Batch issuing &amp; notifications</message>
 	<message key="plugins.generic.reviewerCertificate.manage.tabSettings">Certificate settings</message>
 	<message key="plugins.generic.reviewerCertificate.manage.download">Download</message>
+	<message key="plugins.generic.reviewerCertificate.manage.recent">Recently issued</message>
+	<message key="plugins.generic.reviewerCertificate.manage.viewAll">View all certificates</message>
+	<message key="plugins.generic.reviewerCertificate.manage.allStatuses">All statuses</message>
+	<message key="plugins.generic.reviewerCertificate.manage.selectRow">Select this certificate</message>
+	<message key="plugins.generic.reviewerCertificate.manage.selectPage">Select all certificates on this page</message>
+	<message key="plugins.generic.reviewerCertificate.manage.selected">{$selected} selected</message>
+	<message key="plugins.generic.reviewerCertificate.manage.pageSelected">All {$selected} certificates on this page are selected.</message>
+	<message key="plugins.generic.reviewerCertificate.manage.selectAllMatching">Select all {$total} matching certificates</message>
+	<message key="plugins.generic.reviewerCertificate.manage.allSelected">All {$total} matching certificates are selected.</message>
+	<message key="plugins.generic.reviewerCertificate.manage.clearSelection">Clear selection</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkActions">Batch actions</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkDownload">Download PDFs (ZIP)</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkRevokePrompt">Revoke {$selected} certificates? Reviewers can no longer download them and the verification page shows them as revoked. Optional reason (visible to managers only):</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkRestoreConfirm">Restore {$selected} certificates?</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkPreparing">Preparing the ZIP. This can take a moment for many certificates.</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkRevokedNotice">{$number} certificates revoked.</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkRestoredNotice">{$number} certificates restored.</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkEmpty">No certificates were selected.</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkTooMany">One ZIP download holds at most {$limit} certificates. Select fewer, or narrow the list with the search or status filter.</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkNoZip">This server has no PHP ZIP support (ext-zip), so certificates cannot be downloaded together. Download them one by one, or ask your administrator to enable ext-zip.</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkFailed">The certificates could not be generated. Please try again.</message>
+	<message key="plugins.generic.reviewerCertificate.myCertificates.annualHeading">Summary certificates</message>
+	<message key="plugins.generic.reviewerCertificate.myCertificates.reviewHeading">Review certificates</message>
 </locale>

@@ -81,13 +81,22 @@ class CertificateFeaturesTest extends TestCase
         $this->assertSame('', CertificateHandler::csvSafe(''));
     }
 
+    public function testCertificateListStatusFilterIsWhitelisted(): void
+    {
+        $this->assertSame('valid', CertificateHandler::statusFilter('valid'));
+        $this->assertSame('revoked', CertificateHandler::statusFilter('revoked'));
+        $this->assertSame('', CertificateHandler::statusFilter('1 OR 1=1'));
+        $this->assertSame('', CertificateHandler::statusFilter(['revoked']));
+        $this->assertSame('', CertificateHandler::statusFilter(null));
+    }
+
     public function testNewOpsAreRoleScoped(): void
     {
         $handler = new CertificateHandler();
         $prop = new \ReflectionProperty(get_parent_class($handler), '_roleAssignments');
         $prop->setAccessible(true);
         $assignments = $prop->getValue($handler);
-        foreach (['exportCertificates', 'revokeCertificate', 'managerDownload', 'manage'] as $op) {
+        foreach (['exportCertificates', 'revokeCertificate', 'managerDownload', 'manage', 'bulkCertificates'] as $op) {
             $this->assertContains($op, $assignments[ROLE_ID_MANAGER]);
             $this->assertNotContains($op, $assignments[ROLE_ID_REVIEWER]);
         }

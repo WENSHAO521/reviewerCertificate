@@ -37,6 +37,29 @@ test.describe('Issued certificates overview', () => {
     await expect(page.locator('#rc-panel-settings .rc-manage-panel')).toHaveCount(0);
   });
 
+  test('issued certificates have their own tab with multi-select', async ({ page }) => {
+    await page.goto('/index.php/testjournal/certificate/manage', { waitUntil: 'load', timeout: 15000 });
+    await expect(page.locator('#rc-panel-certificates')).toBeHidden();
+    await page.click('#rc-tab-certificates');
+    await expect(page.locator('table.certificate-manage-table')).toBeVisible();
+    await expect(page.locator('#rc-bulk-form')).toBeHidden();
+    const rows = page.locator('.rc-check--row');
+    if (await rows.count()) {
+      await rows.first().check();
+      await expect(page.locator('#rc-bulk-form')).toBeVisible();
+      await expect(page.locator('#rc-bulk-form [data-bulk="download"]')).toBeVisible();
+      await expect(page.locator('#rc-bulk-form [data-bulk="revoke"]')).toBeVisible();
+      await page.click('#rc-bulk-form .rc-bulk__clear >> nth=0');
+      await expect(page.locator('#rc-bulk-form')).toBeHidden();
+    }
+  });
+
+  test('batch actions need a CSRF token', async ({ page }) => {
+    const response = await page.request.post('/index.php/testjournal/certificate/bulkCertificates',
+      { form: { bulkAction: 'revoke', scope: 'all' } });
+    expect(response.status()).toBe(403);
+  });
+
   test('side menu links to Certificate Management below Statistics', async ({ page }) => {
     await page.goto('/index.php/testjournal/certificate/manage', { waitUntil: 'domcontentloaded', timeout: 15000 });
     await expect(page.locator('a[href*="certificate/manage"]', { hasText: 'Certificate Management' }).first()).toBeVisible();

@@ -737,3 +737,72 @@ msgstr "Certificate settings"
 msgid "plugins.generic.reviewerCertificate.manage.download"
 msgstr "Download"
 
+msgid "plugins.generic.reviewerCertificate.manage.recent"
+msgstr "Recently issued"
+
+msgid "plugins.generic.reviewerCertificate.manage.viewAll"
+msgstr "View all certificates"
+
+msgid "plugins.generic.reviewerCertificate.manage.allStatuses"
+msgstr "All statuses"
+
+msgid "plugins.generic.reviewerCertificate.manage.selectRow"
+msgstr "Select this certificate"
+
+msgid "plugins.generic.reviewerCertificate.manage.selectPage"
+msgstr "Select all certificates on this page"
+
+msgid "plugins.generic.reviewerCertificate.manage.selected"
+msgstr "{$selected} selected"
+
+msgid "plugins.generic.reviewerCertificate.manage.pageSelected"
+msgstr "All {$selected} certificates on this page are selected."
+
+msgid "plugins.generic.reviewerCertificate.manage.selectAllMatching"
+msgstr "Select all {$total} matching certificates"
+
+msgid "plugins.generic.reviewerCertificate.manage.allSelected"
+msgstr "All {$total} matching certificates are selected."
+
+msgid "plugins.generic.reviewerCertificate.manage.clearSelection"
+msgstr "Clear selection"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkActions"
+msgstr "Batch actions"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkDownload"
+msgstr "Download PDFs (ZIP)"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkRevokePrompt"
+msgstr "Revoke {$selected} certificates? Reviewers can no longer download them and the verification page shows them as revoked. Optional reason (visible to managers only):"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkRestoreConfirm"
+msgstr "Restore {$selected} certificates?"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkPreparing"
+msgstr "Preparing the ZIP. This can take a moment for many certificates."
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkRevokedNotice"
+msgstr "{$number} certificates revoked."
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkRestoredNotice"
+msgstr "{$number} certificates restored."
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkEmpty"
+msgstr "No certificates were selected."
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkTooMany"
+msgstr "One ZIP download holds at most {$limit} certificates. Select fewer, or narrow the list with the search or status filter."
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkNoZip"
+msgstr "This server has no PHP ZIP support (ext-zip), so certificates cannot be downloaded together. Download them one by one, or ask your administrator to enable ext-zip."
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkFailed"
+msgstr "The certificates could not be generated. Please try again."
+
+msgid "plugins.generic.reviewerCertificate.myCertificates.annualHeading"
+msgstr "Summary certificates"
+
+msgid "plugins.generic.reviewerCertificate.myCertificates.reviewHeading"
+msgstr "Review certificates"
+

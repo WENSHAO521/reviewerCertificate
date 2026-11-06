@@ -7,19 +7,16 @@ test.describe('Plugin Settings', () => {
     await enablePlugin(page);
   });
 
-  test('can open and save certificate settings', async ({ page }) => {
+  test('plugin list keeps only the switch; settings open in Certificate Management', async ({ page }) => {
     await navigateToPlugins(page);
 
+    // The plugin row has no Settings link any more: everything lives on the
+    // Certificate Management page.
     const pluginRow = await findPluginRow(page);
+    await expect(pluginRow.locator('a:has-text("Settings"), button:has-text("Settings")')).toHaveCount(0);
 
-    // Click the settings link in the plugin row
-    const settingsLink = pluginRow.locator(
-      'a:has-text("Settings"), button:has-text("Settings")'
-    ).first();
-    await settingsLink.click();
-
-    // Wait for settings modal/form to appear
-    await page.waitForTimeout(3000);
+    await page.goto('/index.php/testjournal/certificate/manage#settings', { waitUntil: 'load', timeout: 15000 });
+    await expect(page.locator('#rc-panel-settings #certificateSettingsForm')).toBeVisible({ timeout: 15000 });
 
     // Try to find and fill the certificate header field
     const headerInput = page.locator(

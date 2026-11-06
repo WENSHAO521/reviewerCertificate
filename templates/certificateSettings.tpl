@@ -366,15 +366,6 @@ in recognition of the review contributed to the journal
 ---
 The Editors of {{$journalName}}{/literal}{/capture}
 
-{if !$rcEmbedded}
-<!-- Certificate management lives on its own page (side menu, below Statistics) -->
-<div class="rc-panel rc-manage-panel" style="margin: 0 0 20px;">
-	<h2>{translate key="plugins.generic.reviewerCertificate.manage.menu"}</h2>
-	<p class="description">{translate key="plugins.generic.reviewerCertificate.manage.settingsNotice"}</p>
-	{if $manageCertificatesUrl}<p><a href="{$manageCertificatesUrl|escape}" target="_blank" class="pkp_button rc-manage-link">{translate key="plugins.generic.reviewerCertificate.manage.open"}</a></p>{/if}
-</div>
-{/if}
-
 <form class="pkp_form rc-settings" id="certificateSettingsForm" method="post" action="{url router=$smarty.const.ROUTE_COMPONENT op="manage" category="generic" plugin=$pluginName verb="settings" save=true}" enctype="multipart/form-data" data-layout="{$layoutMode|escape}">
 	{csrf}
 	{include file="controllers/notification/inPlaceNotification.tpl" notificationId="certificateSettingsFormNotification"}
