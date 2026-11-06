@@ -92,7 +92,7 @@
 	<message key="plugins.generic.reviewerCertificate.settings.insertVariable">Insert:</message>
 	<message key="plugins.generic.reviewerCertificate.settings.useRecognitionTemplate">Use recognition-style template</message>
 	<message key="plugins.generic.reviewerCertificate.settings.section.images">Background, logo, cover and seal</message>
-	<message key="plugins.generic.reviewerCertificate.settings.section.imagesDescription">PNG or JPEG, up to 5 MB each. The background fills the page; the other images are placed on top. Leave X and Y empty for the automatic position.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.imagesDescription">PNG, JPEG or WEBP, up to 5 MB each (WEBP files are usually much smaller). When you replace or remove an image, the old file is deleted from the server. The background fills the page; the other images are placed on top. Leave X and Y empty for the automatic position.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.image.none">Not set</message>
 	<message key="plugins.generic.reviewerCertificate.settings.image.xShort">X (mm)</message>
 	<message key="plugins.generic.reviewerCertificate.settings.image.yShort">Y (mm)</message>
@@ -147,7 +147,7 @@
 	<message key="plugins.generic.reviewerCertificate.settings.verification">검증 옵션</message>
 	<message key="plugins.generic.reviewerCertificate.settings.includeQRCode">인증서 검증용 QR 코드 포함</message>
 	<message key="plugins.generic.reviewerCertificate.settings.previewCertificate">인증서 미리보기</message>
-	<message key="plugins.generic.reviewerCertificate.settings.invalidImageType">이미지 유형이 잘못되었습니다. JPG 또는 PNG 파일을 업로드하세요.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.invalidImageType">이미지 유형이 잘못되었습니다. JPG 또는 PNG/WEBP 파일을 업로드하세요.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.uploadFailed">파일 업로드에 실패했습니다. 다시 시도하세요.</message>
 
 	<!-- Error messages -->
@@ -244,7 +244,7 @@ Best regards,
     <message key="plugins.generic.reviewerCertificate.notifications.send">Send certificate notifications</message>
     <message key="plugins.generic.reviewerCertificate.notifications.sent">Sent</message>
     <message key="plugins.generic.reviewerCertificate.settings.invalidValue">Enter a valid value.</message>
-    <message key="plugins.generic.reviewerCertificate.settings.saveFailed">Certificate settings could not be saved. Check the fields and image (JPEG or PNG, up to 5 MB), then try again.</message>
+    <message key="plugins.generic.reviewerCertificate.settings.saveFailed">Certificate settings could not be saved. Check the fields and image (JPEG, PNG or WEBP, up to 5 MB), then try again.</message>
     <message key="plugins.generic.reviewerCertificate.email.subject">인증서가 준비되었습니다!</message>
     <message key="plugins.generic.reviewerCertificate.email.body">{{$reviewerName}},
 

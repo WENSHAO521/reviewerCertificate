@@ -295,7 +295,7 @@ $(function() {
 	$form.on('change', imageInputs, function(e) {
 		var file = e.target.files[0], $info = $(this).siblings('.rc-file-chosen');
 		if (file && (!file.type.match('image.*') || file.size > 5 * 1024 * 1024)) {
-			alert('Please choose a PNG or JPEG image under 5 MB.');
+			alert('Please choose a PNG, JPEG or WEBP image under 5 MB.');
 			$(this).val('');
 			file = null;
 		}
@@ -461,7 +461,7 @@ The Editors of {{$journalName}}{/literal}{/capture}
 					{if $backgroundImage}<span class="rc-badge">{$backgroundImageName|escape}</span>{else}<span class="rc-badge rc-badge--empty">{translate key="`$rcKey`image.none"}</span>{/if}
 				</div>
 				<p class="rc-hint">{translate key="`$rcKey`backgroundImageDescription"}</p>
-				<input type="file" id="backgroundImage" name="backgroundImage" accept="image/png,image/jpeg" class="rc-file" />
+				<input type="file" id="backgroundImage" name="backgroundImage" accept="image/png,image/jpeg,image/webp" class="rc-file" />
 				{if $backgroundImage}
 					<label class="rc-check"><input type="checkbox" id="removeBackgroundImage" name="removeBackgroundImage" value="1" /> {translate key="`$rcKey`removeBackgroundImage"}</label>
 				{/if}
@@ -476,7 +476,7 @@ The Editors of {{$journalName}}{/literal}{/capture}
 						{else}<span class="rc-badge rc-badge--empty">{translate key="`$rcKey`image.none"}</span>{/if}
 					</div>
 					<p class="rc-hint">{translate key="`$rcKey``$field`Description"}</p>
-					<input type="file" id="{$field}" name="{$field}" accept="image/png,image/jpeg" class="rc-file" />
+					<input type="file" id="{$field}" name="{$field}" accept="image/png,image/jpeg,image/webp" class="rc-file" />
 					{if ($field == 'logoImage' && $logoImage) || ($field == 'coverImage' && $coverImage) || ($field == 'sealImage' && $sealImage)}
 						{if $field == 'logoImage'}{assign var=removeField value='removeLogoImage'}{elseif $field == 'coverImage'}{assign var=removeField value='removeCoverImage'}{else}{assign var=removeField value='removeSealImage'}{/if}
 						<label class="rc-check"><input type="checkbox" id="{$removeField}" name="{$removeField}" value="1" /> {translate key="`$rcKey`removeImage"}</label>

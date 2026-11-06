@@ -92,7 +92,7 @@
 	<message key="plugins.generic.reviewerCertificate.settings.insertVariable">插入：</message>
 	<message key="plugins.generic.reviewerCertificate.settings.useRecognitionTemplate">使用獎狀式範本</message>
 	<message key="plugins.generic.reviewerCertificate.settings.section.images">背景、標誌、封面與印章</message>
-	<message key="plugins.generic.reviewerCertificate.settings.section.imagesDescription">PNG 或 JPEG，每張最大 5 MB。背景會鋪滿整頁，其他圖片疊在上方。X 與 Y 留空即使用自動位置。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.imagesDescription">PNG、JPEG 或 WEBP，每張最大 5 MB（WEBP 檔案通常小得多）。替換或移除圖片時，舊檔會自動從伺服器刪除。背景會鋪滿整頁，其他圖片疊在上方。X 與 Y 留空即使用自動位置。</message>
 	<message key="plugins.generic.reviewerCertificate.settings.image.none">未設定</message>
 	<message key="plugins.generic.reviewerCertificate.settings.image.xShort">X（mm）</message>
 	<message key="plugins.generic.reviewerCertificate.settings.image.yShort">Y（mm）</message>
@@ -147,7 +147,7 @@
 	<message key="plugins.generic.reviewerCertificate.settings.verification">驗證選項</message>
 	<message key="plugins.generic.reviewerCertificate.settings.includeQRCode">包含用於證書驗證的QR 碼</message>
 	<message key="plugins.generic.reviewerCertificate.settings.previewCertificate">預覽證書</message>
-	<message key="plugins.generic.reviewerCertificate.settings.invalidImageType">圖片型別無效。請上傳JPG或PNG檔案。</message>
+	<message key="plugins.generic.reviewerCertificate.settings.invalidImageType">圖片型別無效。請上傳JPG、PNG或WEBP檔案。</message>
 	<message key="plugins.generic.reviewerCertificate.settings.uploadFailed">檔案上傳失敗。請重試。</message>
 
 	<!-- Error messages -->
@@ -244,7 +244,7 @@
     <message key="plugins.generic.reviewerCertificate.notifications.send">寄出證書通知</message>
     <message key="plugins.generic.reviewerCertificate.notifications.sent">已寄出</message>
     <message key="plugins.generic.reviewerCertificate.settings.invalidValue">請輸入有效的值。</message>
-    <message key="plugins.generic.reviewerCertificate.settings.saveFailed">證書設定無法儲存。請檢查欄位與圖片（JPEG 或 PNG，最大 5 MB）後再試一次。</message>
+    <message key="plugins.generic.reviewerCertificate.settings.saveFailed">證書設定無法儲存。請檢查欄位與圖片（JPEG、PNG 或 WEBP，最大 5 MB）後再試一次。</message>
     <message key="plugins.generic.reviewerCertificate.email.subject">您的證書已準備就緒！</message>
     <message key="plugins.generic.reviewerCertificate.email.body">{{$reviewerName}},
 

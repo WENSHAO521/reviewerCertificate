@@ -154,7 +154,7 @@ msgid "plugins.generic.reviewerCertificate.settings.previewCertificate"
 msgstr "预览证书"
 
 msgid "plugins.generic.reviewerCertificate.settings.invalidImageType"
-msgstr "图片类型无效。请上传JPG或PNG文件。"
+msgstr "图片类型无效。请上传JPG、PNG或WEBP文件。"
 
 msgid "plugins.generic.reviewerCertificate.settings.uploadFailed"
 msgstr "文件上传失败。请重试。"
@@ -435,7 +435,7 @@ msgid "plugins.generic.reviewerCertificate.settings.section.images"
 msgstr "背景、标志、封面与印章"
 
 msgid "plugins.generic.reviewerCertificate.settings.section.imagesDescription"
-msgstr "PNG 或 JPEG，每张最大 5 MB。背景会铺满整页，其他图片叠在上方。X 与 Y 留空即使用自动位置。"
+msgstr "PNG、JPEG 或 WEBP，每张最大 5 MB（WEBP 文件通常小得多）。替换或移除图片时，旧文件会自动从服务器删除。背景会铺满整页，其他图片叠在上方。X 与 Y 留空即使用自动位置。"
 
 msgid "plugins.generic.reviewerCertificate.settings.image.none"
 msgstr "未设置"
@@ -570,7 +570,7 @@ msgid "plugins.generic.reviewerCertificate.notifications.sent"
 msgstr "已寄出"
 
 msgid "plugins.generic.reviewerCertificate.settings.saveFailed"
-msgstr "证书设置无法保存。请检查字段与图片（JPEG 或 PNG，最大 5 MB）后再试一次。"
+msgstr "证书设置无法保存。请检查字段与图片（JPEG、PNG 或 WEBP，最大 5 MB）后再试一次。"
 
 msgid "plugins.generic.reviewerCertificate.settings.section.email"
 msgstr "感谢信"

@@ -227,7 +227,8 @@ class CertificateSettingsForm extends Form {
     }
 
     /**
-     * Validate one optional image upload (PNG/JPEG, at most 5 MB and 50 MP).
+     * Validate one optional image upload (PNG/JPEG/WEBP, at most 5 MB and 50 MP).
+     * WEBP needs GD with WEBP support: the PDF embeds a converted copy.
      * @param string $field
      * @return bool false when an upload was attempted and rejected
      */
@@ -248,6 +249,10 @@ class CertificateSettingsForm extends Form {
         }
         $info = @getimagesize($tmp);
         $extensions = ['image/png' => 'png', 'image/jpeg' => 'jpg'];
+        require_once dirname(__DIR__) . '/CertificateGenerator.php';
+        if (\APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::webpSupported()) {
+            $extensions['image/webp'] = 'webp';
+        }
         if (!$info || !isset($extensions[$info['mime']]) || $info[0] * $info[1] > 50000000) {
             $this->addError($field, __('plugins.generic.reviewerCertificate.settings.invalidImageType'));
             return false;
@@ -468,6 +473,18 @@ class CertificateSettingsForm extends Form {
                 require_once dirname(__DIR__) . '/CertificateGenerator.php';
                 \APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::deleteBackgroundImage($previous, $this->contextId);
             }
+        }
+        // Also sweep images left behind by earlier replacements (before old files
+        // were deleted, or when a delete failed), so only the images in use stay.
+        try {
+            require_once dirname(__DIR__) . '/CertificateGenerator.php';
+            $inUse = array();
+            foreach (array_keys(self::IMAGE_FIELDS) as $field) {
+                $inUse[] = (string) $this->getData($field);
+            }
+            \APP\plugins\generic\reviewerCertificate\classes\CertificateGenerator::deleteOrphanedImages($this->contextId, $inUse);
+        } catch (\Throwable $e) {
+            error_log('ReviewerCertificate: cleaning up old certificate images failed: ' . $e->getMessage());
         }
         $this->stagedImages = array();
         return true;
