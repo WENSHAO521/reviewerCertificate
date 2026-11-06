@@ -1,9 +1,14 @@
 name: Publish release
-# Run from the Actions tab ("Run workflow") after the version bump is merged.
+# Runs by itself when a merge to main changes version.xml (the release bump
+# is part of each PR), and can still be run by hand from the Actions tab
+# ("Run workflow"). A push whose version is already released is skipped.
 # Builds the OJS 3.3 / 3.4 / 3.5 packages from the selected ref with release.sh,
 # verifies them, and publishes one GitHub Release per OJS target
 # (v{version}-3.3, v{version}-3.4, v{version}-3.5) with its package attached.
 on:
+  push:
+    branches: [main]
+    paths: [version.xml]
   workflow_dispatch:
     inputs:
       version:
@@ -22,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      VERSION: ${{ inputs.version }}
+      INPUT_VERSION: ${{ inputs.version }}
       GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
@@ -31,23 +36,39 @@ jobs:
           php-version: '8.3'
           extensions: mbstring, gd, zip
           tools: composer
-      - name: Check version input against version.xml
+      - name: Work out the version and check it against version.xml
+        id: version
         run: |
+          if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+            VERSION=$(sed -n 's#.*<release>\([0-9]*\.[0-9]*\.[0-9]*\)\.0</release>.*#\1#p' version.xml)
+          else
+            VERSION="$INPUT_VERSION"
+          fi
           if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            echo "::error::Version must look like 1.11.0"; exit 1
+            echo "::error::Version must look like 1.11.0 (got '${VERSION}')"; exit 1
           fi
           grep -q "<release>${VERSION}.0</release>" version.xml || {
             echo "::error::version.xml does not declare ${VERSION}.0"; exit 1; }
+          echo "VERSION=$VERSION" >> "$GITHUB_ENV"
+          skip=false
           for target in 3.3 3.4 3.5; do
             if gh release view "v${VERSION}-${target}" >/dev/null 2>&1; then
-              echo "::error::Release v${VERSION}-${target} already exists"; exit 1
+              if [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
+                echo "::notice::Release v${VERSION}-${target} already exists; nothing to publish"
+                skip=true
+              else
+                echo "::error::Release v${VERSION}-${target} already exists"; exit 1
+              fi
             fi
           done
+          echo "skip=$skip" >> "$GITHUB_OUTPUT"
       - name: Unit tests
+        if: steps.version.outputs.skip != 'true'
         run: |
           composer install --no-interaction --prefer-dist --no-progress
           vendor/bin/phpunit
       - name: Build and verify packages
+        if: steps.version.outputs.skip != 'true'
         run: |
           bash release.sh "$VERSION"
           php tests/check-release.php "$VERSION"
@@ -56,6 +77,7 @@ jobs:
           done
           sha256sum reviewerCertificate-"$VERSION"-*.tar.gz | tee SHA256SUMS
       - name: Publish GitHub Releases
+        if: steps.version.outputs.skip != 'true'
         run: |
           # Release notes: this version's CHANGELOG section
           awk -v v="$VERSION" '
