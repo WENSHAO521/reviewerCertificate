@@ -244,4 +244,82 @@ class BackgroundImageDownscaleTest extends TestCase
         $this->assertSame($first, $second);
         $this->assertSame($firstMtime, filemtime($second), 'Cached copy must not be re-encoded');
     }
+
+    /**
+     * TCPDF cannot embed WEBP: even a small WEBP is converted, to JPEG when
+     * opaque and to PNG when it has transparency, and the PDF embeds it.
+     */
+    public function testWebpIsConvertedForThePdf(): void
+    {
+        if (!CertificateGenerator::webpSupported()) {
+            $this->markTestSkipped('GD without WEBP support');
+        }
+        $img = imagecreatetruecolor(400, 300);
+        imagefilledrectangle($img, 0, 0, 399, 299, imagecolorallocate($img, 30, 90, 160));
+        $opaque = $this->bgPath('background_opaque.webp');
+        imagewebp($img, $opaque, 80);
+        imagedestroy($img);
+        $this->assertFalse(CertificateGenerator::webpHasAlpha($opaque));
+
+        $converted = CertificateGenerator::downscaleBackgroundIfNeeded($opaque);
+        $this->assertNotSame($opaque, $converted);
+        $this->assertSame(IMAGETYPE_JPEG, getimagesize($converted)[2]);
+
+        $img = imagecreatetruecolor(400, 300);
+        imagealphablending($img, false);
+        imagesavealpha($img, true);
+        imagefill($img, 0, 0, imagecolorallocatealpha($img, 0, 0, 0, 127));
+        imagefilledellipse($img, 200, 150, 200, 200, imagecolorallocatealpha($img, 200, 0, 0, 0));
+        $seal = $this->bgPath('seal_alpha.webp');
+        imagewebp($img, $seal, 80);
+        imagedestroy($img);
+        $this->assertTrue(CertificateGenerator::webpHasAlpha($seal));
+        $this->assertSame(IMAGETYPE_PNG, getimagesize(CertificateGenerator::downscaleBackgroundIfNeeded($seal, 400))[2]);
+
+        $generator = new CertificateGenerator();
+        $generator->setPreviewMode(true);
+        $generator->setContext($this->createMockContext(1, 'Test Journal', 'TJ'));
+        $generator->setTemplateSettings([
+            'headerText' => 'Certificate',
+            'bodyTemplate' => 'Awarded to {{$reviewerName}}',
+            'footerText' => 'Footer',
+            'backgroundImage' => $opaque,
+            'sealImage' => $seal,
+        ]);
+        $pdf = $generator->generatePDF();
+        // background + seal, plus the seal's soft mask (transparency)
+        $this->assertSame(3, substr_count($pdf, '/Subtype /Image'), 'Both WEBP images must be embedded');
+    }
+
+    /**
+     * Saving settings sweeps image files no setting points to (left by older
+     * replacements), keeps the images in use with their scaled copies, keeps
+     * fresh files another save may still be committing, and never touches
+     * files that the plugin did not name.
+     */
+    public function testDeleteOrphanedImagesKeepsOnlyImagesInUse(): void
+    {
+        $old = time() - 3600;
+        $files = [
+            'background_aaa.png' => true, 'background_aaa.rcscaled-0123456789ab.jpg' => true,
+            'background_old1.jpg' => false, 'background_old1.rcscaled-ba9876543210.jpg' => false,
+            'seal_old2.png' => false, 'logo_1700000000.jpeg' => false,
+            'seal_new.webp' => true, 'notes.txt' => true,
+        ];
+        foreach ($files as $name => $kept) {
+            file_put_contents($this->bgPath($name), 'x');
+            touch($this->bgPath($name), $old);
+        }
+        file_put_contents($this->bgPath('cover_fresh.png'), 'x');
+
+        $deleted = CertificateGenerator::deleteOrphanedImages(1, [
+            $this->bgPath('background_aaa.png'), $this->bgPath('seal_new.webp'), '', $this->bgPath('missing.png'),
+        ]);
+
+        $this->assertSame(4, $deleted);
+        foreach ($files as $name => $kept) {
+            $this->assertSame($kept, is_file($this->bgPath($name)), $name);
+        }
+        $this->assertFileExists($this->bgPath('cover_fresh.png'), 'Fresh uploads must survive the sweep');
+    }
 }

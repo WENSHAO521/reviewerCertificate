@@ -5,6 +5,17 @@ All notable changes to the Reviewer Certificate Plugin will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.20.0] - 2026-11-06
+
+### Added
+
+- **WEBP images.** The background, logo, cover and seal accept WEBP uploads (still at most 5 MB and 50 MP), usually far smaller than the same image as PNG or JPEG. TCPDF cannot embed WEBP, so the certificate PDF uses a converted copy (JPEG, or PNG when the WEBP has transparency), cached beside the original like the existing downscaled copies. WEBP is offered only when the server's PHP GD can read it; otherwise the upload is refused as before.
+
+### Changed
+
+- **Old images are removed from the server.** Replacing or removing an image already deleted the previous file in the journal's upload directory; it now also does so for images stored in the legacy `{base}/files/journals/{id}/reviewerCertificate` directory, and every successful save sweeps plugin-named image files (`background_`, `logo_`, `cover_`, `seal_` and their scaled copies) that no setting uses any more, such as files orphaned by versions before the cleanup existed. Files younger than 10 minutes are kept so a concurrent save is never affected.
+- Image hints and error messages mention WEBP in every locale.
+
 ## [1.19.1] - 2026-11-06
 
 ### Fixed

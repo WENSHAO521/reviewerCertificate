@@ -166,12 +166,18 @@ class CertificateGenerator {
         clearstatcache();
         $sourceBytes = (int) @filesize($realPath);
         $maxSide = max($width, $height);
-        if ($maxSide <= $maxSidePx && $sourceBytes <= self::BG_MAX_BYTES) {
+        // TCPDF cannot embed WEBP, so a WEBP upload is always converted
+        // (to JPEG, or PNG when it has transparency), even when it is small.
+        $isWebp = defined('IMAGETYPE_WEBP') && $type == IMAGETYPE_WEBP;
+        if (!$isWebp && $maxSide <= $maxSidePx && $sourceBytes <= self::BG_MAX_BYTES) {
             return $path;
         }
 
-        if (!function_exists('imagecreatetruecolor')
-                || !in_array($type, array(IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_GIF))) {
+        $types = array(IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_GIF);
+        if (self::webpSupported()) {
+            $types[] = IMAGETYPE_WEBP;
+        }
+        if (!function_exists('imagecreatetruecolor') || !in_array($type, $types)) {
             return $path;
         }
 
@@ -183,6 +189,8 @@ class CertificateGenerator {
             $header = @file_get_contents($realPath, false, null, 0, 26);
             $colorType = ($header !== false && strlen($header) > 25) ? ord($header[25]) : 6;
             $keepPng = !in_array($colorType, array(0, 2));
+        } elseif ($isWebp) {
+            $keepPng = self::webpHasAlpha($realPath);
         }
         $ext = $keepPng ? 'png' : 'jpg';
 
@@ -204,6 +212,11 @@ class CertificateGenerator {
                     break;
                 case IMAGETYPE_GIF:
                     $src = @imagecreatefromgif($realPath);
+                    break;
+                default:
+                    if ($isWebp) {
+                        $src = @imagecreatefromwebp($realPath);
+                    }
                     break;
             }
         } catch (\Throwable $e) {
@@ -241,7 +254,7 @@ class CertificateGenerator {
 
         // A re-encode that did not shrink anything is useless — keep the
         // original (only possible when the byte threshold alone triggered).
-        if (filesize($tmpPath) >= $sourceBytes && $scale >= 1.0) {
+        if (!$isWebp && filesize($tmpPath) >= $sourceBytes && $scale >= 1.0) {
             $fileManager->deleteByPath($tmpPath);
             return $path;
         }
@@ -259,6 +272,100 @@ class CertificateGenerator {
         }
 
         return $cachePath;
+    }
+
+    /**
+     * Whether this server's GD can read WEBP images (needed to convert them
+     * for the PDF, since TCPDF only embeds JPEG and PNG).
+     * @return bool
+     */
+    public static function webpSupported() {
+        return defined('IMAGETYPE_WEBP') && defined('IMG_WEBP')
+            && function_exists('imagecreatefromwebp') && function_exists('imagetypes')
+            && (imagetypes() & IMG_WEBP);
+    }
+
+    /**
+     * Read the alpha flag from a WEBP header (VP8X flags or the VP8L
+     * alpha_is_used bit). Plain lossy VP8 has no alpha channel.
+     * @param string $path
+     * @return bool
+     */
+    public static function webpHasAlpha($path) {
+        $header = @file_get_contents($path, false, null, 0, 30);
+        if ($header === false || strlen($header) < 25 || substr($header, 0, 4) !== 'RIFF' || substr($header, 8, 4) !== 'WEBP') {
+            return true;
+        }
+        $chunk = substr($header, 12, 4);
+        if ($chunk === 'VP8X') {
+            return (bool) (ord($header[20]) & 0x10);
+        }
+        if ($chunk === 'VP8L') {
+            return (bool) (ord($header[24]) & 0x10);
+        }
+        return false;
+    }
+
+    /** Stored image files: {background|logo|cover|seal}_{id}.{ext}, plus scaled copies */
+    const STORED_IMAGE_PATTERN = '/^(background|logo|cover|seal)_[A-Za-z0-9]+(\\.rcscaled-[0-9a-f]+)?\\.(png|jpe?g|gif|webp)$/i';
+
+    /**
+     * Delete image files in a journal's upload directory that no current
+     * setting points to: images replaced or removed before old files were
+     * cleaned up, and scaled copies of them. Files younger than $minAgeSeconds
+     * are kept so an upload that another save is still committing survives.
+     * Only plugin-named files ({background|logo|cover|seal}_…) are touched.
+     *
+     * @param int $contextId
+     * @param string[] $keepPaths stored paths of the images in use
+     * @param int $minAgeSeconds
+     * @return int number of files deleted
+     */
+    public static function deleteOrphanedImages($contextId, array $keepPaths, $minAgeSeconds = 600) {
+        // Current upload directory, plus the one plugin versions <= 1.7.0 used
+        // when files_dir was not {base}/files
+        $directories = array();
+        foreach (array(self::getBackgroundUploadDir($contextId),
+                self::getOJSBaseDir() . '/files/journals/' . (int) $contextId . '/reviewerCertificate') as $candidate) {
+            $real = realpath($candidate);
+            if ($real !== false && is_dir($real) && !is_link($candidate)) {
+                $directories[$real] = true;
+            }
+        }
+        $keep = array();
+        foreach ($keepPaths as $path) {
+            $real = $path ? realpath($path) : false;
+            if ($real !== false) {
+                $keep[dirname($real) . '/' . pathinfo($real, PATHINFO_FILENAME)] = true;
+            }
+        }
+        $fileManager = new \PKP\file\FileManager();
+        $deleted = 0;
+        $now = time();
+        foreach (array_keys($directories) as $directory) {
+            foreach (scandir($directory) ?: array() as $name) {
+                if (!preg_match(self::STORED_IMAGE_PATTERN, $name)) {
+                    continue;
+                }
+                $file = $directory . '/' . $name;
+                if (is_link($file) || !is_file($file)) {
+                    continue;
+                }
+                // Strip ".rcscaled-{key}.{ext}" / ".{ext}" to get the original's base name
+                $base = preg_replace('/(\\.rcscaled-[0-9a-f]+)?\\.[a-z]+$/i', '', $name);
+                if (isset($keep[$directory . '/' . $base])) {
+                    continue;
+                }
+                $mtime = @filemtime($file);
+                if ($mtime !== false && $now - $mtime < $minAgeSeconds) {
+                    continue;
+                }
+                if ($fileManager->deleteByPath($file)) {
+                    $deleted++;
+                }
+            }
+        }
+        return $deleted;
     }
 
     /**
@@ -322,9 +429,18 @@ class CertificateGenerator {
 
         // Settings replacement must never delete another journal's assets or a
         // legacy shared background. Such files remain available for manual cleanup.
+        // The legacy {base}/files/journals/{id} directory of plugin versions
+        // <= 1.7.0 belongs to the same journal, so its images are removed too.
         if ($contextId !== null) {
-            $directory = realpath(self::getBackgroundUploadDir($contextId));
-            if (!$directory || strpos($realPath, rtrim($directory, '/') . '/') !== 0 || is_link($path)) {
+            $inJournalDir = false;
+            foreach (array(self::getBackgroundUploadDir($contextId),
+                    self::getOJSBaseDir() . '/files/journals/' . (int) $contextId . '/reviewerCertificate') as $candidate) {
+                $directory = realpath($candidate);
+                if ($directory && strpos($realPath, rtrim($directory, '/') . '/') === 0) {
+                    $inJournalDir = true;
+                }
+            }
+            if (!$inJournalDir || is_link($path)) {
                 return false;
             }
         }

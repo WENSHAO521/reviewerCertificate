@@ -94,7 +94,7 @@
 	<message key="plugins.generic.reviewerCertificate.settings.insertVariable">Insert:</message>
 	<message key="plugins.generic.reviewerCertificate.settings.useRecognitionTemplate">Use recognition-style template</message>
 	<message key="plugins.generic.reviewerCertificate.settings.section.images">Background, logo, cover and seal</message>
-	<message key="plugins.generic.reviewerCertificate.settings.section.imagesDescription">PNG or JPEG, up to 5 MB each. The background fills the page; the other images are placed on top. Leave X and Y empty for the automatic position.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.section.imagesDescription">PNG, JPEG or WEBP, up to 5 MB each (WEBP files are usually much smaller). When you replace or remove an image, the old file is deleted from the server. The background fills the page; the other images are placed on top. Leave X and Y empty for the automatic position.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.image.none">Not set</message>
 	<message key="plugins.generic.reviewerCertificate.settings.image.xShort">X (mm)</message>
 	<message key="plugins.generic.reviewerCertificate.settings.image.yShort">Y (mm)</message>
@@ -149,7 +149,7 @@
 	<message key="plugins.generic.reviewerCertificate.settings.verification">Mogućnosti provjere</message>
 	<message key="plugins.generic.reviewerCertificate.settings.includeQRCode">Uključi QR kod za provjeru potvrde</message>
 	<message key="plugins.generic.reviewerCertificate.settings.previewCertificate">Pregled potvrde</message>
-	<message key="plugins.generic.reviewerCertificate.settings.invalidImageType">Nepodržana vrsta slike. Učitajte JPG ili PNG datoteku.</message>
+	<message key="plugins.generic.reviewerCertificate.settings.invalidImageType">Nepodržana vrsta slike. Učitajte JPG ili PNG/WEBP datoteku.</message>
 	<message key="plugins.generic.reviewerCertificate.settings.uploadFailed">Učitavanje datoteke nije uspjelo. Pokušajte ponovno.</message>
 
 	<!-- Error messages -->
@@ -239,7 +239,7 @@ Uredništvo časopisa {{$journalName}}</message>
     <message key="plugins.generic.reviewerCertificate.notifications.send">Send certificate notifications</message>
     <message key="plugins.generic.reviewerCertificate.notifications.sent">Sent</message>
     <message key="plugins.generic.reviewerCertificate.settings.invalidValue">Enter a valid value.</message>
-    <message key="plugins.generic.reviewerCertificate.settings.saveFailed">Certificate settings could not be saved. Check the fields and image (JPEG or PNG, up to 5 MB), then try again.</message>
+    <message key="plugins.generic.reviewerCertificate.settings.saveFailed">Certificate settings could not be saved. Check the fields and image (JPEG, PNG or WEBP, up to 5 MB), then try again.</message>
     <message key="plugins.generic.reviewerCertificate.email.subject">Vaša je potvrda spremna!</message>
     <message key="plugins.generic.reviewerCertificate.email.body">{{$reviewerName}},
 
