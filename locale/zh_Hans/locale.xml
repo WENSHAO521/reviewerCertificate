@@ -311,4 +311,27 @@
 	<message key="plugins.generic.reviewerCertificate.manage.tabTools">批量颁发与通知</message>
 	<message key="plugins.generic.reviewerCertificate.manage.tabSettings">证书设置</message>
 	<message key="plugins.generic.reviewerCertificate.manage.download">下载</message>
+	<message key="plugins.generic.reviewerCertificate.manage.recent">最近颁发</message>
+	<message key="plugins.generic.reviewerCertificate.manage.viewAll">查看全部证书</message>
+	<message key="plugins.generic.reviewerCertificate.manage.allStatuses">全部状态</message>
+	<message key="plugins.generic.reviewerCertificate.manage.selectRow">选取这张证书</message>
+	<message key="plugins.generic.reviewerCertificate.manage.selectPage">选取本页全部证书</message>
+	<message key="plugins.generic.reviewerCertificate.manage.selected">已选取 {$selected} 张</message>
+	<message key="plugins.generic.reviewerCertificate.manage.pageSelected">已选取本页全部 {$selected} 张证书。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.selectAllMatching">选取全部 {$total} 张符合条件的证书</message>
+	<message key="plugins.generic.reviewerCertificate.manage.allSelected">已选取全部 {$total} 张符合条件的证书。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.clearSelection">取消选取</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkActions">批量操作</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkDownload">下载 PDF（ZIP）</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkRevokePrompt">确定撤销 {$selected} 张证书？审稿人将无法再下载，验证页会显示为已撤销。可选填撤销原因（只有管理者看得到）：</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkRestoreConfirm">确定恢复 {$selected} 张证书？</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkPreparing">正在生成 ZIP，证书较多时需要一点时间。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkRevokedNotice">已撤销 {$number} 张证书。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkRestoredNotice">已恢复 {$number} 张证书。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkEmpty">没有选取任何证书。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkTooMany">一次 ZIP 下载最多 {$limit} 张证书。请少选一些，或用搜索、状态筛选缩小范围。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkNoZip">服务器的 PHP 没有 ZIP 支持（ext-zip），无法一次下载多张证书。请逐张下载，或请管理员启用 ext-zip。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkFailed">证书生成失败，请再试一次。</message>
+	<message key="plugins.generic.reviewerCertificate.myCertificates.annualHeading">年度与累计证书</message>
+	<message key="plugins.generic.reviewerCertificate.myCertificates.reviewHeading">审稿证书</message>
 </locale>

@@ -311,4 +311,27 @@
 	<message key="plugins.generic.reviewerCertificate.manage.tabTools">批次頒發與通知</message>
 	<message key="plugins.generic.reviewerCertificate.manage.tabSettings">證書設定</message>
 	<message key="plugins.generic.reviewerCertificate.manage.download">下載</message>
+	<message key="plugins.generic.reviewerCertificate.manage.recent">最近頒發</message>
+	<message key="plugins.generic.reviewerCertificate.manage.viewAll">檢視全部證書</message>
+	<message key="plugins.generic.reviewerCertificate.manage.allStatuses">全部狀態</message>
+	<message key="plugins.generic.reviewerCertificate.manage.selectRow">選取這張證書</message>
+	<message key="plugins.generic.reviewerCertificate.manage.selectPage">選取本頁全部證書</message>
+	<message key="plugins.generic.reviewerCertificate.manage.selected">已選取 {$selected} 張</message>
+	<message key="plugins.generic.reviewerCertificate.manage.pageSelected">已選取本頁全部 {$selected} 張證書。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.selectAllMatching">選取全部 {$total} 張符合條件的證書</message>
+	<message key="plugins.generic.reviewerCertificate.manage.allSelected">已選取全部 {$total} 張符合條件的證書。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.clearSelection">取消選取</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkActions">批次操作</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkDownload">下載 PDF（ZIP）</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkRevokePrompt">確定撤銷 {$selected} 張證書？審稿人將無法再下載，驗證頁會顯示為已撤銷。可選填撤銷原因（只有管理者看得到）：</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkRestoreConfirm">確定恢復 {$selected} 張證書？</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkPreparing">正在產生 ZIP，證書較多時需要一點時間。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkRevokedNotice">已撤銷 {$number} 張證書。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkRestoredNotice">已恢復 {$number} 張證書。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkEmpty">沒有選取任何證書。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkTooMany">一次 ZIP 下載最多 {$limit} 張證書。請少選一些，或用搜尋、狀態篩選縮小範圍。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkNoZip">伺服器的 PHP 沒有 ZIP 支援（ext-zip），無法一次下載多張證書。請逐張下載，或請管理員啟用 ext-zip。</message>
+	<message key="plugins.generic.reviewerCertificate.manage.bulkFailed">證書產生失敗，請再試一次。</message>
+	<message key="plugins.generic.reviewerCertificate.myCertificates.annualHeading">年度與累計證書</message>
+	<message key="plugins.generic.reviewerCertificate.myCertificates.reviewHeading">審稿證書</message>
 </locale>

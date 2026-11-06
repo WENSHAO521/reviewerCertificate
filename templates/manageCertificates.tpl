@@ -5,8 +5,10 @@
  * Distributed under the GNU GPL v3.
  *
  * Certificate Management page, reached from the backend side menu below
- * Statistics: statistics, the issued certificates (search, CSV export,
- * download, revoke and restore), batch issuing and email notifications.
+ * Statistics. Tabs: overview (statistics, latest certificates), issued
+ * certificates (search, status filter, multi-select with "select all
+ * matching" and batch download / CSV / revoke / restore), batch issuing
+ * and email notifications, and the certificate settings.
  *
  * Own design (css/manageCertificates.css, all rules scoped to .rc-manage)
  * in OJS's backend palette, the same look as the certificate settings form
@@ -48,8 +50,25 @@
 			<div class="rc-alert rc-alert--ok" role="status">{translate key="plugins.generic.reviewerCertificate.manage.restoredNotice"}</div>
 		{/if}
 
+		{if $bulkRevoked}
+			<div class="rc-alert rc-alert--ok" role="status">{translate key="plugins.generic.reviewerCertificate.manage.bulkRevokedNotice" number=$bulkRevoked}</div>
+		{/if}
+		{if $bulkRestored}
+			<div class="rc-alert rc-alert--ok" role="status">{translate key="plugins.generic.reviewerCertificate.manage.bulkRestoredNotice" number=$bulkRestored}</div>
+		{/if}
+		{if $bulkError == 'empty'}
+			<div class="rc-alert rc-alert--bad" role="alert">{translate key="plugins.generic.reviewerCertificate.manage.bulkEmpty"}</div>
+		{elseif $bulkError == 'tooMany'}
+			<div class="rc-alert rc-alert--bad" role="alert">{translate key="plugins.generic.reviewerCertificate.manage.bulkTooMany" limit=$bulkZipLimit}</div>
+		{elseif $bulkError == 'noZip'}
+			<div class="rc-alert rc-alert--bad" role="alert">{translate key="plugins.generic.reviewerCertificate.manage.bulkNoZip"}</div>
+		{elseif $bulkError == 'failed'}
+			<div class="rc-alert rc-alert--bad" role="alert">{translate key="plugins.generic.reviewerCertificate.manage.bulkFailed"}</div>
+		{/if}
+
 		<div class="rc-manage__tabs" role="tablist">
 			<button type="button" class="rc-manage__tab" role="tab" id="rc-tab-overview" aria-controls="rc-panel-overview" data-tab="overview">{translate key="plugins.generic.reviewerCertificate.manage.tabOverview"}</button>
+			<button type="button" class="rc-manage__tab" role="tab" id="rc-tab-certificates" aria-controls="rc-panel-certificates" data-tab="certificates">{translate key="plugins.generic.reviewerCertificate.manage.title"}</button>
 			<button type="button" class="rc-manage__tab" role="tab" id="rc-tab-tools" aria-controls="rc-panel-tools" data-tab="tools">{translate key="plugins.generic.reviewerCertificate.manage.tabTools"}</button>
 			{if $settingsUrl}<button type="button" class="rc-manage__tab" role="tab" id="rc-tab-settings" aria-controls="rc-panel-settings" data-tab="settings">{translate key="plugins.generic.reviewerCertificate.manage.tabSettings"}</button>{/if}
 		</div>
@@ -64,8 +83,41 @@
 				<div class="rc-stat"><span class="rc-stat__label">{translate key="plugins.generic.reviewerCertificate.statistics.uniqueReviewers"}</span><strong class="rc-stat__value">{$statistics.reviewers|escape}</strong></div>
 			</section>
 
-			{* Issued certificates *}
-			<section class="rc-box rc-certs">
+			{* The latest certificates; the full list has its own tab *}
+			<section class="rc-box rc-recent">
+				<div class="rc-box__head">
+					<h2 class="rc-box__title">{translate key="plugins.generic.reviewerCertificate.manage.recent"}</h2>
+					<a href="{$allCertificatesUrl|escape}" class="rc-link rc-manage__goto" data-tab-link="certificates">{translate key="plugins.generic.reviewerCertificate.manage.viewAll"} &rarr;</a>
+				</div>
+				{if $recentCertificates}
+					<ul class="rc-list">
+						{foreach from=$recentCertificates item=cert}
+							<li class="rc-list__item{if $cert.revoked} is-revoked{/if}">
+								<span class="rc-list__main">
+									<span class="rc-name">{$cert.reviewerName|escape}</span>
+									<span class="rc-sub rc-ellipsis" title="{$cert.submissionTitle|escape}">{$cert.submissionTitle|escape}</span>
+								</span>
+								<span class="rc-list__date">{$cert.dateIssued|escape}</span>
+								{if $cert.revoked}<span class="rc-badge rc-badge--bad">{translate key="plugins.generic.reviewerCertificate.manage.revoked"}</span>{else}<span class="rc-badge rc-badge--ok">{translate key="plugins.generic.reviewerCertificate.manage.valid"}</span>{/if}
+							</li>
+						{/foreach}
+					</ul>
+				{else}
+					<p class="rc-empty">{translate key="plugins.generic.reviewerCertificate.manage.empty"}</p>
+				{/if}
+			</section>
+		</div>
+
+		<div class="rc-manage__panel" role="tabpanel" id="rc-panel-certificates" aria-labelledby="rc-tab-certificates">
+			{* Issued certificates with multi-select. Ticking boxes selects
+			   rows of this page; "select all matching" switches the batch
+			   form to every certificate that matches the search and status
+			   filter, across all pages (scope=all). *}
+			<section class="rc-box rc-certs" data-total="{$totalCertificates|escape}"
+				data-text-selected="{translate key="plugins.generic.reviewerCertificate.manage.selected" selected="%n%"}"
+				data-text-page-selected="{translate key="plugins.generic.reviewerCertificate.manage.pageSelected" selected="%n%"}"
+				data-text-revoke-prompt="{translate key="plugins.generic.reviewerCertificate.manage.bulkRevokePrompt" selected="%n%"}"
+				data-text-restore-confirm="{translate key="plugins.generic.reviewerCertificate.manage.bulkRestoreConfirm" selected="%n%"}">
 				<div class="rc-box__head">
 					<h2 class="rc-box__title">{translate key="plugins.generic.reviewerCertificate.manage.title"} <span class="rc-count">{$totalCertificates|escape}</span></h2>
 					<a href="{$exportUrl|escape}" class="rc-btn certificate-export-btn">{translate key="plugins.generic.reviewerCertificate.manage.exportCsv"}</a>
@@ -74,17 +126,56 @@
 				<form method="get" action="{$manageUrl|escape}" class="rc-toolbar certificate-manage-search" role="search">
 					<label for="certificateSearch" class="pkp_screen_reader">{translate key="plugins.generic.reviewerCertificate.manage.search"}</label>
 					<input type="search" id="certificateSearch" class="rc-search" name="search" value="{$search|escape}" placeholder="{translate key="plugins.generic.reviewerCertificate.manage.searchPlaceholder"}" />
+					<label for="certificateStatus" class="pkp_screen_reader">{translate key="plugins.generic.reviewerCertificate.manage.status"}</label>
+					<select id="certificateStatus" name="status" class="rc-select">
+						<option value="">{translate key="plugins.generic.reviewerCertificate.manage.allStatuses"}</option>
+						<option value="valid"{if $status == 'valid'} selected{/if}>{translate key="plugins.generic.reviewerCertificate.manage.valid"}</option>
+						<option value="revoked"{if $status == 'revoked'} selected{/if}>{translate key="plugins.generic.reviewerCertificate.manage.revoked"}</option>
+					</select>
 					<button type="submit" class="rc-btn">{translate key="plugins.generic.reviewerCertificate.manage.search"}</button>
 					{if $isFiltered}<a href="{$manageUrl|escape}" class="rc-link">{translate key="plugins.generic.reviewerCertificate.manage.clearSearch"}</a>{/if}
 				</form>
 
+				{* Batch bar: shown once something is ticked *}
+				<form method="post" action="{$bulkUrl|escape}" id="rc-bulk-form" class="rc-bulk certificate-bulk" hidden aria-label="{translate key="plugins.generic.reviewerCertificate.manage.bulkActions"}">
+					{csrf}
+					<input type="hidden" name="bulkAction" value="" />
+					<input type="hidden" name="scope" value="selected" />
+					<input type="hidden" name="reason" value="" />
+					<input type="hidden" name="search" value="{$search|escape}" />
+					<input type="hidden" name="status" value="{$status|escape}" />
+					<input type="hidden" name="page" value="{$page|escape}" />
+					<div class="rc-bulk__bar">
+						<strong class="rc-bulk__count" aria-live="polite"></strong>
+						<div class="rc-bulk__actions">
+							<button type="submit" class="rc-btn rc-btn--sm rc-btn--primary" data-bulk="download">{translate key="plugins.generic.reviewerCertificate.manage.bulkDownload"}</button>
+							<button type="submit" class="rc-btn rc-btn--sm" data-bulk="export">{translate key="plugins.generic.reviewerCertificate.manage.exportCsv"}</button>
+							<button type="submit" class="rc-btn rc-btn--sm rc-btn--danger" data-bulk="revoke">{translate key="plugins.generic.reviewerCertificate.manage.revoke"}</button>
+							<button type="submit" class="rc-btn rc-btn--sm rc-btn--quiet" data-bulk="restore">{translate key="plugins.generic.reviewerCertificate.manage.restore"}</button>
+							<button type="button" class="rc-link rc-bulk__clear">{translate key="plugins.generic.reviewerCertificate.manage.clearSelection"}</button>
+						</div>
+					</div>
+					{if $pageCount > 1}
+						<div class="rc-bulk__scope" hidden>
+							<span class="rc-bulk__page-note"></span>
+							<button type="button" class="rc-link rc-bulk__all">{translate key="plugins.generic.reviewerCertificate.manage.selectAllMatching" total=$totalCertificates}</button>
+						</div>
+						<div class="rc-bulk__scope rc-bulk__scope--all" hidden>
+							<span>{translate key="plugins.generic.reviewerCertificate.manage.allSelected" total=$totalCertificates}</span>
+							<button type="button" class="rc-link rc-bulk__clear">{translate key="plugins.generic.reviewerCertificate.manage.clearSelection"}</button>
+						</div>
+					{/if}
+					<p class="rc-bulk__note" hidden>{translate key="plugins.generic.reviewerCertificate.manage.bulkPreparing"}</p>
+				</form>
+
 				<div class="rc-table-wrap">
-				<table class="rc-table certificate-manage-table">
+				<table class="rc-table rc-table--select certificate-manage-table">
 					<colgroup>
-						<col class="rc-col-reviewer" /><col /><col class="rc-col-date" /><col class="rc-col-num" /><col class="rc-col-status" /><col class="rc-col-actions" />
+						<col class="rc-col-check" /><col class="rc-col-reviewer" /><col /><col class="rc-col-date" /><col class="rc-col-num" /><col class="rc-col-status" /><col class="rc-col-actions" />
 					</colgroup>
 					<thead>
 						<tr>
+							<th scope="col" class="rc-cell-check">{if $certificates}<input type="checkbox" class="rc-check rc-check--page" aria-label="{translate key="plugins.generic.reviewerCertificate.manage.selectPage"}" title="{translate key="plugins.generic.reviewerCertificate.manage.selectPage"}" />{/if}</th>
 							<th scope="col">{translate key="plugins.generic.reviewerCertificate.manage.reviewer"}</th>
 							<th scope="col">{translate key="plugins.generic.reviewerCertificate.myCertificates.submissionTitle"}</th>
 							<th scope="col">{translate key="plugins.generic.reviewerCertificate.manage.reviewCompleted"}</th>
@@ -96,6 +187,7 @@
 					<tbody>
 						{foreach from=$certificates item=cert}
 							<tr class="{if $cert.revoked}is-revoked certificate-revoked{/if}">
+								<td class="rc-cell-check"><input type="checkbox" class="rc-check rc-check--row" form="rc-bulk-form" name="certificateIds[]" value="{$cert.certificateId|escape}" aria-label="{translate key="plugins.generic.reviewerCertificate.manage.selectRow"}: {$cert.reviewerName|escape}" /></td>
 								<td class="rc-cell-reviewer">
 									<span class="rc-name" title="{$cert.reviewerName|escape}">{$cert.reviewerName|escape}</span>
 									<span class="rc-sub rc-ellipsis" title="{$cert.reviewerEmail|escape}">{$cert.reviewerEmail|escape}</span>
@@ -120,6 +212,7 @@
 									<form method="post" action="{$cert.revokeUrl|escape}" class="certificate-revoke-form">
 										{csrf}
 										<input type="hidden" name="search" value="{$search|escape}" />
+										<input type="hidden" name="status" value="{$status|escape}" />
 										<input type="hidden" name="page" value="{$page|escape}" />
 										{if $cert.revoked}
 											<input type="hidden" name="restore" value="1" />
@@ -132,7 +225,7 @@
 								</td>
 							</tr>
 						{foreachelse}
-							<tr class="rc-empty-row"><td colspan="6"><p class="rc-empty">{translate key="plugins.generic.reviewerCertificate.manage.empty"}</p></td></tr>
+							<tr class="rc-empty-row"><td colspan="7"><p class="rc-empty">{translate key="plugins.generic.reviewerCertificate.manage.empty"}</p></td></tr>
 						{/foreach}
 					</tbody>
 				</table>

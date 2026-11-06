@@ -737,3 +737,72 @@ msgstr "證書設定"
 msgid "plugins.generic.reviewerCertificate.manage.download"
 msgstr "下載"
 
+msgid "plugins.generic.reviewerCertificate.manage.recent"
+msgstr "最近頒發"
+
+msgid "plugins.generic.reviewerCertificate.manage.viewAll"
+msgstr "檢視全部證書"
+
+msgid "plugins.generic.reviewerCertificate.manage.allStatuses"
+msgstr "全部狀態"
+
+msgid "plugins.generic.reviewerCertificate.manage.selectRow"
+msgstr "選取這張證書"
+
+msgid "plugins.generic.reviewerCertificate.manage.selectPage"
+msgstr "選取本頁全部證書"
+
+msgid "plugins.generic.reviewerCertificate.manage.selected"
+msgstr "已選取 {$selected} 張"
+
+msgid "plugins.generic.reviewerCertificate.manage.pageSelected"
+msgstr "已選取本頁全部 {$selected} 張證書。"
+
+msgid "plugins.generic.reviewerCertificate.manage.selectAllMatching"
+msgstr "選取全部 {$total} 張符合條件的證書"
+
+msgid "plugins.generic.reviewerCertificate.manage.allSelected"
+msgstr "已選取全部 {$total} 張符合條件的證書。"
+
+msgid "plugins.generic.reviewerCertificate.manage.clearSelection"
+msgstr "取消選取"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkActions"
+msgstr "批次操作"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkDownload"
+msgstr "下載 PDF（ZIP）"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkRevokePrompt"
+msgstr "確定撤銷 {$selected} 張證書？審稿人將無法再下載，驗證頁會顯示為已撤銷。可選填撤銷原因（只有管理者看得到）："
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkRestoreConfirm"
+msgstr "確定恢復 {$selected} 張證書？"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkPreparing"
+msgstr "正在產生 ZIP，證書較多時需要一點時間。"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkRevokedNotice"
+msgstr "已撤銷 {$number} 張證書。"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkRestoredNotice"
+msgstr "已恢復 {$number} 張證書。"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkEmpty"
+msgstr "沒有選取任何證書。"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkTooMany"
+msgstr "一次 ZIP 下載最多 {$limit} 張證書。請少選一些，或用搜尋、狀態篩選縮小範圍。"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkNoZip"
+msgstr "伺服器的 PHP 沒有 ZIP 支援（ext-zip），無法一次下載多張證書。請逐張下載，或請管理員啟用 ext-zip。"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkFailed"
+msgstr "證書產生失敗，請再試一次。"
+
+msgid "plugins.generic.reviewerCertificate.myCertificates.annualHeading"
+msgstr "年度與累計證書"
+
+msgid "plugins.generic.reviewerCertificate.myCertificates.reviewHeading"
+msgstr "審稿證書"
+

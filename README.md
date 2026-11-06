@@ -10,6 +10,12 @@ The Reviewer Certificate Plugin enables reviewers to generate and download perso
 
 - Fixes the My Certificates page failing to open (HTTP 500) in v1.15.0.
 
+**Changes in v1.19.0**:
+
+- Issued certificates get their own tab in Certificate Management with multi-select: tick certificates (or select all that match the search and status filter, across pages) and download them together as one ZIP, export them as CSV, or revoke / restore them in one go. New status filter (valid / revoked); the overview shows the latest five.
+- The reviewers' My Certificates page uses the same design as Certificate Management.
+- The plugin list keeps only the on/off switch: the Settings link is gone, since the settings live in Certificate Management.
+
 **Changes in v1.18.0**:
 
 - Certificate Management page redesigned: aligned issued-certificates table that no longer overflows (compact Download / Revoke buttons, cards on narrow screens), a statistics strip, matching batch tool cards, and aligned fields in the certificate settings form.

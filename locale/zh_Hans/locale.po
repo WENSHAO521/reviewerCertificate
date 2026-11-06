@@ -737,3 +737,72 @@ msgstr "证书设置"
 msgid "plugins.generic.reviewerCertificate.manage.download"
 msgstr "下载"
 
+msgid "plugins.generic.reviewerCertificate.manage.recent"
+msgstr "最近颁发"
+
+msgid "plugins.generic.reviewerCertificate.manage.viewAll"
+msgstr "查看全部证书"
+
+msgid "plugins.generic.reviewerCertificate.manage.allStatuses"
+msgstr "全部状态"
+
+msgid "plugins.generic.reviewerCertificate.manage.selectRow"
+msgstr "选取这张证书"
+
+msgid "plugins.generic.reviewerCertificate.manage.selectPage"
+msgstr "选取本页全部证书"
+
+msgid "plugins.generic.reviewerCertificate.manage.selected"
+msgstr "已选取 {$selected} 张"
+
+msgid "plugins.generic.reviewerCertificate.manage.pageSelected"
+msgstr "已选取本页全部 {$selected} 张证书。"
+
+msgid "plugins.generic.reviewerCertificate.manage.selectAllMatching"
+msgstr "选取全部 {$total} 张符合条件的证书"
+
+msgid "plugins.generic.reviewerCertificate.manage.allSelected"
+msgstr "已选取全部 {$total} 张符合条件的证书。"
+
+msgid "plugins.generic.reviewerCertificate.manage.clearSelection"
+msgstr "取消选取"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkActions"
+msgstr "批量操作"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkDownload"
+msgstr "下载 PDF（ZIP）"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkRevokePrompt"
+msgstr "确定撤销 {$selected} 张证书？审稿人将无法再下载，验证页会显示为已撤销。可选填撤销原因（只有管理者看得到）："
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkRestoreConfirm"
+msgstr "确定恢复 {$selected} 张证书？"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkPreparing"
+msgstr "正在生成 ZIP，证书较多时需要一点时间。"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkRevokedNotice"
+msgstr "已撤销 {$number} 张证书。"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkRestoredNotice"
+msgstr "已恢复 {$number} 张证书。"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkEmpty"
+msgstr "没有选取任何证书。"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkTooMany"
+msgstr "一次 ZIP 下载最多 {$limit} 张证书。请少选一些，或用搜索、状态筛选缩小范围。"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkNoZip"
+msgstr "服务器的 PHP 没有 ZIP 支持（ext-zip），无法一次下载多张证书。请逐张下载，或请管理员启用 ext-zip。"
+
+msgid "plugins.generic.reviewerCertificate.manage.bulkFailed"
+msgstr "证书生成失败，请再试一次。"
+
+msgid "plugins.generic.reviewerCertificate.myCertificates.annualHeading"
+msgstr "年度与累计证书"
+
+msgid "plugins.generic.reviewerCertificate.myCertificates.reviewHeading"
+msgstr "审稿证书"
+
